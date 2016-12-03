@@ -1,0 +1,27 @@
+# pdfs
+*.pdf
+
+#zip files
+*.zip
+
+# txt files
+*.txt
+
+# Images
+*.img
+*.jpg
+*.jpeg
+*.png
+
+# Videos
+*.mp4
+*.avi
+
+# Directories
+exercise?_solns/*
+
+# Tmps
+*~
+
+#VO - pipeline
+VO*

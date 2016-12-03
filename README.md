@@ -32,3 +32,6 @@ Monocular, visual odometry (VO) pipeline with the most essential features:
 3. **Other Features**: Whether you implemented one or multiple bonus features, or did something in addition to the basic requirements (and explained it in the report). Note that no penalty is given if a bonus feature requires stereo frames. A (non-exhaustive) list of ideas is given down here:
 
 ## Installation
+
+## Reference output
+https://www.youtube.com/watch?v=MQ1iDi3S-TU&list=PLI5XgAFFHqZiAg6yd0XKOTRgkCE4QTm54&index=3#t=32.749926

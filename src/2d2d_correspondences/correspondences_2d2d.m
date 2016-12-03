@@ -1,4 +1,4 @@
-function [matches, keypoints1, keypoints2] = correspondences_2d2d(img1, img2)
+function [keypoints1, keypoints2] = correspondences_2d2d(img1, img2)
 
 % Randomly chosen parameters that seem to work well - can you find better
 % ones?
@@ -56,11 +56,12 @@ keypoints_2 = selectKeypoints(...
 descriptors_2 = describeKeypoints(img_2, keypoints_2, descriptor_radius);
 
 matches = matchDescriptors(descriptors_2, descriptors_1, match_lambda);
-keypoints1 = keypoints_1;
-keypoints2 = keypoints_2;
+
 
 
 [~, query_indices, match_indices] = find(matches);
+keypoints1 = keypoints_1(:, match_indices);
+keypoints2 = keypoints_2(:, query_indices);
 
 figure(4);
 imshow(img_1);

@@ -17,11 +17,5 @@
 *.mp4
 *.avi
 
-# Directories
-exercise?_solns/*
-
 # Tmps
 *~
-
-#VO - pipeline
-VO*

@@ -70,7 +70,7 @@ else
 end
 
 tic;
-matches = correspondences_2d2d(img_left, img_right);
+[matches, keypoints_left, keypoints_right] = correspondences_2d2d(img_left, img_right);
 toc
 
 

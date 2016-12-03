@@ -31,11 +31,13 @@ figure(2);
 imshow(img_1);
 hold on;
 plot(keypoints_1(2, :), keypoints_1(1, :), 'rx', 'Linewidth', 2);
+hold off;
 
 %% Part 3 - Describe keypoints and show 16 strongest keypoint descriptors
 
 descriptors_1 = describeKeypoints(img_1, keypoints_1, descriptor_radius);
 figure(3);
+hold on;
 for i = 1:16
     subplot(4, 4, i);
     patch_size = 2 * descriptor_radius + 1;
@@ -43,6 +45,7 @@ for i = 1:16
     axis equal;
     axis off;
 end
+hold off;
 
 %% Part 4 - Match descriptors rsbetween first two images
 img_2 = img2;
@@ -56,10 +59,26 @@ matches = matchDescriptors(descriptors_2, descriptors_1, match_lambda);
 keypoints1 = keypoints_1;
 keypoints2 = keypoints_2;
 
+
+[~, query_indices, match_indices] = find(matches);
+
 figure(4);
+imshow(img_1);
+hold on;
+title('Left image');
+plot(keypoints_1(2, :), keypoints_1(1, :), 'rx', 'Linewidth', 2);
+plot(keypoints_1(2, match_indices), keypoints_1(1, match_indices), 'bx', 'Linewidth', 2);
+legend('Non-matched keypoints', 'Matched keypoints');
+hold off;
+
+figure(5);
 imshow(img_2);
 hold on;
+title('Right image');
 plot(keypoints_2(2, :), keypoints_2(1, :), 'rx', 'Linewidth', 2);
+plot(keypoints_2(2, query_indices), keypoints_2(1, query_indices), 'bx', 'Linewidth', 2);
+legend('Non-matched keypoints','Matched keypoints');
 plotMatches(matches, keypoints_2, keypoints_1);
+hold off;
 
 end

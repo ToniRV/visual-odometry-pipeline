@@ -102,11 +102,13 @@ homo_keypoints_left_fliped = [flipud(keypoints_left) ; ones(1, size(keypoints_le
 homo_keypoints_right_fliped = [flipud(keypoints_right) ; ones(1, size(keypoints_right,2))]; %be a SCALE factor or something of the kind
 
 tic;
+% These are 3D points in camera left frame
 P_est = linearTriangulation(homo_keypoints_left_fliped, homo_keypoints_right_fliped, M_left, M_right);
 fprintf('It took %ds to compute linear triangulation \n', toc);
 % official triangulation given in matlab,
 % I have also to flip upside down the keypoints...
-[worldPoints, reprojectionErrors] = triangulate(flipud(keypoints_left)', flipud(keypoints_right)', M_left', M_right');
+% Again these are wrt camera Left frame
+[P_est_official, reprojectionErrors] = triangulate(flipud(keypoints_left)', flipud(keypoints_right)', M_left', M_right');
 
 
 
@@ -117,7 +119,7 @@ fprintf('It took %ds to compute linear triangulation \n', toc);
 A_col1 = K^-1 * homo_keypoints_left_fliped;
 A_col2 = K^-1 * homo_keypoints_right_fliped;
 
-camera_points = zeros(3, size(homo_keypoints_left_fliped,2)); % Number of world points
+camera_points = zeros(3, size(homo_keypoints_left_fliped,2)); % Number of 3D points
 
 b = [baseline; 0; 0];
 for i = 1:size(homo_keypoints_left_fliped, 2) % for each keypoint compute the corresponding world point

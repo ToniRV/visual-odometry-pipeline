@@ -106,6 +106,7 @@ P_est = linearTriangulation(homo_keypoints_left_fliped, homo_keypoints_right_fli
 fprintf('It took %ds to compute linear triangulation \n', toc);
 % official triangulation given in matlab,
 % I have also to flip upside down the keypoints...
+[worldPoints, reprojectionErrors] = triangulate(flipud(keypoints_left)', flipud(keypoints_right)', M_left', M_right');
 toc
 
 

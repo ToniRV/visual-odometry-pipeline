@@ -3,6 +3,8 @@ clear all;
 clc;
 close all;
 
+addpath('../2d2d_correspondences');
+
 kitti_path='/home/tonirv/Downloads/kitti';
 malaga_path='/home/tonirv/Downloads/';
 parking_path='/home/tonirv/Documents/Vision Algorithms for Mobile Robotics/VO - Project/parking';

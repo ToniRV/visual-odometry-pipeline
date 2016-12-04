@@ -74,6 +74,8 @@ end
 tic;
 [keypoints_left, keypoints_right] = correspondences_2d2d(img_left, img_right);
 fprintf('It took %ds to compute correspondences \n', toc);
+
+figure(10); showMatchedFeatures(img_left, img_right, circshift(keypoints_left,1)', circshift(keypoints_right,1)', 'montage');
 toc
 
 

@@ -70,7 +70,8 @@ else
 end
 
 tic;
-[matches, keypoints_left, keypoints_right] = correspondences_2d2d(img_left, img_right);
+[keypoints_left, keypoints_right] = correspondences_2d2d(img_left, img_right);
+fprintf('It took %ds to compute correspondences \n', toc);
 toc
 
 

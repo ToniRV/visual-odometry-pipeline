@@ -77,7 +77,8 @@ tic;
 [keypoints_left, keypoints_right] = correspondences_2d2d(img_left, img_right);
 fprintf('It took %ds to compute correspondences \n', toc);
 
-figure(10); showMatchedFeatures(img_left, img_right, circshift(keypoints_left,1)', circshift(keypoints_right,1)', 'montage');
+%Matlab convention, I have to flip keypoints :O
+figure(10); showMatchedFeatures(img_left, img_right, flipud(keypoints_left)', flipud(keypoints_right)', 'montage');
 toc
 
 

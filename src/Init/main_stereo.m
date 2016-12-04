@@ -92,13 +92,7 @@ figure(10); showMatchedFeatures(img_left, img_right, flipud(keypoints_left)', fl
 homo_keypoints_left = [keypoints_left ; ones(1, size(keypoints_left,2))]; % TODO not sure if this zeros should instead 
 homo_keypoints_right = [keypoints_right ; ones(1, size(keypoints_right,2))]; %be a SCALE factor or something of the kind
 
-% Given by the KITTI dataset:
-baseline = 0.54;
 
-% Assuming identical K for each camera
-M_left = K * [eye(3), [0; 0; 0]];
-M_right = K * [eye(3), [-baseline; 0; 0]]; % TODO check that this is correct, it actually depends on the Kitti coords.
-                                                                                % According to the coords in this paper http://www.mrt.kit.edu/z/publ/download/2013/GeigerAl2013IJRR.pdf
                                                                                 
 toc
 

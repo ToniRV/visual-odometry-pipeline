@@ -115,6 +115,13 @@ fprintf('It took %ds to compute linear triangulation \n', toc);
 [P_est_official, reprojectionErrors] = triangulate(flipud(keypoints_left)', flipud(keypoints_right)', M_left', M_right');
 P_est_official = P_est_official';
 
+% TODO we should maybe get rid of triangulation behind the camera at this
+% step? This makes the 18th entrance in P_est disappear since it's z
+% component is negative, mind that the one from P_est_official isn't
+% negative, and the reprojection error is 0.5... So maybe we shouldn't keep
+% it anyway...
+P_est = P_est(:, P_est(3,:)>0);
+P_est_official = P_est_official(:, P_est_official(3,:)>0);
 
 
 %% Adapt disparity functions to compute 3D points only for the keypoints found

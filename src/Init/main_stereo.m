@@ -110,4 +110,19 @@ fprintf('It took %ds to compute linear triangulation \n', toc);
 
 
 
+%% Adapt disparity functions to compute 3D points only for the keypoints found
+
+% WARNING Switch from (row, col, 1) to (u, v, 1), check figure 2 of exercice4.
+
+A_col1 = K^-1 * homo_keypoints_left_fliped;
+A_col2 = K^-1 * homo_keypoints_right_fliped;
+
+camera_points = zeros(3, size(homo_keypoints_left_fliped,2)); % Number of world points
+
+b = [baseline; 0; 0];
+for i = 1:size(homo_keypoints_left_fliped, 2) % for each keypoint compute the corresponding world point
+    A = [A_col1(:,i), -A_col2(:,i)]; % Matrix A of one keypoint
+    x = (A' * A) \ (A' * b); % solve lambdas
+    camera_points(:, i) = x(1) * A_col1(:, i); % lambda_left*K^-1*homo_keypoint_left_fliped;
+end
 

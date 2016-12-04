@@ -74,6 +74,9 @@ else
     assert(false);
 end
 
+% The triangulation output varies depending on the algorithm
+% It seems like the one given in ex5 is doing something different at
+% certain points compared with the other two.
 [ points_2D_ex_5_triangulation, points_3D_ex_5_triangulation ] = stereo_initialisation( img_left, img_right , K, baseline, 'ex_5_triangulation');
 [ points_2D_matlab_triangulation, points_3D_matlab_triangulation ] = stereo_initialisation( img_left, img_right , K, baseline, 'matlab_triangulation');
 [ points_2D_disparity_triangulation, points_3D_disparity_triangulation ] = stereo_initialisation( img_left, img_right , K, baseline, 'disparity_triangulation');

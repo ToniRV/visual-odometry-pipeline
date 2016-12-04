@@ -109,6 +109,9 @@ fprintf('It took %ds to compute linear triangulation \n', toc);
 % the course implementation, which one do we choose?
 % I have also to flip upside down the keypoints...
 % Again these are wrt camera Left frame
+% TODO a possible optimisation would be to get rid of points that have a
+% great reprojectionERROR which are the ones where both triangulations (the
+% matlab one and the one given in the exercices) differ.
 [P_est_official, reprojectionErrors] = triangulate(flipud(keypoints_left)', flipud(keypoints_right)', M_left', M_right');
 
 

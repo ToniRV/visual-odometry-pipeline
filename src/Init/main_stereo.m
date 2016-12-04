@@ -23,12 +23,7 @@ if ds == 0
     % Given by the KITTI dataset:
     baseline = 0.54;
 
-    % Assuming identical K for each camera, and world frame identical to
-    % left camera frame.
-    M_left = K * [eye(3), [0; 0; 0]];
-    M_right = K * [eye(3), [-baseline; 0; 0]]; % TODO check that this is correct, it actually depends on the Kitti coords.
-                                                                                % According to the coords in this paper http://www.mrt.kit.edu/z/publ/download/2013/GeigerAl2013IJRR.pdf
-elseif ds == 1
+  elseif ds == 1
     % Path containing the many files of Malaga 7.
     assert(exist('malaga_path', 'var') ~= 0);
     images = dir([malaga_path ...
@@ -79,64 +74,13 @@ else
     assert(false);
 end
 
-tic;
-% !!!!!!!!!!!!!!!!WARNING keypoints are in (row, col) coordinates of the image which might differ from
-% (u, v) coordinates, depending on whether u representes rows or columns!!!!!!!!!!!!!!!!!!!!!!
-[keypoints_left, keypoints_right] = correspondences_2d2d(img_left, img_right);
-fprintf('It took %ds to compute correspondences \n', toc);
-
-%Matlab convention, I have to flip keypoints :O
-figure(10); showMatchedFeatures(img_left, img_right, flipud(keypoints_left)', flipud(keypoints_right)', 'montage');
-
-% Homogeneous coordinates of 2d-2d correspondences
-homo_keypoints_left = [keypoints_left ; ones(1, size(keypoints_left,2))]; % TODO not sure if this zeros should instead 
-homo_keypoints_right = [keypoints_right ; ones(1, size(keypoints_right,2))]; %be a SCALE factor or something of the kind
+[ points_2D_ex_5_triangulation, points_3D_ex_5_triangulation ] = stereo_initialisation( img_left, img_right , K, baseline, 'ex_5_triangulation');
+[ points_2D_matlab_triangulation, points_3D_matlab_triangulation ] = stereo_initialisation( img_left, img_right , K, baseline, 'matlab_triangulation');
+[ points_2D_disparity_triangulation, points_3D_disparity_triangulation ] = stereo_initialisation( img_left, img_right , K, baseline, 'disparity_triangulation');
 
 
-                                                                                
-% FLIPED Homogeneous coordinates of 2d-2d correspondences
-% The flipping is to switch from (row, col, 1) coords to (u, v, 1) coords,
-% u and v are cols and rows respectively... IT DEPENDS ON THE CONVENTION
-% USED...
-homo_keypoints_left_fliped = [flipud(keypoints_left) ; ones(1, size(keypoints_left,2))]; % TODO not sure if this zeros should instead 
-homo_keypoints_right_fliped = [flipud(keypoints_right) ; ones(1, size(keypoints_right,2))]; %be a SCALE factor or something of the kind
+
+
 
 tic;
-% These are 3D points in camera left frame
-P_est = linearTriangulation(homo_keypoints_left_fliped, homo_keypoints_right_fliped, M_left, M_right);
-fprintf('It took %ds to compute linear triangulation \n', toc);
-% TODO official triangulation given in matlab, the results are different
-% the course implementation, which one do we choose?
-% I have also to flip upside down the keypoints...
-% Again these are wrt camera Left frame
-% TODO a possible optimisation would be to get rid of points that have a
-% great reprojectionERROR which are the ones where both triangulations (the
-% matlab one and the one given in the exercices) differ.
-[P_est_official, reprojectionErrors] = triangulate(flipud(keypoints_left)', flipud(keypoints_right)', M_left', M_right');
-P_est_official = P_est_official';
-
-% TODO we should maybe get rid of triangulation behind the camera at this
-% step? This makes the 18th entrance in P_est disappear since it's z
-% component is negative, mind that the one from P_est_official isn't
-% negative, and the reprojection error is 0.5... So maybe we shouldn't keep
-% it anyway...
-P_est = P_est(:, P_est(3,:)>0);
-P_est_official = P_est_official(:, P_est_official(3,:)>0);
-
-
-%% Adapt disparity functions to compute 3D points only for the keypoints found
-
-% WARNING Switch from (row, col, 1) to (u, v, 1), check figure 2 of exercice4.
-
-A_col1 = K^-1 * homo_keypoints_left_fliped;
-A_col2 = K^-1 * homo_keypoints_right_fliped;
-
-camera_points = zeros(3, size(homo_keypoints_left_fliped,2)); % Number of 3D points
-
-b = [baseline; 0; 0];
-for i = 1:size(homo_keypoints_left_fliped, 2) % for each keypoint compute the corresponding world point
-    A = [A_col1(:,i), -A_col2(:,i)]; % Matrix A of one keypoint
-    x = (A' * A) \ (A' * b); % solve lambdas
-    camera_points(:, i) = x(1) * A_col1(:, i); % lambda_left*K^-1*homo_keypoint_left_fliped;
-end
 

@@ -79,6 +79,10 @@ fprintf('It took %ds to compute correspondences \n', toc);
 
 %Matlab convention, I have to flip keypoints :O
 figure(10); showMatchedFeatures(img_left, img_right, flipud(keypoints_left)', flipud(keypoints_right)', 'montage');
+
+% Homogeneous coordinates of 2d-2d correspondences
+homo_keypoints_left = [keypoints_left ; ones(1, size(keypoints_left,2))]; % TODO not sure if this zeros should instead 
+homo_keypoints_right = [keypoints_right ; ones(1, size(keypoints_right,2))]; %be a SCALE factor or something of the kind
 toc
 
 

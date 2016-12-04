@@ -23,7 +23,8 @@ if ds == 0
     % Given by the KITTI dataset:
     baseline = 0.54;
 
-    % Assuming identical K for each camera
+    % Assuming identical K for each camera, and world frame identical to
+    % left camera frame.
     M_left = K * [eye(3), [0; 0; 0]];
     M_right = K * [eye(3), [-baseline; 0; 0]]; % TODO check that this is correct, it actually depends on the Kitti coords.
                                                                                 % According to the coords in this paper http://www.mrt.kit.edu/z/publ/download/2013/GeigerAl2013IJRR.pdf

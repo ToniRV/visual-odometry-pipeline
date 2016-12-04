@@ -72,6 +72,8 @@ else
 end
 
 tic;
+% !!!!!!!!!!!!!!!!WARNING keypoints are in (row, col) coordinates of the image which might differ from
+% (u, v) coordinates, depending on whether u representes rows or columns!!!!!!!!!!!!!!!!!!!!!!
 [keypoints_left, keypoints_right] = correspondences_2d2d(img_left, img_right);
 fprintf('It took %ds to compute correspondences \n', toc);
 

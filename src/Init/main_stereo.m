@@ -105,7 +105,8 @@ tic;
 % These are 3D points in camera left frame
 P_est = linearTriangulation(homo_keypoints_left_fliped, homo_keypoints_right_fliped, M_left, M_right);
 fprintf('It took %ds to compute linear triangulation \n', toc);
-% official triangulation given in matlab,
+% TODO official triangulation given in matlab, the results are different
+% the course implementation, which one do we choose?
 % I have also to flip upside down the keypoints...
 % Again these are wrt camera Left frame
 [P_est_official, reprojectionErrors] = triangulate(flipud(keypoints_left)', flipud(keypoints_right)', M_left', M_right');

@@ -94,6 +94,18 @@ homo_keypoints_right = [keypoints_right ; ones(1, size(keypoints_right,2))]; %be
 
 
                                                                                 
+% FLIPED Homogeneous coordinates of 2d-2d correspondences
+% The flipping is to switch from (row, col, 1) coords to (u, v, 1) coords,
+% u and v are cols and rows respectively... IT DEPENDS ON THE CONVENTION
+% USED...
+homo_keypoints_left_fliped = [flipud(keypoints_left) ; ones(1, size(keypoints_left,2))]; % TODO not sure if this zeros should instead 
+homo_keypoints_right_fliped = [flipud(keypoints_right) ; ones(1, size(keypoints_right,2))]; %be a SCALE factor or something of the kind
+
+tic;
+P_est = linearTriangulation(homo_keypoints_left_fliped, homo_keypoints_right_fliped, M_left, M_right);
+fprintf('It took %ds to compute linear triangulation \n', toc);
+% official triangulation given in matlab,
+% I have also to flip upside down the keypoints...
 toc
 
 

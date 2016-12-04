@@ -113,6 +113,7 @@ fprintf('It took %ds to compute linear triangulation \n', toc);
 % great reprojectionERROR which are the ones where both triangulations (the
 % matlab one and the one given in the exercices) differ.
 [P_est_official, reprojectionErrors] = triangulate(flipud(keypoints_left)', flipud(keypoints_right)', M_left', M_right');
+P_est_official = P_est_official';
 
 
 

@@ -20,6 +20,13 @@ if ds == 0
     K = [7.188560000000e+02 0 6.071928000000e+02
         0 7.188560000000e+02 1.852157000000e+02
         0 0 1];
+    % Given by the KITTI dataset:
+    baseline = 0.54;
+
+    % Assuming identical K for each camera
+    M_left = K * [eye(3), [0; 0; 0]];
+    M_right = K * [eye(3), [-baseline; 0; 0]]; % TODO check that this is correct, it actually depends on the Kitti coords.
+                                                                                % According to the coords in this paper http://www.mrt.kit.edu/z/publ/download/2013/GeigerAl2013IJRR.pdf
 elseif ds == 1
     % Path containing the many files of Malaga 7.
     assert(exist('malaga_path', 'var') ~= 0);

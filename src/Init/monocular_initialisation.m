@@ -13,13 +13,13 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     %   - T_cw: First camera pose of img1 in wold coorinate frame (frame of img0)
 
     % Get keypoints in both frames, descriptors and matches
-    [keypoints1, keypoints2, descriptors1, descritors2, matches] = ...
+    [keypoints0, keypoints1, descriptors0, descritors1, matches] = ...
         correspondences_2d2d(img0, img1);
 
     % Get matching keypoints
     [~, query_indices, match_indices] = find(matches);
-    kp0 = keypoints1(:, match_indices);
-    kp1 = keypoints2(:, query_indices);
+    kp0 = keypoints0(:, match_indices);
+    kp1 = keypoints1(:, query_indices);
     
     % Plot matching features
     figure(5); 
@@ -28,13 +28,13 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     % Homogenous coordinates
     %p1 = [kp1; ones(1, size(kp1, 2))];
     %p2 = [kp2; ones(1, size(kp2, 2))];
-    p1 = [flipud(kp0); ones(1, size(kp0, 2))];
-    p2 = [flipud(kp1); ones(1, size(kp1, 2))];
+    p0 = [flipud(kp0); ones(1, size(kp0, 2))];
+    p1 = [flipud(kp1); ones(1, size(kp1, 2))];
 
     % Estimate fundamental matrix
     % Call the 8-point algorithm on inputs x1,x2
-    F = fundamentalEightPoint_normalized(p1,p2)
-    E = estimateEssentialMatrix(p1, p2, K, K)
+    F = fundamentalEightPoint_normalized(p0, p1)
+    E = estimateEssentialMatrix(p0, p1, K, K)
 
     % Decompose the matrix E by svd
     [u,s,v]=svd(E);
@@ -67,38 +67,38 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     t(:,:,4) = t1;
     
     %% Check if in front of camera
-    % lambda1*[u v 1]^T = K1 * [Xw Yw Zw]^T
-    % lambda2*[u v 1]^T = K1 * R1* [Xw Yw Zw]^T + T
+    % lambda0*[u v 1]^T = K1 * [Xw Yw Zw]^T
+    % lambda1*[u v 1]^T = K1 * R1* [Xw Yw Zw]^T + T
     for i=1:size(rot,3)
-        M1 = K*[eye(3) zeros(3,1)];
-        M2 = K*[rot(:,:,i) t(:,:,i)];
+        M0 = K*[eye(3) zeros(3,1)];
+        M1 = K*[rot(:,:,i) t(:,:,i)];
 
-        P_test = linearTriangulation(p1(:,1), p2(:,1), M1, M2);
+        P_test = linearTriangulation(p0(:,1), p1(:,1), M0, M1);
 
+        px0 = M0*P_test;
         px1 = M1*P_test;
-        px2 = M2*P_test;
 
         % Check if point in front of both cameras
-        if ((px1(3) > 0) && (px2(3) > 0))
+        if ((px0(3) > 0) && (px1(3) > 0))
             R = rot(:,:,i); 
             T = t(:,:,i);
-            P = linearTriangulation(p1, p2, M1, M2);
+            P = linearTriangulation(p0, p1, M0, M1);
             break
         end
 
-        %x3d1(:,i) = inv(K)*p1(:,2);
+        %x3d0(:,i) = inv(K)*p0(:,2);
         %kr = K*rot(:,:,i);
-        %x3d2(:,i) = inv(kr)*(p2(:,2) - t(:,:,i));
+        %x3d1(:,i) = inv(kr)*(p1(:,2) - t(:,:,i));
     end
 
-    repro = reprojectPoints(transpose(P(1:3,:)), M1, K);
-    repro2 = reprojectPoints(transpose(P(1:3,:)), M2, K);
+    repro0 = reprojectPoints(transpose(P(1:3,:)), M0, K);
+    repro1 = reprojectPoints(transpose(P(1:3,:)), M1, K);
     %inlier_mask = ransac(img0, img1, K, keypoints1, P(1:3,:))
 
     % Check the epipolar constraint x2(i).' * F * x1(i) = 0 for all points i.
     N = size(p1,2);
-    cost_algebraic = norm( sum(p2.*(F*p1)) ) / sqrt(N)
-    cost_dist_epi_line = distPoint2EpipolarLine(F,p1,p2)
+    cost_algebraic = norm( sum(p1.*(F*p0)) ) / sqrt(N)
+    cost_dist_epi_line = distPoint2EpipolarLine(F,p0,p1)
     
     %% OUTPUT
     state = []

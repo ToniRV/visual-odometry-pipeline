@@ -13,28 +13,31 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     %   - T_cw: First camera pose of img1 in wold coorinate frame (frame of img0)
 
     % Get keypoints in both frames, descriptors and matches
-    [keypoints0, keypoints1, descriptors0, descritors1, matches] = ...
-        correspondences_2d2d(img0, img1);
+    [keypoints_data, keypoints_query, descriptors_data, ...
+        descritors_query, matches] = correspondences_2d2d(img0, img1);
 
     % Get matching keypoints
     [~, query_indices, match_indices] = find(matches);
-    kp0 = keypoints0(:, match_indices);
-    kp1 = keypoints1(:, query_indices);
+    kp_matches_data = keypoints_data(:, match_indices);
+    kp_matches_query = keypoints_query(:, query_indices);
     
     % Plot matching features
     figure(5); 
-    showMatchedFeatures(img0, img1, flipud(kp0)', flipud(kp1)', 'montage');
+    showMatchedFeatures(img0, img1, ...
+        flipud(kp_matches_data)', flipud(kp_matches_query)', 'montage');
     
-    % Homogenous coordinates
-    %p1 = [kp1; ones(1, size(kp1, 2))];
-    %p2 = [kp2; ones(1, size(kp2, 2))];
-    p0 = [flipud(kp0); ones(1, size(kp0, 2))];
-    p1 = [flipud(kp1); ones(1, size(kp1, 2))];
+    % Homogenous fliped keypoint coordinates
+    kp_fliped_homo_data = ...
+        [flipud(kp_matches_data); ones(1, size(kp_matches_data, 2))];
+    kp_fliped_homo_query = ...
+        [flipud(kp_matches_query); ones(1, size(kp_matches_query, 2))];
 
     % Estimate fundamental matrix
     % Call the 8-point algorithm on inputs x1,x2
-    F = fundamentalEightPoint_normalized(p0, p1)
-    E = estimateEssentialMatrix(p0, p1, K, K)
+    F = fundamentalEightPoint_normalized(kp_fliped_homo_data, ...
+        kp_fliped_homo_query)
+    E = estimateEssentialMatrix(kp_fliped_homo_data, ...
+        kp_fliped_homo_query, K, K)
 
     % Decompose the matrix E by svd
     [u,s,v]=svd(E);
@@ -73,7 +76,8 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
         M0 = K*[eye(3) zeros(3,1)];
         M1 = K*[rot(:,:,i) t(:,:,i)];
 
-        P_test = linearTriangulation(p0(:,1), p1(:,1), M0, M1);
+        P_test = linearTriangulation(kp_fliped_homo_data(:,1), ...
+            kp_fliped_homo_query(:,1), M0, M1);
 
         px0 = M0*P_test;
         px1 = M1*P_test;
@@ -82,7 +86,8 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
         if ((px0(3) > 0) && (px1(3) > 0))
             R = rot(:,:,i); 
             T = t(:,:,i);
-            P = linearTriangulation(p0, p1, M0, M1);
+            P = linearTriangulation(kp_fliped_homo_data, ...
+                kp_fliped_homo_query, M0, M1);
             break
         end
 
@@ -96,9 +101,10 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     %inlier_mask = ransac(img0, img1, K, keypoints1, P(1:3,:))
 
     % Check the epipolar constraint x2(i).' * F * x1(i) = 0 for all points i.
-    N = size(p1,2);
-    cost_algebraic = norm( sum(p1.*(F*p0)) ) / sqrt(N)
-    cost_dist_epi_line = distPoint2EpipolarLine(F,p0,p1)
+    N = size(kp_fliped_homo_query,2);
+    cost_algebraic = norm( sum(kp_fliped_homo_query.*(F*kp_fliped_homo_data)) ) / sqrt(N)
+    cost_dist_epi_line = distPoint2EpipolarLine(F,kp_fliped_homo_data, ...
+        kp_fliped_homo_query)
     
     %% OUTPUT
     state = []

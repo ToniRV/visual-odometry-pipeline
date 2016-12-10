@@ -3,10 +3,13 @@ clear all;
 clc;
 close all;
 
+kitti_path = '/Users/mgrimm/Documents/Studium/9. Semester/VisionAlgoMobileRobotics/kitti';
+malaga_path = '/Users/mgrimm/Documents/Studium/9. Semester/VisionAlgoMobileRobotics/malaga';
+parking_path = '/Users/mgrimm/Documents/Studium/9. Semester/VisionAlgoMobileRobotics/parking';
+
+
 %% Setup
 ds = 2; % 0: KITTI, 1: Malaga, 2: parking
-
-parking_path = '/Users/mgrimm/Documents/Studium/9. Semester/VisionAlgoMobileRobotics/parking';
 
 if ds == 0
     % need to set kitti_path to folder containing "00" and "poses"
@@ -61,29 +64,9 @@ elseif ds == 2
         sprintf('/images/img_%05d.png',bootstrap_frames(1))]));
     img1 = rgb2gray(imread([parking_path ...
         sprintf('/images/img_%05d.png',bootstrap_frames(2))]));
-    matches = correspondences_2d2d(img0, img1);
 else
     assert(false);
 end
 
-%% Continuous operation
-% range = (bootstrap_frames(2)+1):last_frame;
-% for i = range
-%     fprintf('\n\nProcessing frame %d\n=====================\n', i);
-%     if ds == 0
-%         image = imread([kitti_path '/00/image_0/' sprintf('%06d.png',i)]);
-%     elseif ds == 1
-%         image = rgb2gray(imread([malaga_path ...
-%             '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
-%             left_images(i).name]));
-%     elseif ds == 2
-%         image = im2uint8(rgb2gray(imread([parking_path ...
-%             sprintf('/images/img_%05d.png',i)])));
-%     else
-%         assert(false);
-%     end
-%     % Makes sure that plots refresh.    
-%     pause(0.01);
-%     
-%     prev_img = image;
-% end
+%% Monocular initialisation
+[state, T_cw] = monocular_initialisation(img0, img1, K);

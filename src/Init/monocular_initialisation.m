@@ -27,10 +27,19 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     N = 1000;
     state = struct('matches_2d', zeros(3, N), 'matches_3d', zeros(4, N), ...
         'keypoints', zeros(3, N), 'descriptors', zeros(361, N));
-
+    T_cw = eye(4);
+    
+    % Run with given sfm from exercise
+%     [rot, t] = sfm(img0, img1, K)
+    
     % Get keypoints in both frames, descriptors and matches
     [keypoints_database, keypoints_query, descriptors_database, ...
         descritors_query, matches] = correspondences_2d2d(img0, img1);
+    
+    % Homogenous keypoints
+%     kp_homo_database = ...
+%         [keypoints_database; ones(1, size(keypoints_database, 2))];
+%     kp_homo_query = [keypoints_query; ones(1, size(keypoints_query, 2))];
 
     % Get matching keypoints
     [~, query_indices, match_indices] = find(matches);
@@ -41,25 +50,28 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     figure(5); 
     showMatchedFeatures(img0, img1, ...
         flipud(kp_matches_database)', flipud(kp_matches_query)', 'montage');
-    
-    % Homogenous fliped keypoint coordinates
-    % TODO: FLIP OR NOT FLIP??
-    kp_fliped_homo_database = ...
-        [kp_matches_database; ones(1, size(kp_matches_database, 2))];
-    kp_fliped_homo_query = ...
-        [kp_matches_query; ones(1, size(kp_matches_query, 2))];
-    
-%     kp_fliped_homo_database = ...
-%         [flipud(kp_matches_database); ones(1, size(kp_matches_database, 2))];
-%     kp_fliped_homo_query = ...
-%         [flipud(kp_matches_query); ones(1, size(kp_matches_query, 2))];
 
-    % Estimate fundamental matrix
-    % Call the 8-point algorithm on inputs x1,x2
-    F = fundamentalEightPoint_normalized(kp_fliped_homo_database, ...
-        kp_fliped_homo_query)
-    E = estimateEssentialMatrix(kp_fliped_homo_database, ...
-        kp_fliped_homo_query, K, K)
+    % Homogenous fliped keypoint coordinates
+    kp_fliped_homo_database = ...
+        [flipud(kp_matches_database); ones(1, size(kp_matches_database, 2))];
+    kp_fliped_homo_query = ...
+        [flipud(kp_matches_query); ones(1, size(kp_matches_query, 2))];
+
+    % Find fundamental matrix
+    [inlier_mask, F] = ransac(kp_fliped_homo_database, ...
+        kp_fliped_homo_query, K, 1.0);
+    
+    % Estimate Essential matrix
+    E = K'*F*K
+
+    % Get inlier
+    kp_fliped_homo_database = kp_fliped_homo_query(:, inlier_mask);
+    kp_fliped_homo_query = kp_fliped_homo_query(:, inlier_mask);
+    
+    % Plot matching features
+    figure(6); 
+    showMatchedFeatures(img0, img1, ...
+        kp_fliped_homo_database(1:2,:)', kp_fliped_homo_query(1:2,:)', 'montage');
 
     % Get the hypotheses for the pose (rotation and translation)
     [rot, t] = get_pose_hypotheses(E);
@@ -88,11 +100,8 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
         case 4
             P = P4;
     end
-    
-    %repro0 = reprojectPoints(transpose(P(1:3,:)), M0, K);
-    %repro1 = reprojectPoints(transpose(P(1:3,:)), M1, K);
-    %inlier_mask = ransac(img0, img1, K, kp_fliped_homo_database, P)
 
+    %% ONLY TESTING
     % Check the epipolar constraint x2(i).' * F * x1(i) = 0 for all points i.
     N = size(kp_fliped_homo_query,2);
     cost_algebraic = norm( sum(kp_fliped_homo_query.*(F*kp_fliped_homo_database)) ) / sqrt(N)

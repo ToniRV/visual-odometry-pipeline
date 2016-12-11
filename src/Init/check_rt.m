@@ -22,7 +22,7 @@ function [points_3d, num_good, M1, M2] = check_rt(R, t, K, ...
     O2 = -R'*t;
     
     % Initialize Output
-    points_3d = [];
+    points_3d = zeros(3,size(keypoints_database,2));
     num_good = 0;
     
     for i=1:size(keypoints_database, 2)        

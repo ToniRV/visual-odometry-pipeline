@@ -5,10 +5,8 @@ function [points_3d, num_good] = check_rt(R, t, K, ...
     % lambda1*[u v 1]^T = K1 * R1* [Xw Yw Zw]^T + T
     
     % Retrieve intrinsics
-    fx = K(1,1);
-    fy = K(2,2);
-    cx = K(1,3);
-    cy = K(2,3);
+    fx = K(1,1); fy = K(2,2);
+    cx = K(1,3); cy = K(2,3);
     
     % Thresholds
     sigma = 1.0;
@@ -38,7 +36,7 @@ function [points_3d, num_good] = check_rt(R, t, K, ...
         %point_3d_from_cam1 = triangulate(kp1, kp2, M1, M2)
         point_3d_from_cam1 = linearTriangulation(kp1, kp2, M1, M2);
         point_3d_from_cam1 = point_3d_from_cam1(1:3);
-
+        
         % Check if 3d point is finite
         %if(~isfinite(point_3d_from_cam1))
         %    continue;

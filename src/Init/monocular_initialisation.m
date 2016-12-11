@@ -21,7 +21,6 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
         % --> Find Essential Matrix E (E = K^T*F*K)
     % 3. Find rotation and translation pose hypotheses
     % 4. Triangulate 2D-3D points
-    % 5. RANSAC to get rid of correspondence outliers
     
     % Initialize Output
     N = 1000;

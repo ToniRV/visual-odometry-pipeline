@@ -1,4 +1,4 @@
-function [points_3d, num_good] = check_rt(R, t, K, ...
+function [points_3d, num_good, M1, M2] = check_rt(R, t, K, ...
     keypoints_database, keypoints_query)
     % Check if in front of camera
     % lambda0*[u v 1]^T = K1 * [Xw Yw Zw]^T
@@ -25,9 +25,7 @@ function [points_3d, num_good] = check_rt(R, t, K, ...
     points_3d = [];
     num_good = 0;
     
-    for i=1:size(keypoints_database, 2)
-        % TODO: Is point inlier? Else continue
-        
+    for i=1:size(keypoints_database, 2)        
         % Matched keypoints
         kp1 = keypoints_database(:, i);
         kp2 = keypoints_query(:, i);

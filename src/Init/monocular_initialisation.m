@@ -29,8 +29,8 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     T_cw = eye(4);
     
     % Get keypoints in both frames, descriptors and matches
-    [keypoints_database, keypoints_query, descriptors_database, ...
-        descritors_query, matches] = correspondences_2d2d(img0, img1);
+    [keypoints_database, keypoints_query, ~, descritors_query, matches] = ...
+        correspondences_2d2d(img0, img1);
     
     % Get matching keypoints
     [~, query_indices, match_indices] = find(matches);
@@ -49,9 +49,11 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
         [flipud(kp_matches_query); ones(1, size(kp_matches_query, 2))];
     
     % Find fundamental matrix
+    tic;
     [inlier_mask, F] = ransac(kp_fliped_homo_database, ...
         kp_fliped_homo_query, K, 1.0);
-
+    toc;
+    
     % Get inlier from inlier_mask
     kp_fliped_homo_database = kp_fliped_homo_database(:, inlier_mask);
     kp_fliped_homo_query = kp_fliped_homo_query(:, inlier_mask);
@@ -71,6 +73,7 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     %% Check if in front of camera
     % lambda0*[u v 1]^T = K1 * [Xw Yw Zw]^T
     % lambda1*[u v 1]^T = K1 * R1* [Xw Yw Zw]^T + T
+    tic;
     [P1, num_good(1), M1, M2] = check_rt(rot(:,:,1), t(:,:,1), K, ...
         kp_fliped_homo_database, kp_fliped_homo_query);
     [P2, num_good(2), ~, ~] = check_rt(rot(:,:,2), t(:,:,2), K, ...
@@ -79,6 +82,7 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
         kp_fliped_homo_database, kp_fliped_homo_query);
     [P4, num_good(4), ~, ~] = check_rt(rot(:,:,4), t(:,:,4), K, ...
         kp_fliped_homo_database, kp_fliped_homo_query);
+    toc;
     
     % Find best rotation and translation hypotheses
     [maximum, idx] = max(num_good);
@@ -104,7 +108,19 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
         p_homo2(:,i) = M2*[P(:,i); 1];
         p_homo2(:,i) = p_homo2(:,i) ./p_homo2(3,i);
     end
-
+    p_homo;
+    p_homo2;
+    
+    % Reprojection error
+    % First image
+    difference_db = kp_fliped_homo_database - p_homo;
+    errors_db = sum(difference_db.^2, 1);
+    errordb = sum(sqrt(errors_db))/sqrt(size(P,2))
+    % Second image
+    difference_qu = kp_fliped_homo_query - p_homo2;
+    errors_qu = sum(difference_qu.^2, 1);
+    errorqu = sum(sqrt(errors_qu))/sqrt(size(P,2))
+    
     % Check the epipolar constraint x2(i).' * F * x1(i) = 0 for all points i.
     N = size(kp_fliped_homo_query,2);
     cost_algebraic = norm( sum(kp_fliped_homo_query.*(F*kp_fliped_homo_database)) ) / sqrt(N)
@@ -119,7 +135,6 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     state.descriptors = descritors_query;
     
     % Pose (4x4)
-    T_cw = eye(4); 
     T_cw(1:3, 1:3) = rot(:,:,idx); 
     T_cw(1:3,4) = t(:,:,idx);
 end

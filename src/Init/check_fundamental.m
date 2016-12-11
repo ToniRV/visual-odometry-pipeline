@@ -45,4 +45,3 @@ function [score, inliers] = check_fundamental(kp_database, kp_query, ...
         end
     end
 end
-

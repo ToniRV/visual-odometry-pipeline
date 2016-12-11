@@ -92,4 +92,3 @@ function [points_3d, num_good, M1, M2] = check_rt(R, t, K, ...
         num_good = num_good + 1;
     end
 end
-

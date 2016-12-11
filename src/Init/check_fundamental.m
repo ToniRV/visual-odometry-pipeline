@@ -5,7 +5,9 @@ function [score, inliers] = check_fundamental(kp_database, kp_query, ...
     th_score = 5.991;
     inv_sigma_squared = 1.0/(sigma^2);
     score = 0.0;
-
+    
+    inliers = false(num_matches, 1);
+    
     for i=1:num_matches
         bool_inlier = true;
         

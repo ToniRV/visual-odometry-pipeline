@@ -29,23 +29,15 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
         'keypoints', zeros(3, N), 'descriptors', zeros(361, N));
     T_cw = eye(4);
     
-    % Run with given sfm from exercise
-%     [rot, t] = sfm(img0, img1, K)
-    
     % Get keypoints in both frames, descriptors and matches
     [keypoints_database, keypoints_query, descriptors_database, ...
         descritors_query, matches] = correspondences_2d2d(img0, img1);
     
-    % Homogenous keypoints
-%     kp_homo_database = ...
-%         [keypoints_database; ones(1, size(keypoints_database, 2))];
-%     kp_homo_query = [keypoints_query; ones(1, size(keypoints_query, 2))];
-
     % Get matching keypoints
     [~, query_indices, match_indices] = find(matches);
     kp_matches_database = keypoints_database(:, match_indices);
     kp_matches_query = keypoints_query(:, query_indices);
-    
+        
     % Plot matching features
     figure(5); 
     showMatchedFeatures(img0, img1, ...
@@ -56,17 +48,18 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
         [flipud(kp_matches_database); ones(1, size(kp_matches_database, 2))];
     kp_fliped_homo_query = ...
         [flipud(kp_matches_query); ones(1, size(kp_matches_query, 2))];
-
+    
     % Find fundamental matrix
     [inlier_mask, F] = ransac(kp_fliped_homo_database, ...
         kp_fliped_homo_query, K, 1.0);
-    
-    % Estimate Essential matrix
-    E = K'*F*K
 
-    % Get inlier
-    kp_fliped_homo_database = kp_fliped_homo_query(:, inlier_mask);
+    % Get inlier from inlier_mask
+    kp_fliped_homo_database = kp_fliped_homo_database(:, inlier_mask);
     kp_fliped_homo_query = kp_fliped_homo_query(:, inlier_mask);
+        
+    % Estimate Essential matrix
+    E = estimateEssentialMatrix(kp_fliped_homo_database, ...
+        kp_fliped_homo_query, K, K)
     
     % Plot matching features
     figure(6); 
@@ -79,13 +72,13 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     %% Check if in front of camera
     % lambda0*[u v 1]^T = K1 * [Xw Yw Zw]^T
     % lambda1*[u v 1]^T = K1 * R1* [Xw Yw Zw]^T + T
-    [P1, num_good(1)] = check_rt(rot(:,:,1), t(:,:,1), K, ...
+    [P1, num_good(1), M1, M2] = check_rt(rot(:,:,1), t(:,:,1), K, ...
         kp_fliped_homo_database, kp_fliped_homo_query);
-    [P2, num_good(2)] = check_rt(rot(:,:,2), t(:,:,2), K, ...
+    [P2, num_good(2), ~, ~] = check_rt(rot(:,:,2), t(:,:,2), K, ...
         kp_fliped_homo_database, kp_fliped_homo_query);
-    [P3, num_good(3)] = check_rt(rot(:,:,3), t(:,:,3), K, ...
+    [P3, num_good(3), ~, ~] = check_rt(rot(:,:,3), t(:,:,3), K, ...
         kp_fliped_homo_database, kp_fliped_homo_query);
-    [P4, num_good(4)] = check_rt(rot(:,:,4), t(:,:,4), K, ...
+    [P4, num_good(4), ~, ~] = check_rt(rot(:,:,4), t(:,:,4), K, ...
         kp_fliped_homo_database, kp_fliped_homo_query);
     
     % Find best rotation and translation hypotheses
@@ -102,6 +95,17 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     end
 
     %% ONLY TESTING
+    % Rescale reprojection to homogenous coordinates again (u v 1)
+    for i=1:size(P,2)
+        p_homo(:,i) = M1*[P(:,i); 1];
+        p_homo(:,i) = p_homo(:,i) ./p_homo(3,i);
+    end
+    
+    for i=1:size(P,2)
+        p_homo2(:,i) = M2*[P(:,i); 1];
+        p_homo2(:,i) = p_homo2(:,i) ./p_homo2(3,i);
+    end
+
     % Check the epipolar constraint x2(i).' * F * x1(i) = 0 for all points i.
     N = size(kp_fliped_homo_query,2);
     cost_algebraic = norm( sum(kp_fliped_homo_query.*(F*kp_fliped_homo_database)) ) / sqrt(N)

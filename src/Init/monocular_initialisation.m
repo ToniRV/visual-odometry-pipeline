@@ -89,7 +89,7 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
         kp_fliped_homo_database, kp_fliped_homo_query);
     
     % Find best rotation and translation hypotheses
-    [maximum, idx] = max(num_good)
+    [maximum, idx] = max(num_good);
     switch(idx)
         case 1 
             P = P1;

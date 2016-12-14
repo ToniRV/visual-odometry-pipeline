@@ -1,4 +1,5 @@
-function [keypoints1, keypoints2] = correspondences_2d2d(img1, img2)
+function [database_keypoints, keypoints_query_image, database_descriptors, descriptors_query_image, matches] =...
+correspondences_2d2d(database_img, query_img)
 
 debug_with_figures = false;
 
@@ -11,17 +12,15 @@ nonmaximum_supression_radius = 8;
 descriptor_radius = 9;
 match_lambda = 4;
 
-img_1 = img1;
-
 %% Part 1 - Calculate Harris scores
 
-harris_scores = harris(img_1, harris_patch_size, harris_kappa);
-assert(min(size(harris_scores) == size(img_1)));
+database_harris_scores = harris(database_img, harris_patch_size, harris_kappa);
+assert(min(size(database_harris_scores) == size(database_img)));
 
 if (debug_with_figures)
     figure(1);
     subplot(2, 1, 1);
-    imshow(img_1);
+    imshow(database_img);
     subplot(2, 1, 2);
     imagesc(harris_scores);
     axis equal;
@@ -30,19 +29,19 @@ end
 
 %% Part 2 - Select keypoints
 
-keypoints_1 = selectKeypoints(...
-    harris_scores, num_keypoints, nonmaximum_supression_radius);
+database_keypoints = selectKeypoints(...
+    database_harris_scores, num_keypoints, nonmaximum_supression_radius);
 
 if(debug_with_figures)
     figure(2);
-    imshow(img_1);
+    imshow(database_img);
     hold on;
-    plot(keypoints_1(2, :), keypoints_1(1, :), 'rx', 'Linewidth', 2);
+    plot(database_keypoints(2, :), database_keypoints(1, :), 'rx', 'Linewidth', 2);
     hold off;
 end
 %% Part 3 - Describe keypoints and show 16 strongest keypoint descriptors
 
-descriptors_1 = describeKeypoints(img_1, keypoints_1, descriptor_radius);
+database_descriptors = describeKeypoints(database_img, database_keypoints, descriptor_radius);
 
 if (debug_with_figures)
     figure(3);
@@ -58,37 +57,36 @@ if (debug_with_figures)
 end
 
 %% Part 4 - Match descriptors rsbetween first two images
-img_2 = img2;
 
-harris_scores_2 = harris(img_2, harris_patch_size, harris_kappa);
-keypoints_2 = selectKeypoints(...
-    harris_scores_2, num_keypoints, nonmaximum_supression_radius);
-descriptors_2 = describeKeypoints(img_2, keypoints_2, descriptor_radius);
+harris_scores_query_image = harris(query_img, harris_patch_size, harris_kappa);
+keypoints_query_image = selectKeypoints(...
+    harris_scores_query_image, num_keypoints, nonmaximum_supression_radius);
+descriptors_query_image = describeKeypoints(query_img, keypoints_query_image, descriptor_radius);
 
-matches = matchDescriptors(descriptors_2, descriptors_1, match_lambda);
+matches = matchDescriptors(descriptors_query_image, database_descriptors, match_lambda);
 
 [~, query_indices, match_indices] = find(matches);
-keypoints1 = keypoints_1(:, match_indices);
-keypoints2 = keypoints_2(:, query_indices);
+database_keypoints_matched = database_keypoints(:, match_indices);
+keypoints_query_image_matched = keypoints_query_image(:, query_indices);
 
 if (debug_with_figures)
     figure(4);
-    imshow(img_1);
+    imshow(database_img);
     hold on;
     title('First image');
-    plot(keypoints_1(2, :), keypoints_1(1, :), 'rx', 'Linewidth', 2);
-    plot(keypoints_1(2, match_indices), keypoints_1(1, match_indices), 'bx', 'Linewidth', 2);
+    plot(database_keypoints(2, :), database_keypoints(1, :), 'rx', 'Linewidth', 2);
+    plot(database_keypoints_matched(2,:), database_keypoints_matched(1, :), 'bx', 'Linewidth', 2);
     legend('Non-matched keypoints', 'Matched keypoints');
     hold off;
 
     figure(5);
-    imshow(img_2);
+    imshow(query_img);
     hold on;
     title('Second image');
-    plot(keypoints_2(2, :), keypoints_2(1, :), 'rx', 'Linewidth', 2);
-    plot(keypoints_2(2, query_indices), keypoints_2(1, query_indices), 'bx', 'Linewidth', 2);
+    plot(keypoints_query_image(2, :), keypoints_query_image(1, :), 'rx', 'Linewidth', 2);
+    plot(keypoints_query_image_matched(2, :), keypoints_query_image_matched(1, :), 'bx', 'Linewidth', 2);
     legend('Non-matched keypoints','Matched keypoints');
-    plotMatches(matches, keypoints_2, keypoints_1);
+    plotMatches(matches, keypoints_query_image, database_keypoints);
     hold off;
 end
 

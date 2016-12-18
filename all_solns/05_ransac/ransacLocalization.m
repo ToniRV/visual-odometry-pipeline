@@ -7,7 +7,7 @@ function [R_C_W, t_C_W, query_keypoints, all_matches, inlier_mask, ...
 % inlier_mask should be 1xnum_matched (!!!) and contain, only for the
 %   matched keypoints (!!!), 0 if the match is an outlier, 1 otherwise.
 
-use_p3p = false;
+use_p3p = true;
 
 % Parameters form exercise 3.
 harris_patch_size = 9;

@@ -1,7 +1,22 @@
-function [database_keypoints, keypoints_query_image, database_descriptors, descriptors_query_image, matches] =...
-correspondences_2d2d(database_img, query_img)
-
-debug_with_figures = false;
+function [database_keypoints_matched, keypoints_query_image_matched, database_descriptors_matched, ...
+    query_image_descriptors_matched] = correspondences_2d2d(database_img, query_img)
+%
+%   INPUT:
+    %
+    %   - database_img:
+    %   - query_img:
+%
+%   OUTPUT:
+    %
+    %   - database_keypoints_matched: Only the matched keypoints in the
+    %   database image.
+    %   - keypoints_query_image_matched: Only the matched keypoints in the
+    %   query image.
+    %   - database_descriptors_matched: Only the descriptors of the
+    %   keypoints matched in the database image.
+    %    - query_descriptors_matched: Only the descriptors of the
+    %   keypoints matched in the query image.
+debug_with_figures = true;
 
 % Randomly chosen parameters that seem to work well - can you find better
 % ones?
@@ -22,7 +37,7 @@ if (debug_with_figures)
     subplot(2, 1, 1);
     imshow(database_img);
     subplot(2, 1, 2);
-    imagesc(harris_scores);
+    imagesc(database_harris_scores);
     axis equal;
     axis off;
 end
@@ -49,7 +64,7 @@ if (debug_with_figures)
     for i = 1:16
         subplot(4, 4, i);
         patch_size = 2 * descriptor_radius + 1;
-        imagesc(uint8(reshape(descriptors_1(:,i), [patch_size patch_size])));
+        imagesc(uint8(reshape(database_descriptors(:,i), [patch_size patch_size])));
         axis equal;
         axis off;
     end
@@ -68,6 +83,9 @@ matches = matchDescriptors(descriptors_query_image, database_descriptors, match_
 [~, query_indices, match_indices] = find(matches);
 database_keypoints_matched = database_keypoints(:, match_indices);
 keypoints_query_image_matched = keypoints_query_image(:, query_indices);
+database_descriptors_matched = database_descriptors(:, match_indices);
+query_image_descriptors_matched = descriptors_query_image(:, query_indices);
+
 
 if (debug_with_figures)
     figure(4);

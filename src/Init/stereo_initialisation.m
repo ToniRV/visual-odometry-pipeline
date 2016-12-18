@@ -47,6 +47,12 @@ function [ points_2D, points_3D ] = stereo_initialisation( img_left, img_right ,
     %% Detect and match features: find 2D-2D correspondences
     
     tic;
+    
+    % This way of finding 2d2d correspondences is actually pretty dumb since I am not using the
+    % knowledge that my images are stereo images. Hence, if the images are rectified, I should be able
+    % to match features by simply exploring the epipolar line instead of looking at all the descriptors to
+    % see matches
+    
     % !!!!!!!!!!!!!!!!WARNING keypoints are in (row, col) coordinates of the image which might differ from
     % (u, v) coordinates, depending on whether u representes rows or columns!!!!!!!!!!!!!!!!!!!!!!
     [keypoints_left, keypoints_right,~,~] = correspondences_2d2d(img_left, img_right);

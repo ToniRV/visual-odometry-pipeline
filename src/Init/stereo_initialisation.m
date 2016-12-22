@@ -41,13 +41,14 @@ function [ points_2D, points_3D ] = stereo_initialisation( img_left, img_right ,
     elseif(strcmp(triangulation_algorithm,'disparity_triangulation'))
         triangulation_algorithm = 3; % only useful for stereo
     else
-        printf('No valid triangulation algorithm specified, defaulting to: "disparity_triangulation" ');
+        fprintf('No valid triangulation algorithm specified, defaulting to: "disparity_triangulation" ');
     end
     
     %% Detect and match features: find 2D-2D correspondences
     
     tic;
     
+    % TODO
     % This way of finding 2d2d correspondences is actually pretty dumb since I am not using the
     % knowledge that my images are stereo images. Hence, if the images are rectified, I should be able
     % to match features by simply exploring the epipolar line instead of looking at all the descriptors to

@@ -103,6 +103,13 @@ axis equal;
 axis vis3d;
 axis([-15 10 -10 5 -1 40]);
 prev_img = img_left;
+
+% success field determines whether we localized or failed
+S_i0 = struct('success', 0, 'keypoints', keypoints, 'p_W_landmarks', p_W_landmarks, 'K', K);
+S_i1 = struct('success', 0, 'keypoints', 0, 'p_W_landmarks', 0, 'K', K);
+
+% Store performance by counting number of inlier keypoints per frame
+num_inliers = zeros(1, last_frame-(bootstrap_frames(2)+1));
 for i = range
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     if ds == 0
@@ -120,40 +127,15 @@ for i = range
         assert(false);
     end
     % Makes sure that plots refresh.    
-    pause(0.01);
           tic;
-            [R_C_W, t_C_W, query_keypoints, all_matches, inlier_mask] = ...
-            ransacLocalization(image, prev_img,  keypoints, ...
-            p_W_landmarks, K);
+            [S_i1, T_i1, inlier_mask] = processFrame(image, prev_img, S_i0, i);
             toc
-            matched_query_keypoints = query_keypoints(:, all_matches > 0);
-            corresponding_matches = all_matches(all_matches > 0);
-
-            % Distinguish success from failure.
-            if (numel(R_C_W) > 0)
-                subplot(1, 3, 3);
-                plotCoordinateFrame(R_C_W', -R_C_W'*t_C_W, 2);
-                disp(['Frame ' num2str(i) ' localized with ' ...
-                    num2str(nnz(inlier_mask)) ' inliers!']);
-                view(0,0);
-            else
-                disp(['Frame ' num2str(i) ' failed to localize!']);
-            end
-
-            subplot(1, 3, [1 2]);
-            imshow(image);
-            hold on;
-            plot(matched_query_keypoints(2, (1-inlier_mask)>0), ...
-                matched_query_keypoints(1, (1-inlier_mask)>0), 'rx', 'Linewidth', 2);
-            if (nnz(inlier_mask) > 0)
-                plot(matched_query_keypoints(2, (inlier_mask)>0), ...
-                    matched_query_keypoints(1, (inlier_mask)>0), 'gx', 'Linewidth', 2);
-            end
-            plotMatches(corresponding_matches(inlier_mask>0), ...
-                matched_query_keypoints(:, inlier_mask>0), ...
-                keypoints);
-            hold off;
-            title('Inlier and outlier matches');
-            pause(0.01);
-    prev_img = image;
+    % Store the number of inliers per frame
+    num_inliers(i) = nnz(inlier_mask);
+    % Update keypoints and 3D landmarks and switch to new keyframe every 5
+    % frames
+    if (mod(i,5) == 0)
+        S_i0 = S_i1;
+        prev_img = image;
+    end
 end

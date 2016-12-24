@@ -4,7 +4,7 @@ close all;
 clc;
 
 addpath('2d2d_correspondences');
-addpath('src/Init');
+addpath('Init');
 % Replace the following with the path to your keypoint matcher code:
 addpath('../../00_camera_projection/code');
 

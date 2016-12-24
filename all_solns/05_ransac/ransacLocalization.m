@@ -29,17 +29,21 @@ else
     k = 6;
 end
 
-% Detect and match keypoints.
+% Detect new keypoints
 query_harris = harris(query_image, harris_patch_size, harris_kappa);
 query_keypoints = selectKeypoints(...
     query_harris, num_keypoints, nonmaximum_supression_radius);
+% Describe keypoints. TODO we are describing twice the same keypoints in
+% two iterations... try to store descriptors?
 query_descriptors = describeKeypoints(...
     query_image, query_keypoints, descriptor_radius);
 database_descriptors = describeKeypoints(...
     database_image, database_keypoints, descriptor_radius);
+% Match keypoints
 all_matches = matchDescriptors(...
     query_descriptors, database_descriptors, match_lambda);
 
+% Store matched keypoints and landmarks correpondences ci<->Xi
 matched_query_keypoints = query_keypoints(:, all_matches > 0);
 corresponding_matches = all_matches(all_matches > 0);
 corresponding_landmarks = p_W_landmarks(:, corresponding_matches);

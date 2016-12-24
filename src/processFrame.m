@@ -83,18 +83,25 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     % Store only the matched inlier keypoints of the Image_i1 plus the new
     % ones triangulated
      if (isempty(points_2D) | points_2D ==0)
-        State_i1.keypoints_correspondences = inlier_matched_query_keypoints;
-        State_i1.p_W_landmarks_correspondences = inlier_matched_corresponding_landmarks;
+         % WITH ONLY STORING INLIERS (!!this is the suggested method!!)
+%         State_i1.keypoints_correspondences = inlier_matched_query_keypoints;
+%         State_i1.p_W_landmarks_correspondences = inlier_matched_corresponding_landmarks;
+         % STORING ALL MATCHES
+        State_i1.keypoints_correspondences = matched_query_keypoints;
+        State_i1.p_W_landmarks_correspondences = matched_corresponding_landmarks;
      else
-        State_i1.keypoints_correspondences = [inlier_matched_query_keypoints, points_2D];
+         %%% WITH ONLY STORING INLIERS (!!this is the suggested method!!)
+%            State_i1.keypoints_correspondences = [inlier_matched_query_keypoints, points_2D];
         % Keep the found 3D landmarks that match to the inlier keypoints plus the new ones triangulated. TODO
         % what about the rest of outlier landmarks, shouldn't we keep the
         % previous 2d-3d correspondence for other frames? Probably yes, this
         % way if there's an occlusion we can still track the landmark later...
-        State_i1.p_W_landmarks_correspondences = [inlier_matched_corresponding_landmarks, points_3D];
-     end
+%             State_i1.p_W_landmarks_correspondences = [inlier_matched_corresponding_landmarks, points_3D];
+         %%% STORING ALL MATCHES
+          State_i1.keypoints_correspondences = [matched_query_keypoints, points_2D];
+          State_i1.p_W_landmarks_correspondences = [matched_corresponding_landmarks, points_3D];
+           end
     State_i1.K = State_i0.K;
-    
     
 
 %% Plotting

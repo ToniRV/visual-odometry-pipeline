@@ -53,8 +53,6 @@ inlier_mask = zeros(1, size(matched_query_keypoints, 2));
 matched_query_keypoints = flipud(matched_query_keypoints);
 max_num_inliers_history = zeros(1, num_iterations);
 max_num_inliers = 0;
-% Replace the following with the path to your keypoint matcher code:
-addpath('../../00_camera_projection/code');
 
 % RANSAC
 for i = 1:num_iterations

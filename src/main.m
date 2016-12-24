@@ -142,10 +142,10 @@ for i = range
             toc
     % Store the number of inliers per frame
     num_inliers(i) = nnz(inlier_mask);
-    % Update keypoints and 3D landmarks and switch to new keyframe every 5
-    % frames
-    if (mod(i,5) == 0)
-        S_i0 = S_i1;
-        prev_img = image;
-    end
+    % Idea: Update keypoints and 3D landmarks and switch to new keyframe every 5
+    % frames, that's why there is a mod there .... 
+%     if (mod(i,5) == 0)
+         S_i0 = S_i1;
+         prev_img = image;
+%     end
 end

@@ -96,9 +96,14 @@ stereo_bootstrap_frames = [0 0];
     stereo_initialisation( img_left, img_right , K, baseline, 'matlab_triangulation');
 
 %% Continuous operation
-p_W_landmarks = points_3D_matlab_triangulation;
-keypoints = points_2D_matlab_triangulation;
 range = (bootstrap_frames(2)+1):last_frame;
+% p_W_landmarks = points_3D_matlab_triangulation;
+% keypoints = points_2D_matlab_triangulation;
+%%% Ground truth initialisation
+keypoints = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/keypoints.txt');
+keypoints = keypoints';
+p_W_landmarks = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/p_W_landmarks.txt');
+p_W_landmarks = p_W_landmarks';
 figure(5);
 subplot(1, 3, 3);
 scatter3(p_W_landmarks(1, :), p_W_landmarks(2, :), p_W_landmarks(3, :), 5);

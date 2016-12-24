@@ -118,6 +118,7 @@ if max_num_inliers == 0
     R_C_W = [];
     t_C_W = [];
 else
+    % TODO last DLT estimate has to be removed according to hints?? 
     M_C_W = estimatePoseDLT(...
         matched_query_keypoints(:, inlier_mask>0)', ...
         corresponding_landmarks(:, inlier_mask>0)', K);

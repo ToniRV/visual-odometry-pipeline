@@ -3,6 +3,9 @@ clear all;
 close all;
 clc;
 
+% REMOVE
+rng(1);
+
 addpath('2d2d_correspondences');
 addpath('Init');
 % Replace the following with the path to your keypoint matcher code:

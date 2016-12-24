@@ -128,8 +128,6 @@ num_inliers = zeros(1, last_frame-(bootstrap_frames(2)+1));
 for i = range
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     if ds == 0
-        % should we use image_left or right? before it was image_0 but
-        % ain't nothing like that in the given folder
         image = imread([kitti_path '/00/image_left/' sprintf('%06d.png',i)]);
     elseif ds == 1
         image = rgb2gray(imread([malaga_path ...

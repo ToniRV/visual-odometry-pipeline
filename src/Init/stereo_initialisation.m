@@ -130,7 +130,7 @@ function [ points_2D, points_3D ] = stereo_initialisation( img_left, img_right ,
         % component is negative, mind that the one from P_est_official isn't
         % negative, and the reprojection error is 0.5... So maybe we shouldn't keep
         % it anyway...
-        valid_indices = P_est_official(3,:)>0;
+        valid_indices = P_est_official(3,:)>0; %TODO also set a reprojection error threshold and get rid of bigger than 0.5
         P_est_official = P_est_official(:, valid_indices);
 
         points_3D = P_est_official;

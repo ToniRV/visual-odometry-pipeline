@@ -42,6 +42,8 @@ database_descriptors = describeKeypoints(...
 % Match keypoints
 all_matches = matchDescriptors(...
     query_descriptors, database_descriptors, match_lambda);
+num_matches = nnz(all_matches);
+fprintf('Num of matches %d \n', num_matches);
 
 % Store matched keypoints and landmarks correpondences ci<->Xi
 matched_query_keypoints = query_keypoints(:, all_matches > 0);

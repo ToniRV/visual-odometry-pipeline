@@ -145,12 +145,12 @@ for i = range
     else
         assert(false);
     end
-    % Makes sure that plots refresh.    
-          tic;
-            [S_i1, T_i1, inlier_mask] = processFrame(image, prev_img, S_i0, i);
-            toc
+    
+    [S_i1, T_i1, inlier_mask] = processFrame(image, prev_img, S_i0, i);
+    
     % Store the number of inliers per frame
     num_inliers(i) = nnz(inlier_mask);
+    
     % Idea: Update keypoints and 3D landmarks and switch to new keyframe every 5
     % frames, that's why there is a mod there .... 
 %     if (mod(i,5) == 0)

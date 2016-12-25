@@ -1,4 +1,4 @@
-function [ points_2D, points_3D ] = stereo_initialisation( img_left, img_right , K, baseline, ...
+function [ points_2D, points_3D_left_cam_frame] = stereo_initialisation( img_left, img_right , K, baseline, ...
                                                                                         triangulation_algorithm)
 %
 %   INPUT:
@@ -21,7 +21,7 @@ function [ points_2D, points_3D ] = stereo_initialisation( img_left, img_right ,
         %       image matrix.
         %       * second row: each value corresponds to the column of the pixel in the image
         %       matrix.
-    %   - points_3D: 3D points in the world that correspond to each point in
+    %   - points_3D_left_cam_frame: 3D points in the world that correspond to each point in
     %   points_2D. These are expressed in the left camera frame (right handed frame
     %   with z pointing in front of the camera, x pointing to where the right camera is located
     %   see figure 2 exercise 4 for an illustration). 3xN vector
@@ -100,7 +100,7 @@ function [ points_2D, points_3D ] = stereo_initialisation( img_left, img_right ,
         valid_indices = P_est(3,:)>0;
         P_est = P_est(:, valid_indices);
 
-        points_3D = P_est(1:3,:);
+        points_3D_left_cam_frame = P_est(1:3,:);
         points_2D =  keypoints_left(:, valid_indices); % TODO should we send (u, v) coords instead of (row, col)?
 
         % Official matlab triangulation algorithm
@@ -133,7 +133,7 @@ function [ points_2D, points_3D ] = stereo_initialisation( img_left, img_right ,
         valid_indices = P_est_official(3,:)>0; %TODO also set a reprojection error threshold and get rid of bigger than 0.5
         P_est_official = P_est_official(:, valid_indices);
 
-        points_3D = P_est_official;
+        points_3D_left_cam_frame = P_est_official;
         points_2D =  keypoints_left(:, valid_indices); % TODO should we send (u, v) coords instead of (row, col)?
 
     % Disparity based algorithm
@@ -157,12 +157,12 @@ function [ points_2D, points_3D ] = stereo_initialisation( img_left, img_right ,
         
         fprintf('It took %ds to compute disparity_triangulation \n', toc);
         
-        points_3D = camera_points;
+        points_3D_left_cam_frame = camera_points;
         points_2D =  keypoints_left; % TODO should we send (u, v) coords instead of (row, col)?
     else
         printf('No triangulation method precised!!!');
         points_2D = 0;
-        points_3D  = 0;
+        points_3D_left_cam_frame  = 0;
     end
 
 end

@@ -130,7 +130,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
 
             % E) For the non_matched_query_keypoints, append them as new candidates to current candidates.
             %%% I) Create values:
-            new_first_obs_cand_kp_i1 = non_matched_query_keypoints(:, query_indices == 0); % These guys haven't been matched twice.
+            new_first_obs_cand_kp_i1 = non_matched_query_keypoints(:, matches == 0); % These guys haven't been matched twice.
             new_first_obs_cand_tf_i1 = repmat(reshape(Transform_i1, 12, 1), 1, size(new_first_obs_cand_kp_i1, 2));
             new_last_obs_cand_kp_i1 = new_first_obs_cand_kp_i1; %First time we store them we also fill last_obs as first_obs for uniformity
 

@@ -78,9 +78,8 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             % first kp and tf do:
             %%% I) Check which are suitable to triangulate:
             
-            random_generator = randi(2,1,size(last_obs_cand_kp_i1, 2));
-            is_triangulable = random_generator > 1;
-            
+            random_generator = randi(4,1,size(last_obs_cand_kp_i1, 2));
+            is_triangulable = random_generator > 3;
             fprintf('Number of triangulable points: %d \n', nnz(is_triangulable));
             triangulable_last_kp = last_obs_cand_kp_i1(:, is_triangulable);
             triangulable_last_tf = Transform_i1;

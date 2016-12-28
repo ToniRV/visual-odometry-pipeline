@@ -29,6 +29,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     %% Step 3: trying to triangulate new landmarks
     descriptor_radius = 9;
     match_lambda = 4;
+    points_2D_global_var = 0;
     %First time we start:
     if (isempty(State_i0.first_obs_candidate_keypoints))
         new_first_obs_cand_kp_i1 = zeros(2, 0); % keypoints 

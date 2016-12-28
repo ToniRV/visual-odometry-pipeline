@@ -1,7 +1,7 @@
 %% Tabula rasa
 clear all;
 close all;
-clc;
+%clc;
 
 % REMOVE
 rng(1);

@@ -31,7 +31,7 @@ function [ points_2D, points_3D_left_cam_frame] = stereo_initialisation( img_lef
         %       >0).
     
     % If you want debugging figures
-    debug_with_figures = true;
+    debug_with_figures = false;
     
     % Select triangulation algorithm
     if (strcmp(triangulation_algorithm,'ex_5_triangulation'))

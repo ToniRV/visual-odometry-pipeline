@@ -31,9 +31,9 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     match_lambda = 4;
     %First time we start:
     if (isempty(State_i0.first_obs_candidate_keypoints))
-        new_first_obs_cand_kp_i1 = zeros(2, 0);
-        new_first_obs_cand_tf_i1 = zeros(12, 0);
-        new_last_obs_cand_kp_i1 = zeros(2, 0);
+        new_first_obs_cand_kp_i1 = zeros(2, 0); % keypoints 
+        new_first_obs_cand_tf_i1 = zeros(12, 0); % transform
+        new_last_obs_cand_kp_i1 = zeros(2, 0); % keypoints
         if(isLocalized)
             new_first_obs_cand_kp_i1 = query_keypoints(:, all_matches == 0); % Non_matched_query_keypoints
             % TODO find better way to deal with the transform of the first
@@ -77,7 +77,10 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             % D) For all the updated last_obs_cand_kp_i1 and corresponding
             % first kp and tf do:
             %%% I) Check which are suitable to triangulate:
-            is_triangulable = true(1, size(last_obs_cand_kp_i1, 2));
+            
+            random_generator = randi(2,1,size(last_obs_cand_kp_i1, 2));
+            is_triangulable = random_generator > 1;
+            
             triangulable_last_kp = last_obs_cand_kp_i1(:, is_triangulable);
             triangulable_last_tf = Transform_i1;
             triangulable_first_kp = first_obs_cand_kp_i1(:, is_triangulable);
@@ -91,10 +94,13 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             num_triang_kps = size(triangulable_last_kp, 2);
             X_s = zeros(3, num_triang_kps);
             list_reprojection_errors = zeros(1, num_triang_kps);
+            K = State_i0.K;
             for i = 1:num_triang_kps
                 [newX_cam_frame, reprojectionError] = ...
-                triangulate(flipud(triangulable_last_kp(:, i))', flipud(triangulable_first_kp(:, i))',...
-                                  triangulable_last_tf', reshape(triangulable_first_tf(:,i), 3, 4)');
+                triangulate(flipud(triangulable_last_kp(:, i))',...
+                                  flipud(triangulable_first_kp(:, i))',...
+                                  (K*triangulable_last_tf)',...
+                                  (K*reshape(triangulable_first_tf(:,i), 3, 4))');
                 newX_cam_frame = newX_cam_frame';
                 X_s(:, i) = newX_cam_frame;
                 list_reprojection_errors(i) = reprojectionError;

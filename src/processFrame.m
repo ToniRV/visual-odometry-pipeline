@@ -81,6 +81,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             random_generator = randi(2,1,size(last_obs_cand_kp_i1, 2));
             is_triangulable = random_generator > 1;
             
+            fprintf('Number of triangulable points: %d \n', nnz(is_triangulable));
             triangulable_last_kp = last_obs_cand_kp_i1(:, is_triangulable);
             triangulable_last_tf = Transform_i1;
             triangulable_first_kp = first_obs_cand_kp_i1(:, is_triangulable);
@@ -112,6 +113,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             valid_errors = list_reprojection_errors < reprojectionError_threshold;
             valid_depth = X_s(3,:) > 0;
             valid_indices = valid_errors & valid_depth;
+            fprintf('Number of valid triangulated points: %d \n', nnz(valid_indices));
             points_3D_cam_frame = X_s(:, valid_indices);
             % IS THIS CORRECT?
             points_3D_W = inversed_transform_i1 * [points_3D_cam_frame; ones(1, nnz(valid_indices))];
@@ -120,6 +122,8 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             %%%% b) Append to already known 2D-3D correspondences
             keypoints_correspondences_i1 = [keypoints_correspondences_i1,  points_2D];
             p_W_landmarks_correspondences_i1 = [p_W_landmarks_correspondences_i1, points_3D_W];
+            
+            points_2D_global_var = points_2D; % Only for plotting later...
             
             %%%% b) Clear triangulated tracks, both correctly and incorrectly
             %%%% triangulated
@@ -178,6 +182,10 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     if (nnz(inlier_mask) > 0)
         plot(matched_query_keypoints(2, (inlier_mask)>0), ...
             matched_query_keypoints(1, (inlier_mask)>0), 'gx', 'Linewidth', 2);
+    end
+    % Plot the new guys
+    if (points_2D_global_var ~= 0)
+        plot (points_2D_global_var(2, :), points_2D_global_var(1, :), 'bx');
     end
     plotMatches(corresponding_matches(inlier_mask>0), ...
         matched_query_keypoints(:, inlier_mask>0), ...

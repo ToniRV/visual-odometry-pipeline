@@ -98,7 +98,7 @@ stereo_bootstrap_frames = [0 0];
 %% Continuous operation
 % p_W_landmarks = points_3D_matlab_triangulation;
 % keypoints = points_2D_matlab_triangulation;
-%%% Ground truth initialisation
+%%% GROUND TRUTH initialisation
 keypoints = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/keypoints.txt');
 keypoints = keypoints';
 p_W_landmarks = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/p_W_landmarks.txt');

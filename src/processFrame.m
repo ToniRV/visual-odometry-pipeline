@@ -79,8 +79,10 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             % first kp and tf do:
             %%% I) Check which are suitable to triangulate:
             
-            random_generator = randi(4,1,size(last_obs_cand_kp_i1, 2));
-            is_triangulable = random_generator > 3;
+            %random_generator = randi(2,1,size(last_obs_cand_kp_i1, 2));
+            %is_triangulable = random_generator > 1;
+            is_triangulable = checkTriangulability(last_obs_cand_kp_i1, Transform_i1, ...
+                                                                      first_obs_cand_kp_i1, first_obs_cand_tf_i1, State_i0.K);
             fprintf('Number of triangulable points: %d \n', nnz(is_triangulable));
             triangulable_last_kp = last_obs_cand_kp_i1(:, is_triangulable);
             triangulable_last_tf = Transform_i1;
@@ -109,7 +111,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
 
             %%% III) Update state
             %%%% a) Store new 2D-3D correspondences which are valid
-            reprojectionError_threshold = 0.1; % WARNING: this guy gets rid of MANY possible landmarks!
+            reprojectionError_threshold = 2; % WARNING: this guy gets rid of MANY possible landmarks!
             valid_errors = list_reprojection_errors < reprojectionError_threshold;
             valid_depth = X_s(3,:) > 0;
             valid_indices = valid_errors & valid_depth;
@@ -194,4 +196,33 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     title('Inlier and outlier matches');
     pause(0.01);
 
+end
+
+function is_triangulable = checkTriangulability(last_kps, last_tf, first_kps, first_tfs, K)
+%%% last_tf: transformation from World to Camera of the last kps
+%%% first_tf: transformation from World to Camera of the first kps
+    %%% Tune this threshold
+    threshold = 20;
+    %1) Compute last bearing vector in the World frame
+    bearing_vector_last_kps = computeBearing(last_kps, last_tf, K);
+    %2) Compute first bearing vector in the World frame
+    bearing_vector_first_kps = zeros(3, size(first_tfs, 2));
+    for i = 1:size(first_kps,2)
+        first_tf = reshape(first_tfs(:, i), 3, 4);
+        bearing_vector_first_kps(:, i) = computeBearing(first_kps(:, i), first_tf, K);
+    end
+    %3) Check which current kps are triangulable
+    angles = atan2d(norm(cross(bearing_vector_last_kps, bearing_vector_first_kps)), ...
+        dot(bearing_vector_last_kps, bearing_vector_first_kps));
+    is_triangulable = angles > threshold;
+end
+
+function bearing_vector = computeBearing(kps, tfs, K)
+    % Get bearings orientation in cam frame
+    bearings = K\[kps; ones(1, size(kps,2))];
+    % Get rot matrix from cam points to world
+    R_C_W = tfs(:, 1:3);
+    % Get bearings orientation in world frame
+    bearings_in_world_frame = R_C_W*bearings;
+    bearing_vector = bearings_in_world_frame;
 end

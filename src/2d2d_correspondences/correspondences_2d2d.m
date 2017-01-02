@@ -3,32 +3,36 @@ function [database_keypoints_matched, keypoints_query_image_matched, database_de
 %
 %   INPUT:
     %
-    %   - database_img:
-    %   - query_img:
+    %   *   database_img: Corresponds to the left image / last frame.
+    %   * 	query_img: Corresponds to the right image / current frame.
 %
 %   OUTPUT:
     %
-    %   - database_keypoints_matched: Only the matched keypoints in the
-    %   database image.
-    %   - keypoints_query_image_matched: Only the matched keypoints in the
-    %   query image.
-    %   - database_descriptors_matched: Only the descriptors of the
-    %   keypoints matched in the database image.
-    %    - query_descriptors_matched: Only the descriptors of the
-    %   keypoints matched in the query image.
-debug_with_figures = true;
+    %   *   database_keypoints_matched: Only those keypoints in the
+    %       database image that have been matched.
+    %   *   keypoints_query_image_matched: Only those keypoints in the
+    %       query image that have been matched.
+    %   *   database_descriptors_matched: The descriptors of only those
+    %       keypoints in the database image that have been matched.
+    %   *   query_descriptors_matched: The descriptors of only those
+    %       keypoints in the query image that have been matched.
 
-% Randomly chosen parameters that seem to work well - can you find better
-% ones?
-harris_patch_size = 9;
-harris_kappa = 0.08;
-num_keypoints = 200;
-nonmaximum_supression_radius = 8;
-descriptor_radius = 9;
-match_lambda = 4;
+    % Set to 'true' if you want debugging figures to be shown
+    debug_with_figures = true;
 
-%% Part 1 - Calculate Harris scores
+    % TODO: IMPROVE PERFORMANCE BY TWEAKING THE PARAMETERS.
+    % Parameter values taken from exercise 3:
+    harris_patch_size = 9;
+    harris_kappa = 0.08; % Typical values between 0.04 - 0.15
+    num_keypoints = 200;
+    nonmaximum_supression_radius = 8;
+    descriptor_radius = 9;
+    match_lambda = 4; % Trades of false positives and false negatives
 
+%% Part 1 - Calculation of Harris scores
+
+% Take the left image of the stereo images and calculate the Harris score
+% for each pixel in the image.
 database_harris_scores = harris(database_img, harris_patch_size, harris_kappa);
 assert(min(size(database_harris_scores) == size(database_img)));
 
@@ -42,20 +46,23 @@ if (debug_with_figures)
     axis off;
 end
 
-%% Part 2 - Select keypoints
+%% Part 2 - Keypoint selection
 
+% Select the num_keypoints pixels with the highest Harris scores and store
+% them in a 2xnum_keypoints matrix; Harris score decreases for increasing
+% column index
 database_keypoints = selectKeypoints(...
     database_harris_scores, num_keypoints, nonmaximum_supression_radius);
 
-if(debug_with_figures)
+if (debug_with_figures)
     figure(2);
     imshow(database_img);
     hold on;
     plot(database_keypoints(2, :), database_keypoints(1, :), 'rx', 'Linewidth', 2);
     hold off;
 end
-%% Part 3 - Describe keypoints and show 16 strongest keypoint descriptors
 
+%% Part 3 - Keypoint descriptors
 database_descriptors = describeKeypoints(database_img, database_keypoints, descriptor_radius);
 
 if (debug_with_figures)
@@ -71,21 +78,23 @@ if (debug_with_figures)
     hold off;
 end
 
-%% Part 4 - Match descriptors rsbetween first two images
+%% Part 4 - Match descriptors between first two images
 
-harris_scores_query_image = harris(query_img, harris_patch_size, harris_kappa);
+% Calculate Harris scores and select keypoints for the query / right image:
+query_harris_scores = harris(query_img, harris_patch_size, harris_kappa);
+% harris_scores_query_image = harris(query_img, harris_patch_size, harris_kappa);
 keypoints_query_image = selectKeypoints(...
-    harris_scores_query_image, num_keypoints, nonmaximum_supression_radius);
-descriptors_query_image = describeKeypoints(query_img, keypoints_query_image, descriptor_radius);
+    query_harris_scores, num_keypoints, nonmaximum_supression_radius);
+query_descriptors = describeKeypoints(query_img, keypoints_query_image, descriptor_radius);
+% descriptors_query_image = describeKeypoints(query_img, keypoints_query_image, descriptor_radius);
 
-matches = matchDescriptors(descriptors_query_image, database_descriptors, match_lambda);
+matches = matchDescriptors(query_descriptors, database_descriptors, match_lambda); % 1xQ row vector
 
 [~, query_indices, match_indices] = find(matches);
 database_keypoints_matched = database_keypoints(:, match_indices);
 keypoints_query_image_matched = keypoints_query_image(:, query_indices);
 database_descriptors_matched = database_descriptors(:, match_indices);
 query_image_descriptors_matched = descriptors_query_image(:, query_indices);
-
 
 if (debug_with_figures)
     figure(4);

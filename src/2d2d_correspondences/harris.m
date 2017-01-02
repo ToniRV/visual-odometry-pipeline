@@ -16,10 +16,14 @@ sIyy = conv2(Iyy, patch, 'valid');
 sIxy = conv2(Ixy, patch, 'valid');
 
 scores = (sIxx .* sIyy - sIxy .^ 2) ... determinant
-    - kappa * (sIxx + sIyy) .^ 2;  % square trace
+    - kappa * (sIxx + sIyy) .^ 2;  % squared trace
 
+% Only maxima (i.e. positive values) of the cornerness function are
+% considered.
 scores(scores<0) = 0;
 
+% Set the score to 0 for pixels at which the Harris score is not defined
+% (due to only partial overlapping of the filter with the image).
 scores = padarray(scores, [1+pr 1+pr]);
 
 end

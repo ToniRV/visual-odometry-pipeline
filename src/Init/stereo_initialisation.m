@@ -1,36 +1,37 @@
-function [ points_2D, points_3D ] = stereo_initialisation( img_left, img_right , K, baseline, ...
-                                                                                        triangulation_algorithm)
-%
-%   INPUT:
+function [points_2D, points_3D] = ...
+    stereo_initialisation(img_left, img_right , K, baseline, triangulation_algorithm)
+
+%   INPUTS:
     %
-    %   - img_left: image from the left camera of the stereo cameras.
-    %   - img_right: image from the right camera of the stereo cameras.
-    %   - K: 3x3 matrix with the intrinsics of the cameras, assumed to be
-    %   identical for both cameras.
-    %   - baseline: scalar with the baseline lenght between left and right
-    %   camera.
-    %   - triangulation_algorithm: possible values= 'ex_5_triangulation',
-    %   'matlab_triangulation', 'disparity_triangulation'. Default:
-    %   'disparity_triangulation'
+    %   *   img_left / img_right: Image taken by the left / right camera of 
+    %       the stereo camera.
+    %   *   K: 3x3 matrix containing the intrinsic parameters of the cameras, 
+    %       assumed to be identical for both cameras.
+    %   *   baseline: Scalar value with the baseline length (i.e. distance)
+    %       between the left and right camera.
+    %   *   triangulation_algorithm: Possible values are 'ex_5_triangulation',
+    %       'matlab_triangulation', 'disparity_triangulation'; default is
+    %       'disparity_triangulation'
 %
 %   OUTPUT:
     %
-    %   - points_2D: 2D points in the image (img_left) that have been defined
-    %   as keypoints and triangulated to 3D points in the world. 2xN vector
-        %       * first row: each value corresponds to the row of the pixel in the
-        %       image matrix.
-        %       * second row: each value corresponds to the column of the pixel in the image
-        %       matrix.
-    %   - points_3D: 3D points in the world that correspond to each point in
-    %   points_2D. These are expressed in the left camera frame (right handed frame
-    %   with z pointing in front of the camera, x pointing to where the right camera is located
-    %   see figure 2 exercise 4 for an illustration). 3xN vector
-        %       * first row: x coordinate in left camera frame.
-        %       * second row: y coordinate in left camera frame.
-        %       * third row: z coordinate in left camera frame (should be
-        %       >0).
+    %   *   points_2D: 2D points in the image (img_left) that have been defined
+    %       as keypoints and triangulated to 3D landmarks in the world; 2xK matrix
+    %        *   First row: Each value corresponds to the row of the pixel 
+    %            in the image matrix.
+    %        *   Second row: Each value corresponds to the column of the 
+    %            pixel in the image matrix.
+    %        *   K denotes the total number of identified 2D - 3D
+    %            correspondences.
+    %   *   points_3D: 3D points in the world that correspond to the respective image 
+    %       points stored in points_2D; expressed in the left camera frame (right-handed frame
+    %       with z-axis pointing towards the front of the camera, x pointing to where the 
+    %       right camera is located; see figure 2 of exercise 4 for an illustration); 3xK matrix
+    %        *   First row: x coordinate in left camera frame.
+    %        *   Second row: y coordinate in left camera frame.
+    %        *   Third row: z coordinate in left camera frame (should be >0).
     
-    % If you want debugging figures
+    % Set to 'true' if you want debugging figures to be shown
     debug_with_figures = true;
     
     % Select triangulation algorithm
@@ -39,22 +40,26 @@ function [ points_2D, points_3D ] = stereo_initialisation( img_left, img_right ,
     elseif (strcmp(triangulation_algorithm,'matlab_triangulation'))
         triangulation_algorithm = 2;
     elseif(strcmp(triangulation_algorithm,'disparity_triangulation'))
-        triangulation_algorithm = 3; % only useful for stereo
+        triangulation_algorithm = 3; % Only useful for stereo 
     else
-        printf('No valid triangulation algorithm specified, defaulting to: "disparity_triangulation" ');
+        printf('No valid triangulation algorithm specified, algorithm defaults to: "disparity_triangulation"');
     end
     
-    %% Detect and match features: find 2D-2D correspondences
+    %% Detect and match features: Find 2D-2D correspondences
     
     tic;
     
-    % This way of finding 2d2d correspondences is actually pretty dumb since I am not using the
-    % knowledge that my images are stereo images. Hence, if the images are rectified, I should be able
-    % to match features by simply exploring the epipolar line instead of looking at all the descriptors to
-    % see matches
+    % To find 2D-2D correspondences are found by comparing each of the descriptors
+    % of keypoints in the left image with all descriptors in the right
+    % image. At this point, we are not utilizing the knowledge that the images 
+    % are stereo images. If the images were rectified, matches should be identified 
+    % simply by exploring the epipolar line instead of looking at all the
+    % descriptors.
     
-    % !!!!!!!!!!!!!!!!WARNING keypoints are in (row, col) coordinates of the image which might differ from
-    % (u, v) coordinates, depending on whether u representes rows or columns!!!!!!!!!!!!!!!!!!!!!!
+    % =======================================================================
+    % Attention: Keypoints are stored in (row, col) coordinates of the image 
+    % which differs from the convention of (u, v) coordinates.
+    % =======================================================================
     [keypoints_left, keypoints_right,~,~] = correspondences_2d2d(img_left, img_right);
     fprintf('It took %ds to compute correspondences \n', toc);
 

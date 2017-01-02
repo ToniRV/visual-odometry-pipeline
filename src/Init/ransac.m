@@ -1,4 +1,4 @@
-function [inlier_mask, F] = ransac(kp_database, kp_query, sigma)
+function [inlier_mask, F] = ransac(kp_database, kp_query)
     % Parameters
     num_iterations = 1000;
     num_matches = size(kp_database,2);

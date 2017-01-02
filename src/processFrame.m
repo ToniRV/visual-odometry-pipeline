@@ -6,25 +6,17 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     % A) Run p3p+ransac to get transformation and new keypoints, both matched
     % and unmatched. Given the images and the correspondences 2D<->3D
     % correspondences and K.
-    [R_C_W, t_C_W, query_keypoints, query_descriptors, all_matches, inlier_mask] = ...
+    [R_C_W, t_C_W, valid_tracked_keypoints, valid_p_W_landmarks, validity_mask, inlier_mask,...
+        query_keypoints, query_descriptors] = ...
     ransacLocalization(Image_i1, Image_i0,  State_i0.keypoints_correspondences, ...
                                   State_i0.p_W_landmarks_correspondences, State_i0.K);
 
     % B) Retrieve transformation
     Transform_i1 = [R_C_W, t_C_W];
-    inversed_transform_i1 = [R_C_W', -R_C_W'*t_C_W];
-    isLocalized = numel(R_C_W)>0;
-
-    % Get matched keypoints and corresponding landmarks with both inliers and outliers
-    matched_query_keypoints = query_keypoints(:, all_matches > 0);
-    matched_corresponding_landmarks = State_i0.p_W_landmarks_correspondences(:, all_matches(all_matches > 0));
-    % Get matched keypoints and corresponding landmarks with only inliers
-    inlier_matched_query_keypoints =  matched_query_keypoints(:, inlier_mask>0);
-    inlier_matched_corresponding_landmarks = matched_corresponding_landmarks(:, inlier_mask>0);
     
-    % C) Update State
-    keypoints_correspondences_i1 = inlier_matched_query_keypoints;
-    p_W_landmarks_correspondences_i1 = inlier_matched_corresponding_landmarks;
+    keypoints_correspondences_i1 = valid_tracked_keypoints(:, inlier_mask > 0); % WARNING: should we round, ceil floor?
+    p_W_landmarks_correspondences_i1 = valid_p_W_landmarks(:,inlier_mask > 0);
+    
     
     %% Step 3: trying to triangulate new landmarks
     descriptor_radius = 9;
@@ -160,7 +152,6 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
       
 %% Plotting
 % Distinguish success from failure.
-    corresponding_matches = all_matches(all_matches > 0);
     if (numel(R_C_W) > 0)
         subplot(1, 3, 3);
         num_inliers(i1) = nnz(inlier_mask);
@@ -179,19 +170,23 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     subplot(1, 3, [1 2]);
     imshow(Image_i1);
     hold on;
-    plot(matched_query_keypoints(2, (1-inlier_mask)>0), ...
-        matched_query_keypoints(1, (1-inlier_mask)>0), 'rx', 'Linewidth', 2);
+    plot(valid_tracked_keypoints(2, (1-inlier_mask)>0), ...
+        valid_tracked_keypoints(1, (1-inlier_mask)>0), 'rx', 'Linewidth', 2);
     if (nnz(inlier_mask) > 0)
-        plot(matched_query_keypoints(2, (inlier_mask)>0), ...
-            matched_query_keypoints(1, (inlier_mask)>0), 'gx', 'Linewidth', 2);
+        plot(keypoints_correspondences_i1(2, :), ...
+            keypoints_correspondences_i1(1, :), 'gx', 'Linewidth', 2);
     end
     % Plot the new guys
-    if (points_2D_global_var ~= 0)
-        plot (points_2D_global_var(2, :), points_2D_global_var(1, :), 'bx');
-    end
-    plotMatches(corresponding_matches(inlier_mask>0), ...
-        matched_query_keypoints(:, inlier_mask>0), ...
-        State_i0.keypoints_correspondences);
+%     if (points_2D_global_var ~= 0)
+%         plot (points_2D_global_var(2, :), points_2D_global_var(1, :), 'bx');
+%     end
+    valid_keypoints_correspondences_i0 = State_i0.keypoints_correspondences(:, validity_mask > 0);
+    keypoints_correspondences_i0 = valid_keypoints_correspondences_i0(:, inlier_mask > 0);
+    x_from = keypoints_correspondences_i1(1, :);
+    x_to = keypoints_correspondences_i0(1, :);
+    y_from = keypoints_correspondences_i1(2, :);
+    y_to = keypoints_correspondences_i0(2, :);
+    plot([y_from; y_to], [x_from; x_to], 'g-', 'Linewidth', 3);
     hold off;
     title('Inlier and outlier matches');
     pause(0.01);

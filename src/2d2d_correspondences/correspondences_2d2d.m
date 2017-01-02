@@ -1,4 +1,5 @@
-function [keypoints, keypoints_2, descriptors, descriptors_2, matches] = correspondences_2d2d(img0, img1)
+function [keypoints, keypoints_2, descriptors, descriptors_2, matches] = ...
+    correspondences_2d2d(img0, img1, N)
 
 debug_verbose = false;
 
@@ -6,22 +7,20 @@ debug_verbose = false;
 % ones?
 harris_patch_size = 9;
 harris_kappa = 0.08;
-num_keypoints = 1000;
+num_keypoints = N;
 nonmaximum_supression_radius = 8;
 descriptor_radius = 9;
 match_lambda = 4;
 
-img = img0;
-
 %% Part 1 - Calculate Harris scores
 
-harris_scores = harris(img, harris_patch_size, harris_kappa);
-assert(min(size(harris_scores) == size(img)));
+harris_scores = harris(img0, harris_patch_size, harris_kappa);
+assert(min(size(harris_scores) == size(img0)));
 
 if (debug_verbose)
     figure(1);
     subplot(2, 1, 1);
-    imshow(img);
+    imshow(img0);
     subplot(2, 1, 2);
     imagesc(harris_scores);
     axis equal;
@@ -35,14 +34,14 @@ keypoints = selectKeypoints(...
 
 if (debug_verbose) 
     figure(2);
-    imshow(img);
+    imshow(img0);
     hold on;
     plot(keypoints(2, :), keypoints(1, :), 'rx', 'Linewidth', 2);
 end
 
 %% Part 3 - Describe keypoints and show 16 strongest keypoint descriptors
 
-descriptors = describeKeypoints(img, keypoints, descriptor_radius);
+descriptors = describeKeypoints(img0, keypoints, descriptor_radius);
 if (debug_verbose) 
     figure(3);
     for i = 1:16
@@ -55,18 +54,17 @@ if (debug_verbose)
 end
 
 %% Part 4 - Match descriptors between first two images
-img_2 = img1;
 
-harris_scores_2 = harris(img_2, harris_patch_size, harris_kappa);
+harris_scores_2 = harris(img1, harris_patch_size, harris_kappa);
 keypoints_2 = selectKeypoints(...
     harris_scores_2, num_keypoints, nonmaximum_supression_radius);
-descriptors_2 = describeKeypoints(img_2, keypoints_2, descriptor_radius);
+descriptors_2 = describeKeypoints(img1, keypoints_2, descriptor_radius);
 
 matches = matchDescriptors(descriptors_2, descriptors, match_lambda);
 
 if (debug_verbose)
     figure(4);
-    imshow(img_2);
+    imshow(img1);
     hold on;
     plot(keypoints_2(2, :), keypoints_2(1, :), 'rx', 'Linewidth', 2);
     plotMatches(matches, keypoints_2, keypoints);

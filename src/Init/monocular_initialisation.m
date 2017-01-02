@@ -22,6 +22,9 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     % 3. Find rotation and translation pose hypotheses
     % 4. Triangulate 2D-3D points
     
+    % Verbose output for debug
+    debug_verbose = false;
+    
     % Initialize Output
     N = 1000;
     state = struct('matches_2d', zeros(3, N), 'matches_3d', zeros(4, N), ...
@@ -38,10 +41,12 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     kp_matches_query = keypoints_query(:, query_indices);
         
     % Plot matching features
-    figure(5); 
-    showMatchedFeatures(img0, img1, ...
-        flipud(kp_matches_database)', flipud(kp_matches_query)', 'montage');
-
+    if (debug_verbose)
+        figure(5); 
+        showMatchedFeatures(img0, img1, flipud(kp_matches_database)', ...
+            flipud(kp_matches_query)', 'montage');
+    end
+    
     % Homogenous fliped keypoint coordinates
     kp_fliped_homo_database = ...
         [flipud(kp_matches_database); ones(1, size(kp_matches_database, 2))];

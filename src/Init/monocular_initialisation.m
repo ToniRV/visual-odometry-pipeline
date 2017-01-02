@@ -34,7 +34,7 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     % Get keypoints in both frames, descriptors and matches
     tic;
     [keypoints_database, keypoints_query, ~, descritors_query, matches] = ...
-        correspondences_2d2d(img0, img1);
+        correspondences_2d2d(img0, img1, N);
     sprintf('Time needed: correspondences_2d2d: %f seconds', toc)
     
     % Get matching keypoints
@@ -58,7 +58,7 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     % Find fundamental matrix
     tic;
     [inlier_mask, F] = ransac(kp_fliped_homo_database, ...
-        kp_fliped_homo_query, K, 1.0);
+        kp_fliped_homo_query, 1.0);
     sprintf('Time needed: Find fundamental matrix: %f seconds', toc)
     
     % Get inlier from inlier_mask
@@ -66,10 +66,8 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     kp_fliped_homo_query = kp_fliped_homo_query(:, inlier_mask);
         
     % Estimate Essential matrix
-    tic;
     E = estimateEssentialMatrix(kp_fliped_homo_database, ...
-        kp_fliped_homo_query, K, K)
-    sprintf('Time needed: estimateEssentialMatrix: %f seconds', toc)
+        kp_fliped_homo_query, K, K);
     
     % Plot matching features
     figure(6); 
@@ -77,9 +75,7 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
         kp_fliped_homo_database(1:2,:)', kp_fliped_homo_query(1:2,:)', 'montage');
 
     % Get the hypotheses for the pose (rotation and translation)
-    tic;
     [rot, t] = get_pose_hypotheses(E);
-    sprintf('Time needed: Get pose hypotheses: %f seconds', toc)
 
     %% Check if in front of camera
     % lambda0*[u v 1]^T = K1 * [Xw Yw Zw]^T
@@ -119,8 +115,6 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
         p_homo2(:,i) = M2*[P(:,i); 1];
         p_homo2(:,i) = p_homo2(:,i) ./p_homo2(3,i);
     end
-    p_homo;
-    p_homo2;
     
     % Reprojection error
     % First image

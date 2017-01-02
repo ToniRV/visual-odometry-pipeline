@@ -104,6 +104,29 @@ keypoints = keypoints';
 p_W_landmarks = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/p_W_landmarks.txt');
 p_W_landmarks = p_W_landmarks';
 
+% KLT DEMO
+    % Create the point tracker object.
+    
+    pointTracker = vision.PointTracker('MaxBidirectionalError', 1);
+    POINTS = flipud(keypoints)';
+    initialize(pointTracker, POINTS, img_left);
+    [NEW_POINTS, POINT_VALIDITY, SCORES] = step(pointTracker, img_right);
+    SCORES = SCORES';
+    POINT_VALIDITY = POINT_VALIDITY';
+    new_points = flipud(NEW_POINTS');
+    
+    hold off;
+
+hold on;
+figure(7);
+    % Display tracked points.
+    imshow(img_left);
+    hold on;
+    
+    plot (new_points(2, :), new_points(1, :), 'yx');
+    plot (keypoints(2, :), keypoints(1, :), 'gx');
+    plotMatches(true(1, size(new_points, 2)), new_points, keypoints);
+    
 %%% MAKE SURE WE START with the right frames at the beginning, in stereo it
 %%% differs than in monocular
 % Monocular init

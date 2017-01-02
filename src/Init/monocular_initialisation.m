@@ -32,8 +32,10 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     T_cw = eye(4);
     
     % Get keypoints in both frames, descriptors and matches
+    tic;
     [keypoints_database, keypoints_query, ~, descritors_query, matches] = ...
         correspondences_2d2d(img0, img1);
+    sprintf('Time needed: correspondences_2d2d: %f seconds', toc)
     
     % Get matching keypoints
     [~, query_indices, match_indices] = find(matches);
@@ -57,15 +59,17 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     tic;
     [inlier_mask, F] = ransac(kp_fliped_homo_database, ...
         kp_fliped_homo_query, K, 1.0);
-    toc;
+    sprintf('Time needed: Find fundamental matrix: %f seconds', toc)
     
     % Get inlier from inlier_mask
     kp_fliped_homo_database = kp_fliped_homo_database(:, inlier_mask);
     kp_fliped_homo_query = kp_fliped_homo_query(:, inlier_mask);
         
     % Estimate Essential matrix
+    tic;
     E = estimateEssentialMatrix(kp_fliped_homo_database, ...
         kp_fliped_homo_query, K, K)
+    sprintf('Time needed: estimateEssentialMatrix: %f seconds', toc)
     
     % Plot matching features
     figure(6); 
@@ -73,8 +77,10 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
         kp_fliped_homo_database(1:2,:)', kp_fliped_homo_query(1:2,:)', 'montage');
 
     % Get the hypotheses for the pose (rotation and translation)
+    tic;
     [rot, t] = get_pose_hypotheses(E);
-    
+    sprintf('Time needed: Get pose hypotheses: %f seconds', toc)
+
     %% Check if in front of camera
     % lambda0*[u v 1]^T = K1 * [Xw Yw Zw]^T
     % lambda1*[u v 1]^T = K1 * R1* [Xw Yw Zw]^T + T
@@ -87,7 +93,7 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
         kp_fliped_homo_database, kp_fliped_homo_query);
     [P4, num_good(4), ~, ~] = check_rt(rot(:,:,4), t(:,:,4), K, ...
         kp_fliped_homo_database, kp_fliped_homo_query);
-    toc;
+    sprintf('Time needed: Check in front of camera views: %f seconds', toc)
     
     % Find best rotation and translation hypotheses
     [maximum, idx] = max(num_good);

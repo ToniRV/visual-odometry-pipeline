@@ -118,7 +118,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             fprintf('Number of valid triangulated points: %d \n', nnz(valid_indices));
             points_3D_cam_frame = X_s(:, valid_indices);
             % IS THIS CORRECT?
-            points_3D_W = inversed_transform_i1 * [points_3D_cam_frame; ones(1, nnz(valid_indices))];
+            points_3D_W = points_3D_cam_frame;
             points_2D = triangulable_last_kp(:, valid_indices);
             
             %%%% b) Append to already known 2D-3D correspondences

@@ -13,6 +13,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
 
     % B) Retrieve transformation
     Transform_i1 = [R_C_W, t_C_W];
+    isLocalized = numel(R_C_W)>0;
     
     keypoints_correspondences_i1 = valid_tracked_keypoints(:, inlier_mask > 0); % WARNING: should we round, ceil floor?
     p_W_landmarks_correspondences_i1 = valid_p_W_landmarks(:,inlier_mask > 0);
@@ -22,16 +23,20 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     descriptor_radius = 9;
     match_lambda = 4;
     points_2D_global_var = 0;
+    final_keypoints_correspondences_i1 = keypoints_correspondences_i1;
+    final_p_W_landmarks_correspondences_i1 = p_W_landmarks_correspondences_i1;
+          
+    
     %First time we start:
     if (isempty(State_i0.first_obs_candidate_keypoints))
         new_first_obs_cand_kp_i1 = zeros(2, 0); % keypoints 
         new_first_obs_cand_tf_i1 = zeros(12, 0); % transform
         new_last_obs_cand_kp_i1 = zeros(2, 0); % keypoints
         if(isLocalized)
-            new_first_obs_cand_kp_i1 = query_keypoints(:, all_matches == 0); % Non_matched_query_keypoints
+            new_first_obs_cand_kp_i1 = query_keypoints; % Non_matched_query_keypoints
             % TODO find better way to deal with the transform of the first
             % observed candidates
-            new_first_obs_cand_tf_i1 = repmat(reshape(Transform_i1,12,1), 1, sum(all_matches == 0)); % Store as 12xM transform
+            new_first_obs_cand_tf_i1 = repmat(reshape(Transform_i1,12,1), 1, size(query_keypoints, 2)); % Store as 12xM transform
             new_last_obs_cand_kp_i1 = new_first_obs_cand_kp_i1; %First time we store them we also fill last_obs as first_obs for uniformity
         else
             fprintf('[INFO] Iteration %d: set of first_observed_candidate_keypoints is empty and we have not localized \n', i1);
@@ -48,22 +53,16 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
         first_obs_cand_tf_i0 = State_i0.first_obs_candidate_transform;
 
         last_obs_cand_kp_i0 = State_i0.last_obs_candidate_keypoints;
-        last_obs_cand_descriptors_i0 = describeKeypoints(Image_i0, last_obs_cand_kp_i0, descriptor_radius);
 
-        non_matched_query_keypoints = query_keypoints(:, all_matches == 0);
-        non_matched_query_descriptors = query_descriptors(:, all_matches ==0);   
-
-        % B) Try to match all last_obs_cand_kp_i0 with current
-        % non_matched_query_keypoints
-        matches = matchDescriptors(non_matched_query_descriptors, last_obs_cand_descriptors_i0,...
-            match_lambda);
-        [~, query_indices, match_indices] = find(matches);
+        % B) Try to match all last_obs_cand_kp_i0
+        [tracked_last_obs_cand_kp_i1, cand_validity_mask] = KLT(last_obs_cand_kp_i0, Image_i1, Image_i0);
+        
 
         % C) If successful match, update track with new last obs kp, if unsuccessful
         % discard track, aka delete last and first observed candidate kp together with transform.
-        last_obs_cand_kp_i1 = non_matched_query_keypoints(:, query_indices);
-        first_obs_cand_kp_i1 = first_obs_cand_kp_i0(:, match_indices);
-        first_obs_cand_tf_i1 = first_obs_cand_tf_i0(:, match_indices);
+        last_obs_cand_kp_i1 = tracked_last_obs_cand_kp_i1 (:, cand_validity_mask > 0);
+        first_obs_cand_kp_i1 = first_obs_cand_kp_i0(:, cand_validity_mask > 0);
+        first_obs_cand_tf_i1 = first_obs_cand_tf_i0(:, cand_validity_mask > 0);
 
         %If current pose is ok continue, if not do nothing.
         if (isLocalized)
@@ -114,8 +113,8 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             points_2D = triangulable_last_kp(:, valid_indices);
             
             %%%% b) Append to already known 2D-3D correspondences
-            keypoints_correspondences_i1 = [keypoints_correspondences_i1,  points_2D];
-            p_W_landmarks_correspondences_i1 = [p_W_landmarks_correspondences_i1, points_3D_W];
+            final_keypoints_correspondences_i1 = [keypoints_correspondences_i1,  points_2D];
+            final_p_W_landmarks_correspondences_i1 = [p_W_landmarks_correspondences_i1, points_3D_W];
             
             points_2D_global_var = points_2D; % Only for plotting later...
             
@@ -128,7 +127,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
 
             % E) For the non_matched_query_keypoints, append them as new candidates to current candidates.
             %%% I) Create values:
-            new_first_obs_cand_kp_i1 = non_matched_query_keypoints(:, matches == 0); % These guys haven't been matched twice.
+            new_first_obs_cand_kp_i1 = query_keypoints; % These guys haven't been matched twice.
             new_first_obs_cand_tf_i1 = repmat(reshape(Transform_i1, 12, 1), 1, size(new_first_obs_cand_kp_i1, 2));
             new_last_obs_cand_kp_i1 = new_first_obs_cand_kp_i1; %First time we store them we also fill last_obs as first_obs for uniformity
 
@@ -145,8 +144,8 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     end % end of if (isempty(State_i0.first_obs_candidate_keypoints))
     
     % F) FINAL RESULTS
-    State_i1.keypoints_correspondences = keypoints_correspondences_i1;
-    State_i1.p_W_landmarks_correspondences = p_W_landmarks_correspondences_i1;
+    State_i1.keypoints_correspondences = final_keypoints_correspondences_i1;
+    State_i1.p_W_landmarks_correspondences = final_p_W_landmarks_correspondences_i1;
 
     State_i1.K = State_i0.K;
       
@@ -177,9 +176,9 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             keypoints_correspondences_i1(1, :), 'gx', 'Linewidth', 2);
     end
     % Plot the new guys
-%     if (points_2D_global_var ~= 0)
-%         plot (points_2D_global_var(2, :), points_2D_global_var(1, :), 'bx');
-%     end
+    if (points_2D_global_var ~= 0)
+        plot (points_2D_global_var(2, :), points_2D_global_var(1, :), 'bx');
+    end
     valid_keypoints_correspondences_i0 = State_i0.keypoints_correspondences(:, validity_mask > 0);
     keypoints_correspondences_i0 = valid_keypoints_correspondences_i0(:, inlier_mask > 0);
     x_from = keypoints_correspondences_i1(1, :);

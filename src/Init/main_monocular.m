@@ -3,9 +3,9 @@ clear all;
 clc;
 close all;
 
-kitti_path = '/Users/mgrimm/Documents/Studium/9. Semester/VisionAlgoMobileRobotics/kitti';
-malaga_path = '/Users/mgrimm/Documents/Studium/9. Semester/VisionAlgoMobileRobotics/malaga';
-parking_path = '/Users/mgrimm/Documents/Studium/9. Semester/VisionAlgoMobileRobotics/parking';
+kitti_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/kitti';
+malaga_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/malaga';
+parking_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/parking';
 
 
 %% Setup

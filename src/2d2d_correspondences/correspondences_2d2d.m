@@ -19,7 +19,7 @@ function [keypoints, keypoints_2, descriptors, descriptors_2, matches] = ...
     %       in the query image.
 
     % Set to 'true' if you want debugging figures to be shown
-    debug_verbose = true;
+    debug_verbose = false;
 
     % TODO: IMPROVE PERFORMANCE BY TWEAKING THE PARAMETERS.
     % Parameter values taken from exercise 3:

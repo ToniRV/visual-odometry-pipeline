@@ -1,48 +1,54 @@
-function [state, T_cw] = moncular_initialisation(img0, img1, K)
+function [state, T_cw] = monocular_initialisation(img0, img1, K)
 
 %   INPUT:
-    %   - img0: First image of monocular camera.
-    %   - img1: Subsequent image of monocular camera 
+    %   * img0: First image taken by monocular camera
+    %   * img1: Subsequent image taken by monocular camera 
     %           (not necessarily second image!)
-    %   - K: 3x3 matrix with the intrinsics of the camera
+    %   * K:    3x3 matrix containing the intrinsic parameters of the camera
     
 %   OUTPUT:
-    %   - state: First state S^(i_1) that contains:
-        %       * First set of 2D-3D correnspondences
-        %       * Keypoints of img1 for later tracking
-        %       * Descriptors of img1 for later tracking
-    %   - T_cw: First camera pose of img1 in wold coorinate frame 
-    %           (frame of img0)
+    %   * state: First state S^(i_1) that contains:
+    %               --> First set of 2D-3D correnspondences
+    %               --> Keypoints in img1 for subsequent tracking
+    %               --> Keypoint descriptors in img1 for subsequent tracking
+    %   * T_cw:  First camera pose of img1 in wold coorinate frame 
+    %            (frame of img0)
     
-% ALGORITHM:
-    % 1. Find 2d-2d correspondences
-    % 2. 8-point RANSAC
-        % --> Find Fundamental matrix F
-        % --> Find Essential Matrix E (E = K^T*F*K)
-    % 3. Find rotation and translation pose hypotheses
-    % 4. Triangulate 2D-3D points
+%   ALGORITHM:
+    %   1. Find 2d-2d correspondences
+    %   2. 8-point RANSAC
+    %       --> Find Fundamental matrix F
+    %       --> Find Essential Matrix E (E = K^T*F*K)
+    %   3. Find rotation and translation pose hypotheses
+    %   4. Triangulate 2D-3D points
     
     % Verbose output for debug
     debug_verbose = true;
     
-    %% Initialize Output
+    %% Output Initialization
+    % QUESTION: If you set N = 1000, do you not expect to obtain 1000
+    % MATCHES (i.e. not just keypoints?) We usually only observe like ~200
+    % matches.
     N = 1000;
     state = struct('matches_2d', zeros(3, N), 'matches_3d', zeros(4, N), ...
         'keypoints', zeros(3, N), 'descriptors', zeros(361, N));
+    % Is initialization of T_cw necessary?
     T_cw = eye(4);
     
-    %% Get keypoints in both frames, descriptors and matches
+    %% Keypoint Detection & Matching
+    % Detect keypoints in both frames, obtain descriptors and find matches
     tic;
     [keypoints_database, keypoints_query, ~, descritors_query, matches] = ...
         correspondences_2d2d(img0, img1, N);
     sprintf('Time needed: correspondences_2d2d: %f seconds', toc)
-        
-    %% Get matching keypoints
+    
+    %% Extraction of Keypoint Correspondences
     [~, query_indices, match_indices] = find(matches);
     kp_matches_database = keypoints_database(:, match_indices);
     kp_matches_query = keypoints_query(:, query_indices);
     
-    %% Homogenous fliped keypoint coordinates
+    %% Homogeneous (flipped) Keypoint Coordinates
+    % Express detected keypoints in homogeneous coordinates
     kp_homo_database = ...
         [kp_matches_database; ones(1, size(kp_matches_database, 2))];
     kp_homo_query = ...
@@ -54,7 +60,7 @@ function [state, T_cw] = moncular_initialisation(img0, img1, K)
     inliers_F = nnz(inlier_mask)
     sprintf('Time needed: Find fundamental matrix: %f seconds', toc)
     
-    %% Get inlier from inlier_mask
+    %% Obtain inliers from inlier_mask
     kp_homo_database = kp_homo_database(:, inlier_mask);
     kp_homo_query = kp_homo_query(:, inlier_mask);
         

@@ -53,13 +53,6 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
         [kp_matches_database; ones(1, size(kp_matches_database, 2))];
     kp_homo_query = ...
         [kp_matches_query; ones(1, size(kp_matches_query, 2))];
-        
-    %% Plot matching features
-    if (debug_verbose)
-        figure(5); 
-        showMatchedFeatures(img0, img1, flipud(kp_matches_database)', ...
-            flipud(kp_matches_query)', 'montage');
-    end
     
     %% Find fundamental matrix
     tic;
@@ -72,13 +65,19 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     kp_homo_query = kp_homo_query(:, inlier_mask);
         
     %% Estimate Essential matrix
-    E = estimateEssentialMatrix(kp_homo_database, kp_homo_query, K, K)
-    E = K' * F * K
+    E = estimateEssentialMatrix(kp_homo_database, kp_homo_query, K, K);
+    E = K' * F * K;
     
     %% Plot matching features
-    figure(6); 
-    showMatchedFeatures(img0, img1, flipud(kp_homo_database(1:2,:))', ...
-        flipud(kp_homo_query(1:2,:))', 'montage');
+    if (debug_verbose)
+        figure(5); 
+        subplot(2,1,1);
+        showMatchedFeatures(img0, img1, flipud(kp_matches_database)', ...
+            flipud(kp_matches_query)', 'montage');       
+        subplot(2,1,2);
+        showMatchedFeatures(img0, img1, flipud(kp_homo_database(1:2,:))', ...
+            flipud(kp_homo_query(1:2,:))', 'montage');
+    end
 
     %% Get the hypotheses for the pose (rotation and translation)
     %[rot, u3] = get_pose_hypotheses(E)

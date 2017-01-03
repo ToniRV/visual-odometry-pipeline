@@ -46,7 +46,6 @@ end
 
 %% Bootstrap
 % Need to set bootstrap_frames
-
 if ds == 0
     bootstrap_frames = [1 3]; % Frames suggested in the project description
     img0 = imread([kitti_path '/00/image_0/' ...

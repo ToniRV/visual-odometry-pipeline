@@ -1,5 +1,5 @@
 function [R_C_W, t_C_W, valid_tracked_keypoints, valid_p_W_landmarks, validity_mask, inlier_mask, ...
-    query_keypoints, query_descriptors, max_num_inliers_history] = ransacLocalization(...
+    max_num_inliers_history] = ransacLocalization(...
     query_image, database_image, database_keypoints, p_W_landmarks, K)
 % query_keypoints should be 2x1000
 % all_matches should be 1x1000 and correspond to the output from the
@@ -8,16 +8,6 @@ function [R_C_W, t_C_W, valid_tracked_keypoints, valid_p_W_landmarks, validity_m
 %   matched keypoints (!!!), 0 if the match is an outlier, 1 otherwise.
 
 use_p3p = true;
-
-% Parameters form exercise 3.
-harris_patch_size = 9;
-harris_kappa = 0.08;
-nonmaximum_supression_radius = 8;
-descriptor_radius = 9;
-match_lambda = 5;
-
-% Other parameters.
-num_keypoints = 1000;
 
 if use_p3p
     num_iterations = 200;
@@ -32,15 +22,6 @@ end
 [tracked_keypoints, validity_mask] = KLT(database_keypoints, query_image, database_image);
 valid_tracked_keypoints = round(tracked_keypoints(:, validity_mask > 0)); % WARNING: should we round, ceil floor?
 valid_p_W_landmarks = p_W_landmarks(:, validity_mask > 0);
-
-% Detect new keypoints
- query_harris = harris(query_image, harris_patch_size, harris_kappa);
- query_keypoints = selectKeypoints(...
-     query_harris, num_keypoints, nonmaximum_supression_radius);
-% Describe keypoints. TODO we are describing twice the same keypoints in
-% two iterations... try to store descriptors?
- query_descriptors = describeKeypoints(...
-     query_image, query_keypoints, descriptor_radius);
 
 % Debug
 num_db_keypoints = size(database_keypoints, 2);

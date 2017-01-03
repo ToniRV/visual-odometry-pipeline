@@ -12,12 +12,13 @@ function [keypoints_1, inlier_mask] = KLT(keypoints_0, img_1, img_0)
     keypoints_1 = flipud(NEW_POINTS');
     inlier_mask = POINT_VALIDITY > 0;
     
-    figure(7);
+    
     % Display tracked points.
+    subplot(1, 3, [1 2]);
     imshow(img_0);
     hold on;
     plot (keypoints_1(2, inlier_mask), keypoints_1(1, inlier_mask), 'yx');
     plot (keypoints_0(2, inlier_mask), keypoints_0(1, inlier_mask), 'gx');
-    plotMatches(true(1, size(keypoints_1, 2)), keypoints_1, keypoints_0);
+    plotMatches(inlier_mask, keypoints_1, keypoints_0);
     hold off;
 end

@@ -6,11 +6,12 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     % A) Run p3p+ransac to get transformation and new keypoints, both matched
     % and unmatched. Given the images and the correspondences 2D<->3D
     % correspondences and K.
-    [R_C_W, t_C_W, valid_tracked_keypoints, valid_p_W_landmarks, validity_mask, inlier_mask,...
-        query_keypoints, query_descriptors] = ...
+    [R_C_W, t_C_W, valid_tracked_keypoints, valid_p_W_landmarks, validity_mask, inlier_mask] = ...
     ransacLocalization(Image_i1, Image_i0,  State_i0.keypoints_correspondences, ...
                                   State_i0.p_W_landmarks_correspondences, State_i0.K);
-
+    % Detect new keypoints
+    [query_keypoints, ~] = harrisDetector (Image_i1);
+    
     % B) Retrieve transformation
     Transform_i1 = [R_C_W, t_C_W];
     isLocalized = numel(R_C_W)>0;

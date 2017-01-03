@@ -30,22 +30,7 @@ function [keypoints, keypoints_2, descriptors, descriptors_2, matches] = ...
     descriptor_radius = 9; % A total of 361 pixels per descriptor patch
     match_lambda = 5; % Trades of false positives and false negatives
 
-%% Part 1 - Harris scores
-% Calculate the Harris scores of the database image
-% harris_scores = harris(img0, harris_patch_size, harris_kappa);
-% assert(min(size(harris_scores) == size(img0)));
-
-% if (debug_verbose)
-%     figure(1);
-%     subplot(2, 1, 1);
-%     imshow(img0);
-%     subplot(2, 1, 2);
-%     imagesc(harris_scores);
-%     axis equal;
-%     axis off;
-% end
-
-%% Part 2 - Keypoint Selection
+%% Part 1 - Harris Score Calculation & Keypoint Selection
 % Selects the N pixels with the highest Harris scores while performing 
 % non-maximum suppression and stores them in a 2xN matrix; Harris score 
 % decreases for increasing column index
@@ -53,7 +38,13 @@ function [keypoints, keypoints_2, descriptors, descriptors_2, matches] = ...
 % keypoints = selectKeypoints(...
 %     harris_scores, num_keypoints, nonmaximum_suppression_radius);
 
-corners = detectHarrisFeatures(img0);
+% Detect Harris corners in the database image and extract their
+% coordinates.
+%   --> MinQuality: Pixels with a higher score than this fraction of the
+%                   highest Harris score in the image are accepted as corners.
+%   --> FilterSize: Defines the filter size of the Gaussian filter used to
+%                   smooth the gradient of the input image.
+corners = detectHarrisFeatures(img0,'FilterSize', 3, 'MinQuality', 0.00001);
 keypoints = [corners.Location];
 keypoints = round(flipud(keypoints.'))
 
@@ -89,7 +80,9 @@ end
 % keypoints_2 = selectKeypoints(...
 %     harris_scores_2, num_keypoints, nonmaximum_suppression_radius);
 
-corners_2 = detectHarrisFeatures(img1);
+% Detect the Harris corners of the query image and extract their
+% coordinates:
+corners_2 = detectHarrisFeatures(img1,'FilterSize', 3, 'MinQuality', 0.00001);
 keypoints_2 = [corners_2.Location];
 keypoints_2 = round(flipud(keypoints_2.'))
 

@@ -1,4 +1,4 @@
-function query_keypoints = harrisDetector (query_image)
+function query_keypoints = harrisDetector (query_image, current_keypoints)
     % Parameters form exercise 3.
     harris_patch_size = 9;
     harris_kappa = 0.08;
@@ -29,14 +29,14 @@ function query_keypoints = harrisDetector (query_image)
     
     % Detect new keypoints
     k = 0;
-    query_keypoints = zeros(2, cols*rows*num_keypoints);
+    query_keypoints = ones(2, cols*rows*num_keypoints); % I put ones instead of zeros just in case there is no match....
+    scores = harris(query_image, harris_patch_size, harris_kappa);
+    lean_scores = leanerScores(scores, current_keypoints, nonmaximum_supression_radius);
     for w = 1:cols
         for h = 1:rows
-         query_harris = harris(query_image(h_indices_limits(h):h_indices_limits(h+1),...
-                                                                w_indices_limits(w):w_indices_limits(w+1)), ...
-                                                                harris_patch_size, harris_kappa);
-          selected_kps = selectKeypoints(...
-             query_harris, num_keypoints, nonmaximum_supression_radius);
+         selected_kps = selectKeypoints(lean_scores(h_indices_limits(h):h_indices_limits(h+1),...
+                                                                                w_indices_limits(w):w_indices_limits(w+1)), ...
+                                                            num_keypoints, nonmaximum_supression_radius);
          query_keypoints(:, k*(num_keypoints)+1:(k+1)*(num_keypoints)) = ...
              [selected_kps(1,:)+h_indices_limits(h); selected_kps(2,:)+w_indices_limits(w)];
          k = k+1;
@@ -44,3 +44,18 @@ function query_keypoints = harrisDetector (query_image)
     end
 
 end
+
+function new_scores = leanerScores (scores, tracked_keypoints, r)
+    temp_scores = padarray(scores, [r r]);
+    tracked_keypoints = ceil(tracked_keypoints)+r; % NOT sure whether to use floor or round, I
+    % pick ceil to make sure I don't run into non-positive indices
+    % afterwards..
+    % Remove already followed keypoints
+    for i = 1:size(tracked_keypoints, 2)
+        temp_scores(tracked_keypoints(1,i)-r:tracked_keypoints(1,i)+r,...
+                              tracked_keypoints(2,i)-r:tracked_keypoints(2,i)+r)...
+                              = zeros(2*r+1, 2*r+1);
+    end
+    new_scores = temp_scores(r+1:end-r, r+1:end-r);
+end
+

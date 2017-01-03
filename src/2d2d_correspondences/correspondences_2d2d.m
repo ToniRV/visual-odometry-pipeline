@@ -28,29 +28,34 @@ function [keypoints, keypoints_2, descriptors, descriptors_2, matches] = ...
     num_keypoints = N;
     nonmaximum_suppression_radius = 8;
     descriptor_radius = 9; % A total of 361 pixels per descriptor patch
-    match_lambda = 4; % Trades of false positives and false negatives
+    match_lambda = 5; % Trades of false positives and false negatives
 
 %% Part 1 - Harris scores
 % Calculate the Harris scores of the database image
-harris_scores = harris(img0, harris_patch_size, harris_kappa);
-assert(min(size(harris_scores) == size(img0)));
+% harris_scores = harris(img0, harris_patch_size, harris_kappa);
+% assert(min(size(harris_scores) == size(img0)));
 
-if (debug_verbose)
-    figure(1);
-    subplot(2, 1, 1);
-    imshow(img0);
-    subplot(2, 1, 2);
-    imagesc(harris_scores);
-    axis equal;
-    axis off;
-end
+% if (debug_verbose)
+%     figure(1);
+%     subplot(2, 1, 1);
+%     imshow(img0);
+%     subplot(2, 1, 2);
+%     imagesc(harris_scores);
+%     axis equal;
+%     axis off;
+% end
 
 %% Part 2 - Keypoint Selection
 % Selects the N pixels with the highest Harris scores while performing 
 % non-maximum suppression and stores them in a 2xN matrix; Harris score 
 % decreases for increasing column index
-keypoints = selectKeypoints(...
-    harris_scores, num_keypoints, nonmaximum_suppression_radius);
+
+% keypoints = selectKeypoints(...
+%     harris_scores, num_keypoints, nonmaximum_suppression_radius);
+
+corners = detectHarrisFeatures(img0);
+keypoints = [corners.Location];
+keypoints = round(flipud(keypoints.'))
 
 if (debug_verbose) 
     figure(2);
@@ -79,10 +84,15 @@ end
 %% Part 4 - Keypoint Matching
 
 % Calculate the Harris scores of the query image
-harris_scores_2 = harris(img1, harris_patch_size, harris_kappa);
+% harris_scores_2 = harris(img1, harris_patch_size, harris_kappa);
 % Select the N stongest keypoints in the query image
-keypoints_2 = selectKeypoints(...
-    harris_scores_2, num_keypoints, nonmaximum_suppression_radius);
+% keypoints_2 = selectKeypoints(...
+%     harris_scores_2, num_keypoints, nonmaximum_suppression_radius);
+
+corners_2 = detectHarrisFeatures(img1);
+keypoints_2 = [corners_2.Location];
+keypoints_2 = round(flipud(keypoints_2.'))
+
 % Obtain the corresponding keypoint descriptors
 descriptors_2 = describeKeypoints(img1, keypoints_2, descriptor_radius);
 

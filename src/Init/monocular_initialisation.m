@@ -56,8 +56,11 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     
     %% Find fundamental matrix
     tic;
+    
     [inlier_mask, F] = ransac(kp_homo_database, kp_homo_query);
     inliers_F = nnz(inlier_mask)
+    F
+    F_matlab = estimateFundamentalMatrix(flipud(kp_matches_database).',flipud(kp_matches_query).')
     sprintf('Time needed: Find fundamental matrix: %f seconds', toc)
     
     %% Obtain inliers from inlier_mask
@@ -65,8 +68,9 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     kp_homo_query = kp_homo_query(:, inlier_mask);
         
     %% Estimate Essential matrix
-    E = estimateEssentialMatrix(kp_homo_database, kp_homo_query, K, K);
-    E = K' * F * K;
+    E_ex = estimateEssentialMatrix(kp_homo_database, kp_homo_query, K, K)
+    E = K' * F * K
+    E_matlab = K' * F_matlab * K
     
     %% Plot matching features
     if (debug_verbose)
@@ -82,13 +86,15 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     %% Get the hypotheses for the pose (rotation and translation)
     %[rot, u3] = get_pose_hypotheses(E)
     [R, u3]= decomposeEssentialMatrix(E);
-
+    
+    [R_m, u3_m]= decomposeEssentialMatrix(E_matlab);
     %% Check if in front of camera
     % lambda0*[u v 1]^T = K1 * [Xw Yw Zw]^T
     % lambda1*[u v 1]^T = K1 * R1* [Xw Yw Zw]^T + T
     [R, T, P, M1, M2] = disambiguateRelativePose(R, u3, ...
         kp_homo_database, kp_homo_query, K, K);
-
+    [R_m, T_m, P_m, M1_m, M2_m] = disambiguateRelativePose(R_m, u3_m, ...
+        kp_homo_database, kp_homo_query, K, K);
     %% ONLY TESTING
     % Rescale reprojection to homogenous coordinates again (u v 1)
     for i=1:size(P,2)
@@ -126,4 +132,5 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     
     % Pose (4x4)
     T_cw(1:3,:) = [R, T]
+    T_cw_m(1:3,:) = [R_m, T_m]
 end

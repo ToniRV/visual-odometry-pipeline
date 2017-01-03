@@ -63,7 +63,7 @@ elseif ds == 1
         left_images(bootstrap_frames(2)).name]));
     
 elseif ds == 2
-    bootstrap_frames = [0 2]; % [1 3]
+    bootstrap_frames = [1 3]; % [0 2]
     img0 = rgb2gray(imread([parking_path ...
         sprintf('/images/img_%05d.png',bootstrap_frames(1))]));
     img1 = rgb2gray(imread([parking_path ...

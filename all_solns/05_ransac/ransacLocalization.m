@@ -20,7 +20,7 @@ else
 end
 
 [tracked_keypoints, validity_mask] = KLT(database_keypoints, query_image, database_image);
-valid_tracked_keypoints = round(tracked_keypoints(:, validity_mask > 0)); % WARNING: should we round, ceil floor?
+valid_tracked_keypoints = tracked_keypoints(:, validity_mask > 0); % WARNING: should we round, or keep sub-pixel accuracy?
 valid_p_W_landmarks = p_W_landmarks(:, validity_mask > 0);
 
 % Debug

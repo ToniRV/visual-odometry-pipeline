@@ -176,9 +176,11 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
         plot(keypoints_correspondences_i1(2, :), ...
             keypoints_correspondences_i1(1, :), 'gx', 'Linewidth', 2);
     end
+    % Plot all the keypoints
+    plot(query_keypoints(2,:), query_keypoints(1,:),'yx', 'Linewidth', 2);
     % Plot the new guys
     if (points_2D_global_var ~= 0)
-        plot (points_2D_global_var(2, :), points_2D_global_var(1, :), 'bx');
+        plot (points_2D_global_var(2, :), points_2D_global_var(1, :), 'bx', 'Linewidth', 2);
     end
     valid_keypoints_correspondences_i0 = State_i0.keypoints_correspondences(:, validity_mask > 0);
     keypoints_correspondences_i0 = valid_keypoints_correspondences_i0(:, inlier_mask > 0);

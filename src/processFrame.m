@@ -9,8 +9,6 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     [R_C_W, t_C_W, valid_tracked_keypoints, valid_p_W_landmarks, validity_mask, inlier_mask] = ...
     ransacLocalization(Image_i1, Image_i0,  State_i0.keypoints_correspondences, ...
                                   State_i0.p_W_landmarks_correspondences, State_i0.K);
-    % Detect new keypoints
-    query_keypoints = harrisDetector (Image_i1);
     
     % B) Retrieve transformation
     Transform_i1 = [R_C_W, t_C_W];
@@ -19,6 +17,8 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     keypoints_correspondences_i1 = valid_tracked_keypoints(:, inlier_mask > 0); % WARNING: should we round, ceil floor?
     p_W_landmarks_correspondences_i1 = valid_p_W_landmarks(:,inlier_mask > 0);
     
+    % Detect new keypoints
+    query_keypoints = harrisDetector (Image_i1, keypoints_correspondences_i1);
     
     %% Step 3: trying to triangulate new landmarks
     descriptor_radius = 9;
@@ -188,7 +188,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     x_to = keypoints_correspondences_i0(1, :);
     y_from = keypoints_correspondences_i1(2, :);
     y_to = keypoints_correspondences_i0(2, :);
-    plot([y_from; y_to], [x_from; x_to], 'g-', 'Linewidth', 3);
+    plot([y_from; y_to], [x_from; x_to], 'g-', 'Linewidth', 2);
     hold off;
     title('Inlier and outlier matches');
     pause(0.01);

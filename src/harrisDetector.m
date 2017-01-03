@@ -1,9 +1,8 @@
-function [query_keypoints, query_descriptors] = harrisDetector (query_image)
+function query_keypoints = harrisDetector (query_image)
     % Parameters form exercise 3.
     harris_patch_size = 9;
     harris_kappa = 0.08;
     nonmaximum_supression_radius = 8;
-    descriptor_radius = 9;
     
     % Divide image in matrix
     cols = 4;
@@ -26,7 +25,7 @@ function [query_keypoints, query_descriptors] = harrisDetector (query_image)
     
     
     % Other parameters.
-    num_keypoints = 50;
+    num_keypoints = 16;
     
     % Detect new keypoints
     k = 0;
@@ -43,9 +42,5 @@ function [query_keypoints, query_descriptors] = harrisDetector (query_image)
          k = k+1;
         end
     end
-     
-    % Describe keypoints. TODO we are describing twice the same keypoints in
-    % two iterations... try to store descriptors?
-     query_descriptors = describeKeypoints(...
-         query_image, query_keypoints, descriptor_radius);
+
 end

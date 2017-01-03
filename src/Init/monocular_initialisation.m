@@ -80,7 +80,6 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     end
 
     %% Get the hypotheses for the pose (rotation and translation)
-    %[rot, u3] = get_pose_hypotheses(E)
     [R, u3]= decomposeEssentialMatrix(E);
 
     %% Check if in front of camera

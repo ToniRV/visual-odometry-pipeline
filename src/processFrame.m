@@ -10,7 +10,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     ransacLocalization(Image_i1, Image_i0,  State_i0.keypoints_correspondences, ...
                                   State_i0.p_W_landmarks_correspondences, State_i0.K);
     % Detect new keypoints
-    [query_keypoints, ~] = harrisDetector (Image_i1);
+    query_keypoints = harrisDetector (Image_i1);
     
     % B) Retrieve transformation
     Transform_i1 = [R_C_W, t_C_W];

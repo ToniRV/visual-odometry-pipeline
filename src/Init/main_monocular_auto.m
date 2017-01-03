@@ -44,20 +44,20 @@ end
 %% Bootstrap
 % need to set bootstrap_frames
 if ds == 0
-    initial_image = imread([kitti_path '/00/image_0/' ...
+    initial_frame = imread([kitti_path '/00/image_0/' ...
         sprintf('%06d.png',0)]);
 elseif ds == 1
-    initial_image = rgb2gray(imread([malaga_path ...
+    initial_frame = rgb2gray(imread([malaga_path ...
         '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
         left_images(0).name]));
 elseif ds == 2
-    initial_image = rgb2gray(imread([parking_path ...
+    initial_frame = rgb2gray(imread([parking_path ...
         sprintf('/images/img_%05d.png',0)]));
 else
     assert(false);
 end
     
-for i = range
+for i = 1:10
     if ds == 0
         current_frame = imread([kitti_path '/00/image_0/' ...
             sprintf('%06d.png',i)]);
@@ -73,8 +73,20 @@ for i = range
     end
     
     % Automatically choosing frames
-    [img0, img1, kp_database, kp_query] = auto_init_frames(...
-        initial_frame, current_frame);
+    [img0, img1, kp_database, kp_query, descriptors_query] = ...
+        auto_init_frames(initial_frame, current_frame);
+    
+        %% Check if frames have enough matches
+    if (size(kp_database, 2) < 100)
+        continue;
+    else
+        img0 = initial_frame;
+        img1 = current_frame;
+        figure(8);
+        showMatchedFeatures(img0, img1, flipud(kp_database(1:2,:))', ...
+            flipud(kp_query(1:2,:))', 'montage');
+        break;
+    end    
 end
     
 %% Monocular initialisation

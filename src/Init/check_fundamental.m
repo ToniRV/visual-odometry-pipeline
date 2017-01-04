@@ -12,7 +12,7 @@ function [inliers] = check_fundamental(kp_database, kp_query, F, ...
         square_dist_temp2= distPoint2EpipolarLine(F, kp1, kp2);
         
         % If error to epipolar line is to big --> outlier
-        if (square_dist_temp2 > 1)            
+        if (square_dist_temp2 > 0.1)            
             inliers(i) = false;
         else
             inliers(i) = true;

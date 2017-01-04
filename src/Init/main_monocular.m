@@ -4,9 +4,9 @@ clc;
 close all;
 
 % Insert the paths to the corresponding frame sets:
-kitti_path='/Users/amadeus/Documents/MATLAB/Frame_Sets/Kitti';
-malaga_path='/Users/amadeus/Documents/MATLAB/Frame_Sets/Malaga_07';
-parking_path='/Users/amadeus/Documents/MATLAB/Frame_Sets/Parking';
+kitti_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/kitti';
+malaga_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/malaga';
+parking_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/parking';
 
 %% Setup
 ds = 2; % 0: KITTI, 1: Malaga, 2: parking

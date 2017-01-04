@@ -24,7 +24,7 @@ function plot_trajectory_with_landmarks(img0, img1, kp_homo_database, ...
     
     % Landmarks
     hold on
-    scatter3(P(1,:), P(2,:), P(3,:), 'o')
+    scatter3(P(1,:), P(2,:), P(3,:), '.')
     view([0 -1 0])
 end
 

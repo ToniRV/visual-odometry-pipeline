@@ -12,10 +12,11 @@
 
 function cost = distPoint2EpipolarLine(F,p1,p2)
 
-NumPoints = size(p1,2);
+%NumPoints = size(p1,2);z
 
-homog_points = [p1, p2];
+%homog_points = [p1, p2];
 epi_lines = [F.'*p2, F*p1];
 
 denom = epi_lines(1,:).^2 + epi_lines(2,:).^2;
-cost = sqrt( sum( (sum(epi_lines.*homog_points,1).^2)./denom ) / NumPoints );
+%cost = sqrt( sum( (sum(epi_lines.*homog_points,1).^2)./denom ) / NumPoints );
+cost = sqrt( sum( (sum(epi_lines.*[p1, p2],1).^2)./denom ) / size(p1,2) );

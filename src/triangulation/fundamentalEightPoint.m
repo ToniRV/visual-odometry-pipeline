@@ -16,6 +16,8 @@
 
 function F = fundamentalEightPoint(p1,p2)
 
+speed = false;
+
 [dim,NumPoints] = size(p1);
 [dim2,NumPoints2] = size(p2);
 
@@ -28,7 +30,14 @@ assert(NumPoints>=8,'Insufficient number of points to compute fundamental matrix
 % solution is the vector representing the fundamental matrix.
 A = zeros(NumPoints,9);
 for i=1:NumPoints
-    A(i,:) = kron(p1(:,i),p2(:,i)).';
+    if (speed)
+        A(i,:) = [...
+        p1(1,i)*p2(1,i), p1(2,i)*p2(1,i), p2(1,i), ...
+        p1(1,i)*p2(2,i), p1(2,i)*p2(2,i), p2(2,i), ...
+                     p1(1,i),              p1(2,i), 1];
+    else
+        A(i,:) = kron(p1(:,i),p2(:,i)).';
+    end
 end
 
 % "Solve" the linear homogeneous system of equations A*f = 0.

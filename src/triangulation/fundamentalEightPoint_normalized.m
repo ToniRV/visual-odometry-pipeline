@@ -22,4 +22,10 @@ F = fundamentalEightPoint(x1_nh,x2_nh);
 % Undo the normalization
 F = (T2.') * F * T1;
 
+% Normalize the fundamental matrix.
+F = F / norm(F);
+if F(end) < 0
+  F = -F;
+end
+
 end

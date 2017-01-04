@@ -26,7 +26,7 @@ function [keypoints, keypoints_2, descriptors, descriptors_2, matches] = ...
     harris_patch_size = 9;
     harris_kappa = 0.08; % Typical values between 0.04 - 0.15
     num_keypoints = N;
-    nonmaximum_suppression_radius = 8;
+    nonmaximum_suppression_radius = 2;
     descriptor_radius = 9; % A total of 361 pixels per descriptor patch
     match_lambda = 4; % Trades of false positives and false negatives
 

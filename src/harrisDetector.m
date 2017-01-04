@@ -1,4 +1,6 @@
 function query_keypoints = harrisDetector (query_image, current_keypoints)
+    debug_with_figures = false;
+
     % Parameters form exercise 3.
     harris_patch_size = 9;
     harris_kappa = 0.08;
@@ -28,10 +30,26 @@ function query_keypoints = harrisDetector (query_image, current_keypoints)
     num_keypoints = 16;
     
     % Detect new keypoints
-    k = 0;
     query_keypoints = ones(2, cols*rows*num_keypoints); % I put ones instead of zeros just in case there is no match....
+   
     scores = harris(query_image, harris_patch_size, harris_kappa);
     lean_scores = leanerScores(scores, current_keypoints, nonmaximum_supression_radius);
+    
+    if (debug_with_figures)
+        figure(12);
+        subplot(2, 2, [1 2]);
+        imshow(query_image);
+        hold on;
+        plot(current_keypoints(2, :), current_keypoints(1, :), 'gx', 'Linewidth', 2);
+        legend('Current Keypoints')
+        hold off;
+        subplot(2, 2, 3);
+        imagesc(scores);
+        subplot(2, 2, 4);
+        imagesc(lean_scores);
+    end
+    
+    k = 0;
     for w = 1:cols
         for h = 1:rows
          selected_kps = selectKeypoints(lean_scores(h_indices_limits(h):h_indices_limits(h+1),...

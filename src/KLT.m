@@ -15,11 +15,15 @@ function [keypoints_1, inlier_mask] = KLT(keypoints_0, img_1, img_0)
     
     
     % Display tracked points.
-    subplot(1, 3, [1 2]);
+    figure(6);
     imshow(img_0);
     hold on;
     plot (keypoints_1(2, inlier_mask), keypoints_1(1, inlier_mask), 'yx');
     plot (keypoints_0(2, inlier_mask), keypoints_0(1, inlier_mask), 'gx');
-    plotMatches(inlier_mask, keypoints_1, keypoints_0);
+    x_from = keypoints_1(1, inlier_mask);
+    x_to = keypoints_0(1, inlier_mask);
+    y_from = keypoints_1(2, inlier_mask);
+    y_to = keypoints_0(2, inlier_mask);
+    plot([y_from; y_to], [x_from; x_to], 'g-', 'Linewidth', 3);
     hold off;
 end

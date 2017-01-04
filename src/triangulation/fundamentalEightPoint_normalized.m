@@ -1,25 +1,24 @@
-% 
+
 function F = fundamentalEightPoint_normalized(p1, p2)
-% estimateEssentialMatrix_normalized: estimates the essential matrix
-% given matching point coordinates, and the camera calibration K
+% Estimates the Fundamental matrix F given keypoint correspondences, and
+% the intrinsic parameter matrix K.
 %
-% Input: point correspondences
-%  - p1(3,N): homogeneous coordinates of 2-D points in image 1
-%  - p2(3,N): homogeneous coordinates of 2-D points in image 2
+% INPUT: Keypoint correspondences
+%         --> p1(3,N): Homogeneous coordinates of 2D keypoints in image 1
+%         --> p2(3,N): Homogeneous coordinates of 2D keypoints in image 2
 %
-% Output:
-%  - F(3,3) : fundamental matrix
+% OUTPUT: Fundamental matrix F; 3x3 matrix
 %
 
-% Normalize each set of points so that the origin
-% is at centroid and mean distance from origin is sqrt(2).
+% Normalize each set of keypoints so that centroid of each set is at the 
+% origin and mean distance from origin is sqrt(2).
 [x1_nh,T1] = normalise2dpts(p1);
 [x2_nh,T2] = normalise2dpts(p2);
 
-% Linear solution
+% Apply the 8-point algorithm to estimate the Fundamental matrix
 F = fundamentalEightPoint(x1_nh,x2_nh);
 
-% Undo the normalization
+% Undo the normalization to obtain F for the unnormalized keypoints
 F = (T2.') * F * T1;
 
 end

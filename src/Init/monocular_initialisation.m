@@ -25,15 +25,12 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     % Verbose output for debug
     debug_verbose = true;
     
-    %% Output Initialization
-    % QUESTION: If you set N = 1000, do you not expect to obtain 1000
-    % MATCHES (i.e. not just keypoints?) We usually only observe like ~200
-    % matches.
-    N = 1000;
+    %% State Initialization
+    N = 1000; % Sets the number of keypoints to detect in each frame
     state = struct('matches_2d', zeros(3, N), 'matches_3d', zeros(4, N), ...
         'keypoints', zeros(3, N), 'descriptors', zeros(361, N));
     % Is initialization of T_cw necessary?
-    T_cw = eye(4);
+    % T_cw = eye(4);
     
     %% Keypoint Detection & Matching
     % Detect keypoints in both frames, obtain descriptors and find matches
@@ -48,19 +45,26 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     kp_matches_query = keypoints_query(:, query_indices);
     
     %% Homogeneous (flipped) Keypoint Coordinates
-    % Express detected keypoints in homogeneous coordinates
+    % Express detected keypoint correspondences in homogeneous coordinates
     kp_homo_database = ...
-        [kp_matches_database; ones(1, size(kp_matches_database, 2))];
+        [kp_matches_database; ones(1, size(kp_matches_database, 2))]
     kp_homo_query = ...
-        [kp_matches_query; ones(1, size(kp_matches_query, 2))];
+        [kp_matches_query; ones(1, size(kp_matches_query, 2))]
     
     %% Find fundamental matrix
     tic;
     
     [inlier_mask, F] = ransac(kp_homo_database, kp_homo_query);
-    inliers_F = nnz(inlier_mask)
+    
+    % Compare F computed by our function to F computed by matlab's
+    % function:
     F
-    F_matlab = estimateFundamentalMatrix(flipud(kp_matches_database).',flipud(kp_matches_query).')
+    inliers_F = nnz(inlier_mask)
+    
+    [F_matlab, inlier_mask_m] = estimateFundamentalMatrix(...
+        flipud(kp_matches_database).',flipud(kp_matches_query).');
+    F_matlab
+    inliers_F_m = nnz(inlier_mask_m)
     sprintf('Time needed: Find fundamental matrix: %f seconds', toc)
     
     %% Obtain inliers from inlier_mask
@@ -68,7 +72,7 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     kp_homo_query = kp_homo_query(:, inlier_mask);
         
     %% Estimate Essential matrix
-    E_ex = estimateEssentialMatrix(kp_homo_database, kp_homo_query, K, K)
+    % E_ex = estimateEssentialMatrix(kp_homo_database, kp_homo_query, K, K)
     E = K' * F * K
     E_matlab = K' * F_matlab * K
     

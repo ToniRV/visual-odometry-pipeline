@@ -33,7 +33,7 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     %% Keypoint Detection & Matching
     % Detect keypoints in both frames, obtain descriptors and find matches
     tic;
-    [keypoints_database, keypoints_query, ~, descritors_query, matches] = ...
+    [keypoints_database, keypoints_query, ~, ~, matches] = ...
         correspondences_2d2d(img0, img1, N);
     sprintf('Time needed: correspondences_2d2d: %f seconds', toc)
     
@@ -56,7 +56,7 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     %% Find fundamental matrix
     tic;
     [inlier_mask, F] = ransac(kp_homo_database_fl, kp_homo_query_fl);
-    inliers_F = nnz(inlier_mask)
+    sprintf('Number of inliers after ransac: %i', nnz(inlier_mask))
     sprintf('Time needed: Find fundamental matrix: %f seconds', toc)
     
     %% Obtain inliers from inlier_mask

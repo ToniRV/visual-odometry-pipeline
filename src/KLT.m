@@ -1,7 +1,6 @@
 function [keypoints_1, inlier_mask] = KLT(keypoints_0, img_1, img_0)
     % KLT DEMO Create the point tracker object. 
-    pointTracker = vision.PointTracker('MaxBidirectionalError', 0.5, 'NumPyramidLevels', 1 ...
-                                                           );
+    pointTracker = vision.PointTracker('MaxBidirectionalError', 0.5);
     POINTS = flipud(keypoints_0)';
     initialize(pointTracker, POINTS, img_0);
     [NEW_POINTS, POINT_VALIDITY, SCORES] = step(pointTracker, img_1);

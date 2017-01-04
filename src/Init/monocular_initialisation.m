@@ -26,13 +26,8 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     debug_verbose = true;
     
     %% Output Initialization
-    % QUESTION: If you set N = 1000, do you not expect to obtain 1000
-    % MATCHES (i.e. not just keypoints?) We usually only observe like ~200
-    % matches.
     N = 1000;
-    state = struct('matches_2d', zeros(3, N), 'matches_3d', zeros(4, N), ...
-        'keypoints', zeros(3, N), 'descriptors', zeros(361, N));
-    % Is initialization of T_cw necessary?
+    state = struct('matches_2d', zeros(3, N), 'landmarks', zeros(4, N));
     T_cw = eye(4);
     
     %% Keypoint Detection & Matching
@@ -72,14 +67,14 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     
     %% Estimate Essential matrix
     tic;
-    E = estimateEssentialMatrix(kp_homo_database_fl, kp_homo_query_fl, K, K)
+    E = estimateEssentialMatrix(kp_homo_database_fl, kp_homo_query_fl, K, K);
     sprintf('Time needed: exercise estimateEssentialMatrix: %f seconds', toc)
     
     if (debug_verbose)
         tic;
         F_test = estimateFundamentalMatrix(kp_homo_database_fl(1:2,:)', ...
-            kp_homo_query_fl(1:2,:)')
-        E_test = K' * F_test * K
+            kp_homo_query_fl(1:2,:)');
+        E_test = K' * F_test * K;
         sprintf('Time needed: matlab estimateFundamentalMatrix: %f seconds', toc)
     end
     
@@ -142,9 +137,7 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     %% OUTPUT
     % State
     state.matches_2d = kp_homo_query;
-    state.matches_3d = P;
-    state.keypoints = keypoints_query;
-    state.descriptors = descritors_query;
+    state.landmarks = P;
     
     % Pose (4x4)
     T_cw(1:3,:) = [R, T]

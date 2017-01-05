@@ -14,7 +14,7 @@ function [img0, img1, kp_homo_initial_matched, state, T_cw, ...
     % Detect keypoints in both frames, obtain descriptors and find matches
     tic;
     [kp_homo_initial_matched, keypoints_current_frame] = ...
-        correspondences_2d2d_auto_frames(initial_frame, current_frame, N);
+        correspondences_2d2d(initial_frame, current_frame, N);
     sprintf('Time needed: correspondences_2d2d: %f seconds', toc)
         
     %% Flip keypoints for right input of functions from exercise 5

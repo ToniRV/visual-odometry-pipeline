@@ -200,7 +200,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     plot([y_from; y_to], [x_from; x_to], 'g-', 'Linewidth', 2);
     hold off;
     title('Inlier and outlier matches');
-    pause(0.01);
+    pause(0.001);
 
 end
 

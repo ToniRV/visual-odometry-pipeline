@@ -57,7 +57,11 @@ else
     assert(false);
 end
     
-for i = 1:10
+max_num_auto_frames = 15;
+inliers = zeros(max_num_auto_frames, 1);
+errors = zeros(max_num_auto_frames, 2);
+costs = zeros(max_num_auto_frames, 2);
+for i = 1:max_num_auto_frames
     if ds == 0
         current_frame = imread([kitti_path '/00/image_0/' ...
             sprintf('%06d.png',i)]);
@@ -73,21 +77,18 @@ for i = 1:10
     end
     
     % Automatically choosing frames
-    [img0, img1, kp_database, kp_query, descriptors_query] = ...
-        auto_init_frames(initial_frame, current_frame);
+    [img0, img1, kp_database, state, T_cw, descriptors_query, ...
+        reprojection_errors, dist_epi_costs] = auto_init_frames(...
+        initial_frame, current_frame, K);
     
-        %% Check if frames have enough matches
-    if (size(kp_database, 2) < 100)
-        continue;
-    else
-        img0 = initial_frame;
-        img1 = current_frame;
-        figure(8);
-        showMatchedFeatures(img0, img1, flipud(kp_database(1:2,:))', ...
-            flipud(kp_query(1:2,:))', 'montage');
-        break;
-    end    
+    inliers(i,:) = size(state.matches_2d, 2);
+    errors(i,:) = reprojection_errors;
+    costs(i,:) = dist_epi_costs;
 end
+
+inliers
+errors
+costs
     
 %% Monocular initialisation
-[state, T_cw] = monocular_initialisation(img0, img1, K);
+%[state, T_cw] = monocular_initialisation(img0, img1, K);

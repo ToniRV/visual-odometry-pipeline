@@ -9,43 +9,43 @@ function query_keypoints = harrisDetector (query_image)
 %             selected_kps = selectKeypoints(lean_scores(h_indices_limits(h):h_indices_limits(h+1),...
 %                                                                                 w_indices_limits(w):w_indices_limits(w+1)), ...
 %                                                             num_keypoints, nonmaximum_supression_radius);
-    
     algorithm = 1;
-    if (algorithm == 1) 
-        query_keypoints = customUniformHarrisDetector (query_image, num_keypoints, cols, rows);
-            if (debug_with_figures)
-                figure(23);
-                imshow(query_image); hold on;
-                plot(query_keypoints(2,:),...
-                        query_keypoints(1,:),...
-                        'bx', 'Linewidth', 3);
-                title('Whole image with Custom Uniform keypoints');
-                hold off;
-            end
-    elseif (algorithm ==2)
-        query_keypoints = strongestHarrisDetector(query_image, cols*rows*num_keypoints);
-           if (debug_with_figures)
-                figure(21);
-                imshow(query_image); hold on;
-                plot(query_keypoints(2,:),...
-                        query_keypoints(1,:),...
-                        'bx', 'Linewidth', 3);
-                title('Whole image with Strongest keypoints');
-                hold off;
-           end 
-    elseif (algorithm == 3)
-        query_keypoints = uniformHarrisDetector(query_image, cols*rows*num_keypoints);
-            if (debug_with_figures)
-                figure(22);
-                imshow(query_image); hold on;
-                plot(query_keypoints(2,:),...
-                        query_keypoints(1,:),...
-                        'bx', 'Linewidth', 3);
-                title('Whole image with Uniform keypoints');
-                hold off;
-            end
-    else
-        fprintf('No correct Harris Detector selected');
+    switch algorithm
+        case 1 
+            query_keypoints = customUniformHarrisDetector (query_image, num_keypoints, cols, rows);
+                if (debug_with_figures)
+                    figure(23);
+                    imshow(query_image); hold on;
+                    plot(query_keypoints(2,:),...
+                            query_keypoints(1,:),...
+                            'bx', 'Linewidth', 3);
+                    title('Whole image with Custom Uniform keypoints');
+                    hold off;
+                end
+        case 2
+            query_keypoints = strongestHarrisDetector(query_image, cols*rows*num_keypoints);
+               if (debug_with_figures)
+                    figure(21);
+                    imshow(query_image); hold on;
+                    plot(query_keypoints(2,:),...
+                            query_keypoints(1,:),...
+                            'bx', 'Linewidth', 3);
+                    title('Whole image with Strongest keypoints');
+                    hold off;
+               end 
+        case 3
+            query_keypoints = uniformHarrisDetector(query_image, cols*rows*num_keypoints);
+                if (debug_with_figures)
+                    figure(22);
+                    imshow(query_image); hold on;
+                    plot(query_keypoints(2,:),...
+                            query_keypoints(1,:),...
+                            'bx', 'Linewidth', 3);
+                    title('Whole image with Uniform keypoints');
+                    hold off;
+                end
+        otherwise
+            fprintf('No correct Harris Detector selected');
     end
 end
 

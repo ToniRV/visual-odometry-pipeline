@@ -6,9 +6,10 @@ close all;
 kitti_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/kitti';
 malaga_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/malaga';
 parking_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/parking';
+rng(1);
 
 %% Setup
-ds = 2; % 0: KITTI, 1: Malaga, 2: parking
+ds = 0; % 0: KITTI, 1: Malaga, 2: parking
 
 if ds == 0
     % need to set kitti_path to folder containing "00" and "poses"
@@ -58,6 +59,7 @@ else
 end
     
 max_num_auto_frames = 15;
+min_num_inliers = 30;
 inliers = zeros(max_num_auto_frames, 1);
 errors = zeros(max_num_auto_frames, 2);
 costs = zeros(max_num_auto_frames, 2);
@@ -77,18 +79,41 @@ for i = 1:max_num_auto_frames
     end
     
     % Automatically choosing frames
-    [img0, img1, kp_database, state, T_cw, descriptors_query, ...
+    [img0, img1, kp_database, state, T_cw, ...
         reprojection_errors, dist_epi_costs] = auto_init_frames(...
         initial_frame, current_frame, K);
+    
+    if (size(state.matches_2d, 2) < min_num_inliers)
+        break;
+    end
     
     inliers(i,:) = size(state.matches_2d, 2);
     errors(i,:) = reprojection_errors;
     costs(i,:) = dist_epi_costs;
 end
 
-inliers
-errors
-costs
+smallest_error = Inf;
+for i = 1:nnz(inliers)
+    error = sum(errors(i,:))/2;
+    
+    if (error < smallest_error)
+        smallest_error = error;
+        
+        if ds == 0
+            img1 = imread([kitti_path '/00/image_0/' ...
+                sprintf('%06d.png',i)]);
+        elseif ds == 1
+            img1 = rgb2gray(imread([malaga_path ...
+                '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
+                left_images(i).name]));
+        elseif ds == 2
+            img1 = rgb2gray(imread([parking_path ...
+                sprintf('/images/img_%05d.png',i)]));
+        else
+            assert(false);
+        end
+    end
+end
     
 %% Monocular initialisation
 %[state, T_cw] = monocular_initialisation(img0, img1, K);

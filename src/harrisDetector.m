@@ -1,14 +1,9 @@
-function query_keypoints = harrisDetector (query_image, current_keypoints)
+function query_keypoints = harrisDetector (query_image)
     debug_with_figures = false;
-
-    % Parameters form exercise 3.
-    harris_patch_size = 9;
-    harris_kappa = 0.08;
-    nonmaximum_supression_radius = 8;
     
     % Other parameters.
     num_keypoints = 50;
-    cols = 4;
+    cols = 5;
     rows = 3;
     
 %             selected_kps = selectKeypoints(lean_scores(h_indices_limits(h):h_indices_limits(h+1),...

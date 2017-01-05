@@ -18,12 +18,13 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     p_W_landmarks_correspondences_i1 = valid_p_W_landmarks(:,inlier_mask > 0);
     
     % Detect new keypoints
-    query_keypoints = harrisDetector (Image_i1, keypoints_correspondences_i1);
+    query_keypoints = harrisDetector (Image_i1);
+    
+    query_keypoints = removeDuplicates(query_keypoints, keypoints_correspondences_i1);
     
     %% Step 3: trying to triangulate new landmarks
-    descriptor_radius = 9;
-    match_lambda = 4;
     points_2D_global_var = 0;
+    new_first_obs_cand_kp_i1_global_var = 0;
     final_keypoints_correspondences_i1 = keypoints_correspondences_i1;
     final_p_W_landmarks_correspondences_i1 = p_W_landmarks_correspondences_i1;
           
@@ -37,7 +38,8 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             new_first_obs_cand_kp_i1 = query_keypoints; % Non_matched_query_keypoints
             % TODO find better way to deal with the transform of the first
             % observed candidates
-            new_first_obs_cand_tf_i1 = repmat(reshape(Transform_i1,12,1), 1, size(query_keypoints, 2)); % Store as 12xM transform
+            new_first_obs_cand_tf_i1 = repmat(reshape(Transform_i1,12,1),...
+                1, size(new_first_obs_cand_kp_i1, 2)); % Store as 12xM transform
             new_last_obs_cand_kp_i1 = new_first_obs_cand_kp_i1; %First time we store them we also fill last_obs as first_obs for uniformity
         else
             fprintf('[INFO] Iteration %d: set of first_observed_candidate_keypoints is empty and we have not localized \n', i1);
@@ -121,21 +123,26 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             
             %%%% b) Clear triangulated tracks, both correctly and incorrectly
             %%%% triangulated
-            last_obs_cand_kp_i1 = last_obs_cand_kp_i1(:, is_triangulable == 0);
-            first_obs_cand_kp_i1 = first_obs_cand_kp_i1(:, is_triangulable == 0);
-            first_obs_cand_tf_i1 = first_obs_cand_tf_i1(:, is_triangulable == 0);
+            clear_last_obs_cand_kp_i1 = last_obs_cand_kp_i1(:, is_triangulable == 0);
+            clear_first_obs_cand_kp_i1 = first_obs_cand_kp_i1(:, is_triangulable == 0);
+            clear_first_obs_cand_tf_i1 = first_obs_cand_tf_i1(:, is_triangulable == 0);
                 
 
             % E) For the non_matched_query_keypoints, append them as new candidates to current candidates.
             %%% I) Create values:
-            new_first_obs_cand_kp_i1 = query_keypoints; % These guys haven't been matched twice.
+            %%%% Remove duplicates btw query_keypoints and tracked
+            %%%% last_obs_cand_kp_i1 since they will represent the same 3D
+            %%%% points
+            new_first_obs_cand_kp_i1 = removeDuplicates(query_keypoints, last_obs_cand_kp_i1);
+            disp(['Num of new keypoints: ' num2str(size(new_first_obs_cand_kp_i1,2))]);
+            new_first_obs_cand_kp_i1_global_var = new_first_obs_cand_kp_i1;
             new_first_obs_cand_tf_i1 = repmat(reshape(Transform_i1, 12, 1), 1, size(new_first_obs_cand_kp_i1, 2));
             new_last_obs_cand_kp_i1 = new_first_obs_cand_kp_i1; %First time we store them we also fill last_obs as first_obs for uniformity
 
             %%% II) Append Results
-            last_obs_cand_kp_i1 = [last_obs_cand_kp_i1, new_last_obs_cand_kp_i1];
-            first_obs_cand_kp_i1 = [first_obs_cand_kp_i1, new_first_obs_cand_kp_i1];
-            first_obs_cand_tf_i1 = [first_obs_cand_tf_i1, new_first_obs_cand_tf_i1];
+            last_obs_cand_kp_i1 = [clear_last_obs_cand_kp_i1, new_last_obs_cand_kp_i1];
+            first_obs_cand_kp_i1 = [clear_first_obs_cand_kp_i1, new_first_obs_cand_kp_i1];
+            first_obs_cand_tf_i1 = [clear_first_obs_cand_tf_i1, new_first_obs_cand_tf_i1];
 
             % F) FINAL RESULT
             State_i1.last_obs_candidate_keypoints = last_obs_cand_kp_i1;

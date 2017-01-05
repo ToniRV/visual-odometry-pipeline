@@ -19,7 +19,7 @@ parking_path_ = '/home/tonirv/Documents/Vision Algorithms for Mobile Robotics/VO
 %%% Select dataset to run:
 dataset_ = 'Kitti';                                             % 'Kitti', 'Malaga', 'Parking'
 %%% Select initialisation method to run:
-initialisation_ = 'Ground Truth';                             % 'Monocular', 'Stereo', 'Ground Truth'
+initialisation_ = 'Monocular';                             % 'Monocular', 'Stereo', 'Ground Truth'
 
 % Parameters
 baseline_  = 0;

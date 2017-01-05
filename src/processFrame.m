@@ -193,11 +193,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     end
     valid_keypoints_correspondences_i0 = State_i0.keypoints_correspondences(:, validity_mask > 0);
     keypoints_correspondences_i0 = valid_keypoints_correspondences_i0(:, inlier_mask > 0);
-    x_from = keypoints_correspondences_i1(1, :);
-    x_to = keypoints_correspondences_i0(1, :);
-    y_from = keypoints_correspondences_i1(2, :);
-    y_to = keypoints_correspondences_i0(2, :);
-    plot([y_from; y_to], [x_from; x_to], 'g-', 'Linewidth', 2);
+    
     hold off;
     title('Inlier and outlier matches');
     pause(0.001);

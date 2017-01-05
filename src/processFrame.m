@@ -105,7 +105,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
 
             %%% III) Update state
             %%%% a) Store new 2D-3D correspondences which are valid
-            reprojectionError_threshold = 0.4; % WARNING: this guy gets rid of MANY possible landmarks!
+            reprojectionError_threshold = 0.5; % WARNING: this guy gets rid of MANY possible landmarks!
             valid_errors = list_reprojection_errors < reprojectionError_threshold;
             valid_depth = X_s(3,:) > 0;
             valid_indices = valid_errors & valid_depth;
@@ -208,7 +208,7 @@ function is_triangulable = checkTriangulability(last_kps, last_tf, first_kps, fi
 %%% last_tf: transformation from World to Camera of the last kps
 %%% first_tf: transformation from World to Camera of the first kps
     %%% Tune this threshold
-    threshold = 40;
+    threshold = 35;
     %1) Compute last bearing vector in the World frame
     bearing_vector_last_kps = computeBearing(last_kps, last_tf, K);
     %2) Compute first bearing vector in the World frame

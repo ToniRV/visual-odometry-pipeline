@@ -162,7 +162,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     if (numel(R_C_W) > 0)
         subplot(1, 3, 3);
         num_inliers(i1) = nnz(inlier_mask);
-        plotCoordinateFrame(R_C_W', -R_C_W'*t_C_W, 2);
+        plotCoordinateFrame(R_C_W', -R_C_W'*t_C_W, 1);
         disp(['Frame ' num2str(i1) ' localized with ' ...
             num2str(num_inliers(i1)) ' inliers!']);
         view(0,0);

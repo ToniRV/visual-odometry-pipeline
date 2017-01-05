@@ -63,7 +63,7 @@ end
 %% Bootstrap frames
 
 bootstrap_frames_ = 0;
-img0_ = 0; 
+img0_ = 0;
 img1_ = 0;
 range_ = 0;
 switch dataset_
@@ -166,7 +166,7 @@ prev_image_ = 0;
 i_ = bootstrap_frames_(2);
 switch dataset_
     case 'Kitti'
-        prev_image_ = imread([kitti_path_ '/00/image_left/' sprintf('%06d.png',i_)]);
+        prev_image_ = imread([kitti_path_ '/00/image_0/' sprintf('%06d.png',i_)]);
     case 'Malaga'
         prev_image_ = rgb2gray(imread([malaga_path_ ...
             '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
@@ -185,7 +185,7 @@ for i = range_
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     switch dataset_
         case 'Kitti'
-            image = imread([kitti_path_ '/00/image_left/' sprintf('%06d.png',i)]);
+            image = imread([kitti_path_ '/00/image_0/' sprintf('%06d.png',i)]);
         case 'Malaga'
             image = rgb2gray(imread([malaga_path_ ...
                 '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...

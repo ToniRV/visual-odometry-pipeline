@@ -114,12 +114,12 @@ p_W_landmarks = p_W_landmarks';
 range = (bootstrap_frames(2)):last_frame;
 figure(5);
 subplot(1, 3, 3);
-scatter3(p_W_landmarks(1, :), p_W_landmarks(2, :), p_W_landmarks(3, :), 5);
+%scatter3(p_W_landmarks(1, :), p_W_landmarks(2, :), p_W_landmarks(3, :), 5);
 set(gcf, 'GraphicsSmoothing', 'on');
 view(0,0);
 axis equal;
 axis vis3d;
-axis([-15 10 -10 5 -1 40]);
+grid on;
 prev_img = img_left;
 
 % success field determines whether we localized or failed

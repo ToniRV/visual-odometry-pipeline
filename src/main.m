@@ -19,7 +19,7 @@ parking_path_ = '/home/tonirv/Documents/Vision Algorithms for Mobile Robotics/VO
 %%% Select dataset to run:
 dataset_ = 'Kitti';                                             % 'Kitti', 'Malaga', 'Parking'
 %%% Select initialisation method to run:
-initialisation_ = 'Monocular';                             % 'Monocular', 'Stereo', 'Ground Truth'
+initialisation_ = 'Stereo';                             % 'Monocular', 'Stereo', 'Ground Truth'
 
 % Parameters
 baseline_  = 0;
@@ -109,6 +109,16 @@ switch dataset_
 end
 
 %% Initialisation
+params_stereo = struct(...
+        'triangulation_algorithm', 'matlab_triangulation',...
+        'debug_with_figures', 'false',...
+        'baseline', baseline_,...
+        'K', K);
+params_mono = struct(...
+    'debug_verbose', 'true',...
+    'debug_with_figures', 'false');
+parameters = struct('stereo', params_stereo, 'mono', params_mono);
+
 
 keypoints_ = zeros(0);
 p_W_landmarks_ = zeros(0);
@@ -118,8 +128,8 @@ switch initialisation_
         keypoints_ = state.matches_2d(1:2,:);
         p_W_landmarks_ = state.landmarks(1:3,:);
     case 'Stereo'
-        [keypoints_, p_W_landmarks_] = ...
-            stereo_initialisation(img0_, img1_ , K, baseline_, 'matlab_triangulation');
+        stereoInit = makeStereoInit(parameters.stereo);
+        [keypoints_, p_W_landmarks_] = stereoInit(img0_, img1_);
     case 'Ground Truth'
         %%% GROUND TRUTH initialisation
         if (strcmp(dataset_, 'Kitti'))

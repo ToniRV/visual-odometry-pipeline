@@ -1,5 +1,4 @@
-function [img0, img1, kp_homo_initial_matched, state, T_cw, ...
-    reprojection_errors, costs] = ...
+function [state, T_cw, reprojection_errors, costs] = ...
     auto_init_frames(initial_frame, current_frame, K)
 
     % Verbose output for debug
@@ -114,7 +113,4 @@ function [img0, img1, kp_homo_initial_matched, state, T_cw, ...
     
     % Pose (4x4)
     T_cw(1:3,:) = [R, T]
-    
-    img0 = initial_frame;
-    img1 = current_frame;
 end

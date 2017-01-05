@@ -10,6 +10,7 @@ triangulation_algorithm = parameters.triangulation_algorithm;
 baseline = parameters.baseline;
 K = parameters.K;
 
+parameters_correspondences_2D2D_ = parameters.correspondences_2D2D;
 
     function [ points_2D, points_3D_left_cam_frame] = stereo_initialisation( img_left, img_right)
     %
@@ -68,7 +69,10 @@ K = parameters.K;
 
         % !!!!!!!!!!!!!!!!WARNING keypoints are in (row, col) coordinates of the image which might differ from
         % (u, v) coordinates, depending on whether u representes rows or columns!!!!!!!!!!!!!!!!!!!!!!
-        [keypoints_left, keypoints_right,~,~] = correspondences_2d2d_stereo(img_left, img_right);
+        corresp_2d2d = makeCorrespondences2D2D (parameters_correspondences_2D2D_);
+        [keypoints_left, keypoints_right] = corresp_2d2d(img_left, img_right);
+        keypoints_left = keypoints_left(1:2,:);
+        keypoints_right = keypoints_right(1:2,:);
         fprintf('It took %ds to compute correspondences \n', toc);
 
         if (debug_with_figures)

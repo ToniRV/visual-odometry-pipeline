@@ -4,9 +4,9 @@ clc;
 close all;
 
 % Insert the paths to the corresponding frame sets:
-kitti_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/kitti';
-malaga_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/malaga';
-parking_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/parking';
+kitti_path='/home/tonirv/Downloads/kitti';
+malaga_path='/home/tonirv/Downloads/';
+parking_path='/home/tonirv/Downloads/parking';
 
 %% Setup
 ds = 2; % 0: KITTI, 1: Malaga, 2: parking
@@ -48,9 +48,9 @@ end
 % Need to set bootstrap_frames
 if ds == 0
     bootstrap_frames = [1 3]; % Frames suggested in the project description
-    img0 = imread([kitti_path '/00/image_0/' ...
+    img0 = imread([kitti_path '/00/image_left/' ...
         sprintf('%06d.png',bootstrap_frames(1))]);
-    img1 = imread([kitti_path '/00/image_0/' ...
+    img1 = imread([kitti_path '/00/image_left/' ...
         sprintf('%06d.png',bootstrap_frames(2))]);
     
 elseif ds == 1

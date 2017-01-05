@@ -1,6 +1,5 @@
 function [kp_homo_database_matched, kp_homo_query_matched] = ...
     correspondences_2d2d(img0, img1, N)
-
 %   INPUT:
     %
     %   *   database_img: Corresponds to the left image / previous frame.
@@ -24,8 +23,8 @@ function [kp_homo_database_matched, kp_homo_query_matched] = ...
 
     if (flag_harris_matlab)
         %% Part 1 - Harris Score Calculation & Keypoint Selection
-        % Selects the N pixels with the highest Harris scores while performing 
-        % non-maximum suppression and stores them in a 2xN matrix; Harris score 
+        % Selects the N pixels with the highest Harris scores while performing
+        % non-maximum suppression and stores them in a 2xN matrix; Harris score
         % decreases for increasing column index
 
         % keypoints = selectKeypoints(...
@@ -39,7 +38,7 @@ function [kp_homo_database_matched, kp_homo_query_matched] = ...
         %                   smooth the gradient of the input image.
         corners_1 = detectHarrisFeatures(img0,'FilterSize', 3, 'MinQuality', 0.00001);
 
-        if (debug_verbose) 
+        if (debug_verbose)
             keypoints_1 = [corners_1.Location];
             keypoints_1 = round(flipud(keypoints_1.'));
             figure(2);
@@ -66,31 +65,31 @@ function [kp_homo_database_matched, kp_homo_query_matched] = ...
 
         % Find the matches
         indexPairs = matchFeatures(features1, features2);
-        
+
         % Extract the matched corners
         matchedPoints1 = valid_points1(indexPairs(:,1),:);
         matchedPoints2 = valid_points2(indexPairs(:,2),:);
-        
+
         % Extract matched keypoint locations and round to integer
         keypoints_1 = [matchedPoints1.Location];
         keypoints_1 = round(flipud(keypoints_1.'));
         keypoints_2 = [matchedPoints2.Location];
         keypoints_2 = round(flipud(keypoints_2.'));
-        
+
         if (debug_verbose)
             figure(4);
             imshow(img1);
             hold on;
             showMatchedFeatures(img0, img1, matchedPoints1, matchedPoints2);
         end
-        
+
         %% OUTPUT
         % Homogeneous Keypoint Coordinates
         kp_homo_database_matched = ...
-            [keypoints_1; ones(1, size(keypoints_1, 2))];
+        [keypoints_1; ones(1, size(keypoints_1, 2))];
         kp_homo_query_matched = ...
-            [keypoints_2; ones(1, size(keypoints_2, 2))];
-        
+        [keypoints_2; ones(1, size(keypoints_2, 2))];
+
     else
         % TODO: IMPROVE PERFORMANCE BY TWEAKING THE PARAMETERS.
         % Parameter values taken from exercise 3:
@@ -121,7 +120,7 @@ function [kp_homo_database_matched, kp_homo_query_matched] = ...
         % non-maximum suppression and stores them in a 2xN matrix; Harris score 
         % decreases for increasing column index
         keypoints_1 = selectKeypoints(...
-            harris_scores, num_keypoints, nonmaximum_suppression_radius);
+        harris_scores, num_keypoints, nonmaximum_suppression_radius);
 
         if (debug_verbose) 
             figure(2);
@@ -168,7 +167,7 @@ function [kp_homo_database_matched, kp_homo_query_matched] = ...
             plot(keypoints_2(2, :), keypoints_2(1, :), 'rx', 'Linewidth', 2);
             plotMatches(matches, keypoints_2, keypoints_1);
         end
-        
+
         %% OUTPUT
             %% Extraction of Keypoint Correspondences
         [~, query_indices, match_indices] = find(matches);
@@ -183,3 +182,4 @@ function [kp_homo_database_matched, kp_homo_query_matched] = ...
             [kp_matches_query; ones(1, size(kp_matches_query, 2))];
     end
 end
+

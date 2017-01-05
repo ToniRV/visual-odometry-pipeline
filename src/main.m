@@ -210,7 +210,6 @@ if (BA_ == true)
     % Initialize observation vector:
     observation_hist = [size(S_i0.p_W_landmarks_correspondences,2);...
         S_i0.keypoints_correspondences(:); (1:size(S_i0.p_W_landmarks_correspondences,2))'];
-    
     % Initialize the global landmark vector:
     landmarks_hist_ = S_i0.p_W_landmarks_correspondences;
     

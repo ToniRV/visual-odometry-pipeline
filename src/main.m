@@ -11,9 +11,13 @@ addpath('Init');
 % Replace the following with the path to your keypoint matcher code:
 addpath('../../00_camera_projection/code');
 
-kitti_path='/home/tonirv/Downloads/kitti';
-malaga_path='/home/tonirv/Downloads/';
-parking_path='/home/tonirv/Documents/Vision Algorithms for Mobile Robotics/VO - Project/parking';
+% Set to true if you want to perform bundle adjustment:
+BA = true;
+
+kitti_path='/Users/amadeus/Documents/MATLAB/Frame_Sets/Kitti';
+malaga_path='/Users/amadeus/Documents/MATLAB/Frame_Sets/Malaga_07';
+parking_path='/Users/amadeus/Documents/MATLAB/Frame_Sets/Parking';
+
 %% Setup
 ds = 0; % 0: KITTI, 1: Malaga, 2: parking
 stereo = 1;
@@ -86,10 +90,10 @@ end
 %% Bootstrap stereo, remove when monocular init is ready
 stereo_bootstrap_frames = [0 0];
 % left image
-    img_left = imread([kitti_path '/00/image_left/' ...
+    img_left = imread([kitti_path '/00/image_0/' ...
         sprintf('%06d.png',stereo_bootstrap_frames(1))]);
 % right image
-    img_right = imread([kitti_path '/00/image_right/' ...
+    img_right = imread([kitti_path '/00/image_1/' ...
         sprintf('%06d.png',stereo_bootstrap_frames(2))]);
 
 [ points_2D_matlab_triangulation, points_3D_matlab_triangulation ] = ...
@@ -99,9 +103,9 @@ stereo_bootstrap_frames = [0 0];
 % p_W_landmarks = points_3D_matlab_triangulation;
 % keypoints = points_2D_matlab_triangulation;
 %%% GROUND TRUTH initialisation
-keypoints = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/keypoints.txt');
+keypoints = load('/Users/amadeus/Documents/MATLAB/VAFMR_Exercises/Exercise 6 - Localization using RANSAC and EPnP/data/keypoints.txt');
 keypoints = keypoints';
-p_W_landmarks = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/p_W_landmarks.txt');
+p_W_landmarks = load('/Users/amadeus/Documents/MATLAB/VAFMR_Exercises/Exercise 6 - Localization using RANSAC and EPnP/data/p_W_landmarks.txt');
 p_W_landmarks = p_W_landmarks';
 
 [keypoints_1, inlier_mask] = KLT(keypoints, img_left, img_right);
@@ -111,7 +115,10 @@ p_W_landmarks = p_W_landmarks';
 % Monocular init
 %range = (bootstrap_frames(2)+1):last_frame;
 % Stereo init
-range = (bootstrap_frames(2)):last_frame;
+
+% range = (bootstrap_frames(2)):last_frame;
+range = (bootstrap_frames(2)):30;
+
 figure(5);
 subplot(1, 3, 3);
 %scatter3(p_W_landmarks(1, :), p_W_landmarks(2, :), p_W_landmarks(3, :), 5);
@@ -122,7 +129,8 @@ axis vis3d;
 grid on;
 prev_img = img_left;
 
-% success field determines whether we localized or failed
+%% State Initialization
+% Success field determines whether we localized or failed
 S_i0 = struct('success', 0,...
     'keypoints_correspondences', keypoints,... % 2xL
     'p_W_landmarks_correspondences', p_W_landmarks,... % 3xL
@@ -131,12 +139,23 @@ S_i0 = struct('success', 0,...
     'last_obs_candidate_keypoints', zeros(2,0),... % 2xM Last keypoint matched corresponding to initial candidate
     'K', K);
 
+% Bundle Adjustment initialization:
+if (BA == true)
+    % !!!!!!!!!! HAVE TO ADD POSE FROM INITIALIZATION HERE !!!!!!!!!!
+    poses_W_hist = [];
+    R_abs = eye(3);
+    t_abs = zeros(3,1);
+end
+
+%% Continuous Operation
 % Store performance by counting number of inlier keypoints per frame
 num_inliers = zeros(1, last_frame-(bootstrap_frames(2)+1));
 for i = range
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
+    
+    % Read in next frame:
     if ds == 0
-        image = imread([kitti_path '/00/image_left/' sprintf('%06d.png',i)]);
+        image = imread([kitti_path '/00/image_0/' sprintf('%06d.png',i)]);
     elseif ds == 1
         image = rgb2gray(imread([malaga_path ...
             '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
@@ -148,8 +167,33 @@ for i = range
         assert(false);
     end
     
+    % State and pose update:
     [S_i1, T_i1, inlier_mask] = processFrame(image, prev_img, S_i0, i);
     
+    % BUNDLE ADJUSTMENT
+    % Refines camera poses and 3D landmark positions of the last m frames.
+    if (BA == true)
+        tic;
+        m = 20;
+        % Store absolute (!) pose history (w.r.t. first image frame) as 
+        % twist vectors of the last m frames:
+        R_abs = R_abs * T_i1(1:3,1:3);
+        t_abs = t_abs + T_i1(1:3,4);
+        % Convert pose to 6x1 twist column vector:
+        tau_i1 = HomogMatrix2twist([R_abs, t_abs; zeros(1,3) 1]);
+       
+        % Make sure that the first m frames passed before calling BA:
+        if (i <= range(m))
+            poses_W_hist = [poses_W_hist; tau_i1];
+        else
+            % Only need to store the poses of the last m frames:
+            % IS THIS POSSIBLE WITHOUT COPYING THE WHOLE ARRAY?
+            poses_W_hist = [poses_W_hist(7:120,1); tau_i1];
+            
+            % bundle_adjustment(hidden_state, observations, m, K);
+            sprintf('Time needed: Perform Bundle Adjustment: %f seconds', toc)
+        end
+    end    
     % Store the number of inliers per frame
     num_inliers(i) = nnz(inlier_mask);
     

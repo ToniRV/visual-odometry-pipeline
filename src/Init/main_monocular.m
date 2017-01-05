@@ -7,6 +7,7 @@ close all;
 kitti_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/kitti';
 malaga_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/malaga';
 parking_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/parking';
+rng(1);
 
 %% Setup
 ds = 2; % 0: KITTI, 1: Malaga, 2: parking

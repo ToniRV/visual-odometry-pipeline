@@ -4,9 +4,9 @@ clc;
 close all;
 
 % Insert the paths to the corresponding frame sets:
-kitti_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/kitti';
-malaga_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/malaga';
-parking_path = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/parking';
+kitti_path='/home/tonirv/Downloads/kitti';
+malaga_path='/home/tonirv/Downloads/';
+parking_path='/home/tonirv/Downloads/parking';
 
 %% Setup
 ds = 2; % 0: KITTI, 1: Malaga, 2: parking

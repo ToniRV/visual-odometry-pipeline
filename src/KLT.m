@@ -13,16 +13,16 @@ function [keypoints_1, inlier_mask] = KLT(keypoints_0, img_1, img_0)
     inlier_mask = POINT_VALIDITY > 0;
     
     
-    % Display tracked points.
-    figure(6);
-    imshow(img_0);
-    hold on;
-    plot (keypoints_1(2, inlier_mask), keypoints_1(1, inlier_mask), 'yx');
-    plot (keypoints_0(2, inlier_mask), keypoints_0(1, inlier_mask), 'gx');
-    x_from = keypoints_1(1, inlier_mask);
-    x_to = keypoints_0(1, inlier_mask);
-    y_from = keypoints_1(2, inlier_mask);
-    y_to = keypoints_0(2, inlier_mask);
-    plot([y_from; y_to], [x_from; x_to], 'g-', 'Linewidth', 3);
-    hold off;
+%     % Display tracked points.
+%     figure(6);
+%     imshow(img_0);
+%     hold on;
+%     plot (keypoints_1(2, inlier_mask), keypoints_1(1, inlier_mask), 'yx');
+%     plot (keypoints_0(2, inlier_mask), keypoints_0(1, inlier_mask), 'gx');
+%     x_from = keypoints_1(1, inlier_mask);
+%     x_to = keypoints_0(1, inlier_mask);
+%     y_from = keypoints_1(2, inlier_mask);
+%     y_to = keypoints_0(2, inlier_mask);
+%     plot([y_from; y_to], [x_from; x_to], 'g-', 'Linewidth', 3);
+%     hold off;
 end

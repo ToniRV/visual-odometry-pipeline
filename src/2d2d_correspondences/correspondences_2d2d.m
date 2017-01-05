@@ -37,7 +37,7 @@ function [kp_homo_database_matched, kp_homo_query_matched] = ...
         %                   highest Harris score in the image are accepted as corners.
         %   --> FilterSize: Defines the filter size of the Gaussian filter used to
         %                   smooth the gradient of the input image.
-        min_quality = 0.00001;
+        min_quality = 0.00001; %0.001
         corners_1 = detectHarrisFeatures(img0,'FilterSize', 3, ...
             'MinQuality', min_quality);
 

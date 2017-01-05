@@ -44,12 +44,62 @@ function query_keypoints = harrisDetector (query_image)
                     title('Whole image with Uniform keypoints');
                     hold off;
                 end
+        case 4
+            query_keypoints = customInClassHarrisDetector (query_image,...
+                num_keypoints, cols, rows);
+                if (debug_with_figures)
+                    figure(22);
+                    imshow(query_image); hold on;
+                    plot(query_keypoints(2,:),...
+                            query_keypoints(1,:),...
+                            'bx', 'Linewidth', 3);
+                    title('Whole image with Uniform keypoints');
+                    hold off;
+                 end
         otherwise
             fprintf('No correct Harris Detector selected');
     end
 end
 
+function query_keypoints = customInClassHarrisDetector (query_image,...
+    num_keypoints, cols, rows)
 
+    % Parameters form exercise 3.
+    harris_patch_size = 9;
+    harris_kappa = 0.08;
+    nonmaximum_supression_radius = 8;
+    
+    width = size(query_image, 2);
+    height = size(query_image, 1);
+    
+    w_indices_limits = ones(1,cols+1);
+    for i=1:cols
+        w_indices_limits(i+1) = floor(width/cols*i);
+    end
+    h_indices_limits = ones(1,rows+1);
+    for i=1:rows
+        h_indices_limits(i+1) = floor(height/rows*i);
+    end
+    
+    % TRY to not take keypoints close to the borders of the image, to do so
+    % just crop the image...
+    
+    % Detect new keypoints
+    k = 0;
+    query_keypoints = ones(2, cols*rows*num_keypoints); % I put ones instead of zeros just in case there is no match....
+    scores = harris(query_image, harris_patch_size, harris_kappa);
+    for w = 1:cols
+        for h = 1:rows
+         selected_kps = selectKeypoints(scores(h_indices_limits(h):h_indices_limits(h+1),...
+                                                                                w_indices_limits(w):w_indices_limits(w+1)), ...
+                                                            num_keypoints, nonmaximum_supression_radius);
+         query_keypoints(:, k*(num_keypoints)+1:(k+1)*(num_keypoints)) = ...
+             [selected_kps(1,:)+h_indices_limits(h); selected_kps(2,:)+w_indices_limits(w)];
+         k = k+1;
+        end
+    end
+
+end
 
 % Uniform selection of harris corners on the image. The image is divided
 % in a quadrant of cols columns and rows rows and then num_keypoints are

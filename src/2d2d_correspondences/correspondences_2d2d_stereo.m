@@ -20,7 +20,7 @@ function [database_keypoints_matched, keypoints_query_image_matched, database_de
 
     % Randomly chosen parameters that seem to work well - can you find better
     % ones?
-    harris_psatch_size = 9;
+    harris_patch_size = 9;
     harris_kappa = 0.08;
     num_keypoints = 200;
     nonmaximum_supression_radius = 8;

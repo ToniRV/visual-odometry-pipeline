@@ -13,14 +13,13 @@
 % Returns:
 %   R -  3x3 the correct rotation matrix
 %   T -  3x1 the correct translation vector
-%   P - Triangulated 3d landmarks
 %
 %   where [R|t] = T_C1_C0 = T_C1_W is a transformation that maps points
 %   from the world coordinate system (identical to the coordinate system of camera 0)
 %   to camera 1.
 %
 
-function [R,T,P, M_0, M_1] = disambiguateRelativePose(Rots,u3,points0_h,points1_h,K0,K1)
+function [R,T] = disambiguateRelativePose(Rots,u3,points0_h,points1_h,K0,K1)
 
 M0 = K0 * eye(3,4); % Projection matrix of camera 1
 
@@ -47,9 +46,6 @@ for iRot = 1:2
             R = R_C1_C0_test;
             T = T_C1_C0_test;
             total_points_in_front_best = total_points_in_front;
-            P = P_C0;
-            M_0 = M0;
-            M_1 = M1;
         end
     end
 end

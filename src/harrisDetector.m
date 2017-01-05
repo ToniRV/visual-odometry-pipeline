@@ -54,6 +54,8 @@ function query_keypoints = harrisDetector (query_image, current_keypoints)
     end
 end
 
+
+
 % Uniform selection of harris corners on the image. The image is divided
 % in a quadrant of cols columns and rows rows and then num_keypoints are
 % selected PER BIN. It can be that the bin has less keypoints than selected
@@ -86,7 +88,7 @@ function query_keypoints = customUniformHarrisDetector (query_image, num_keypoin
             image_bin = query_image(h_indices_limits(h):h_indices_limits(h+1),...
                                                      w_indices_limits(w):w_indices_limits(w+1));
             % Compute corners
-            corners = detectHarrisFeatures(image_bin);
+            corners = detectHarrisFeatures(image_bin, 'MinQuality', 0.01, 'FilterSize', 5);
             % Select strongest
             strongest = corners.selectStrongest(num_keypoints).Location;
             best_keypoints = round(flipud(strongest'));
@@ -122,7 +124,7 @@ end
 function query_keypoints = uniformHarrisDetector(query_image, num_keypoints)
     debug_with_figures = false;
     % Compute corners
-    corners = detectHarrisFeatures(query_image);
+    corners = detectHarrisFeatures(query_image, 'MinQuality', 0.01, 'FilterSize', 5);
     % Select strongest uniformly
     uniform_strongest = corners.selectUniform(num_keypoints, size(query_image));
     if(debug_with_figures)
@@ -138,7 +140,7 @@ end
 function query_keypoints = strongestHarrisDetector(query_image, num_keypoints)
     debug_with_figures = false;
     % Compute corners
-    corners = detectHarrisFeatures(query_image);
+    corners = detectHarrisFeatures(query_image, 'MinQuality', 0.01, 'FilterSize', 5);
     % Select strongest
     strongest = corners.selectStrongest(num_keypoints);
     if(debug_with_figures)

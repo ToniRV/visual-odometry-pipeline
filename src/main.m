@@ -10,19 +10,22 @@ addpath('Init');
 % Replace the following with the path to your keypoint matcher code:
 addpath('../../00_camera_projection/code');
 
-% Set to true if you want to perform bundle adjustment:
-BA = true;
+% Set 
 
-kitti_path='/Users/amadeus/Documents/MATLAB/Frame_Sets/Kitti';
-malaga_path='/Users/amadeus/Documents/MATLAB/Frame_Sets/Malaga_07';
-parking_path='/Users/amadeus/Documents/MATLAB/Frame_Sets/Parking';
+
+kitti_path_='/Users/amadeus/Documents/MATLAB/Frame_Sets/Kitti';
+malaga_path_='/Users/amadeus/Documents/MATLAB/Frame_Sets/Malaga_07';
+parking_path_='/Users/amadeus/Documents/MATLAB/Frame_Sets/Parking';
 
 %% Setup
 
 %%% Select dataset to run:
 dataset_ = 'Kitti';                                             % 'Kitti', 'Malaga', 'Parking'
 %%% Select initialisation method to run:
-initialisation_ = 'Monocular';                             % 'Monocular', 'Stereo', 'Ground Truth'
+initialisation_ = 'Monocular';                                  % 'Monocular', 'Stereo', 'Ground Truth'
+
+%%% Set to true if you want to perform bundle adjustment:
+BA_ = true;
 
 % Parameters
 baseline_  = 0;
@@ -154,7 +157,7 @@ p_W_landmarks_ = zeros(0);
 switch initialisation_
     case 'Monocular'
         mono_init = makeMonoInit(parameters.mono);
-        [state, ~] = mono_init(img0_, img1_);
+        [state, T_i0] = mono_init(img0_, img1_);
         keypoints_ = state.matches_2d(1:2,:);
         p_W_landmarks_ = state.landmarks(1:3,:);
     case 'Stereo'
@@ -191,23 +194,35 @@ axis equal;
 axis vis3d;
 grid on;
 
-% Bundle Adjustment initialization:
-if (BA == true)
-    % !!!!!!!!!! HAVE TO ADD POSE FROM INITIALIZATION HERE !!!!!!!!!!
-    poses_W_hist = [];
-    R_abs = eye(3);
-    t_abs = zeros(3,1);
-end
-
 S_i0 = struct(...
-    'keypoints_correspondences', keypoints_,...                     % 2xL
-    'p_W_landmarks_correspondences', p_W_landmarks_,... % 3xL
-    'first_obs_candidate_keypoints', zeros(2,0),...                  % 2xM First observed candidate keypoints
-    'first_obs_candidate_transform', zeros(12,0),...               % 12xM Transformation matrices of each ofthe candidates
-    'last_obs_candidate_keypoints', zeros(2,0),...                   % 2xM Last keypoint matched corresponding to initial candidate
+    'keypoints_correspondences', keypoints_,...          % 2xL
+    'p_W_landmarks_correspondences', p_W_landmarks_,...  % 3xL
+    'first_obs_candidate_keypoints', zeros(2,0),...      % 2xM First observed candidate keypoints
+    'first_obs_candidate_transform', zeros(12,0),...     % 12xM Transformation matrices of each ofthe candidates
+    'last_obs_candidate_keypoints', zeros(2,0),...       % 2xM Last keypoint matched corresponding to initial candidate
     'K', K);
 
 num_inliers = zeros(1, last_frame_-(bootstrap_frames_(2)+1));
+
+% Bundle Adjustment initialization:
+if (BA_ == true)
+    m_ = 20;
+    % Initialize observation vector:
+    observation_hist = [size(S_i0.p_W_landmarks_correspondences,2);...
+        S_i0.keypoints_correspondences(:); (1:size(S_i0.p_W_landmarks_correspondences,2))'];
+    
+    % Initialize the global landmark vector:
+    landmarks_hist_ = S_i0.p_W_landmarks_correspondences;
+    
+    if (strcmp(initialisation_,'Monocular') == 1)
+        tau_i0 = HomogMatrix2twist(T_i0);
+    else    
+        R_init_ = eye(3);
+        t_init_ = zeros(3,1);
+        tau_i0 = HomogMatrix2twist([R_init_, t_init_; zeros(1,3) 1]);
+    end
+    poses_W_hist_ = tau_i0;
+end
 
 % Store Image_i0, aka previous image to kickstart continuous operation.
 prev_image_ = 0;
@@ -247,37 +262,40 @@ for i = range_
     end
     
     % State and pose update:
-    [S_i1, T_i1, inlier_mask] = processFrame(image, prev_img, S_i0, i);
-%      subplot(1, 3, 3);
-%      scatter3(S_i1.p_W_landmarks_correspondences(1, :), ...
-%          S_i1.p_W_landmarks_correspondences(2, :), ...
-%          S_i1.p_W_landmarks_correspondences(3, :), 5);
-
-    
+    [S_i1, T_i1, inlier_mask, new_3D, new_2D] = processFrame(image, prev_img, S_i0, i);
+    % subplot(1, 3, 3);
+    % scatter3(S_i1.p_W_landmarks_correspondences(1, :), ...
+    % S_i1.p_W_landmarks_correspondences(2, :), ...
+    % S_i1.p_W_landmarks_correspondences(3, :), 5);
+  
     % BUNDLE ADJUSTMENT
     % Refines camera poses and 3D landmark positions of the last m frames.
-    if (BA == true)
+    if (BA_ == true)
         tic;
-        m = 20;
-        % Store absolute (!) pose history (w.r.t. first image frame) as 
-        % twist vectors of the last m frames:
-        R_abs = R_abs * T_i1(1:3,1:3);
-        t_abs = t_abs + T_i1(1:3,4);
-        % Convert pose to 6x1 twist column vector:
-        tau_i1 = HomogMatrix2twist([R_abs, t_abs; zeros(1,3) 1]);
-       
+        % Store pose history (w.r.t. first image frame) as 
+        % twist vectors of the last m frames as 6x1 twist column vectors:
+        tau_i1 = HomogMatrix2twist([T_i1(1:3,1:3), T_i1(1:3,4); zeros(1,3) 1]);
+        if (isempty(new_3D) == 0)
+            landmarks_hist_ = [landmarks_hist_, new_3D];
+        end
         % Make sure that the first m frames passed before calling BA:
-        if (i <= range(m))
-            poses_W_hist = [poses_W_hist; tau_i1];
+        if (i <= range_(m_-1))
+            poses_W_hist_ = [poses_W_hist_; tau_i1];
+            % observation_hist = [observation_hist; size(S_i1.p_W_landmarks_correspondences,2);...
+            % S_i1.keypoints_correspondences(:)];
+            % Add only newly triangulated landmarks of current frame to the 
+            % global landmark vector:
         else
-            % Only need to store the poses of the last m frames:
-            % IS THIS POSSIBLE WITHOUT COPYING THE WHOLE ARRAY?
-            poses_W_hist = [poses_W_hist(7:120,1); tau_i1];
-            
+            % hidden_state = [poses_W_hist; landmarks_hist_m];            
+            % Only need to store the poses/landmarks/keypoints of the last m frames:
+            poses_W_hist_ = [poses_W_hist_(7:6*m_,1); tau_i1];
+
             % bundle_adjustment(hidden_state, observations, m, K);
+            
             sprintf('Time needed: Perform Bundle Adjustment: %f seconds', toc)
         end
-    end    
+    end
+    
     % Store the number of inliers per frame
     num_inliers(i) = nnz(inlier_mask);
     

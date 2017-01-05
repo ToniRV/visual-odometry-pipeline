@@ -1,21 +1,19 @@
-function error_terms = baError(hidden_state, observations, K)
+function error_terms = baError(hidden_state, observations, K, num_frames)
 
 plot_debug = false;
 
-num_frames = observations(1);
-T_W_frames = reshape(hidden_state(1:num_frames*6), 6, []);
-p_W_landmarks = reshape(hidden_state(num_frames*6+1:end), 3, []);
+T_W_frames = reshape(hidden_state(1:num_frames*6), 6, []); % 6xnum_frames matrix; stores positions in columns
+p_W_landmarks = reshape(hidden_state(num_frames*6+1:end), 3, []); % 3xnum_frames matrix; stores landmarks in columns
 
 error_terms = [];
-observation_i = 2;
+observation_i = 0;
 
 for i = 1:num_frames
     T_W_frame = twist2HomogMatrix(T_W_frames(:, i));
     num_frame_observations = observations(observation_i + 1);
-    
+
     keypoints = flipud(reshape(observations(observation_i+2:...
         observation_i+1+num_frame_observations * 2), 2, []));
-    
     landmark_indices = observations(...
         observation_i+2+num_frame_observations * 2:...
         observation_i+1+num_frame_observations * 3);

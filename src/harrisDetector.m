@@ -2,8 +2,8 @@ function query_keypoints = harrisDetector (query_image)
     debug_with_figures = false;
     
     % Other parameters.
-    num_keypoints = 50;
-    cols = 5;
+    num_keypoints = 70;
+    cols = 4;
     rows = 3;
     
 %             selected_kps = selectKeypoints(lean_scores(h_indices_limits(h):h_indices_limits(h+1),...

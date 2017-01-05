@@ -33,25 +33,19 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     %% Keypoint Detection & Matching
     % Detect keypoints in both frames, obtain descriptors and find matches
     tic;
-    [keypoints_database, keypoints_query, ~, ~, matches] = ...
+    [kp_homo_database_matched, kp_homo_query_matched] = ...
         correspondences_2d2d(img0, img1, N);
     sprintf('Time needed: correspondences_2d2d: %f seconds', toc)
     
-    %% Extraction of Keypoint Correspondences
-    [~, query_indices, match_indices] = find(matches);
-    kp_matches_database = keypoints_database(:, match_indices);
-    kp_matches_query = keypoints_query(:, query_indices);
-    
-    %% Homogeneous (flipped) Keypoint Coordinates
-    % Express detected keypoints in homogeneous coordinates
-    kp_homo_database = ...
-        [kp_matches_database; ones(1, size(kp_matches_database, 2))];
-    kp_homo_query = ...
-        [kp_matches_query; ones(1, size(kp_matches_query, 2))];
-    
+    % For later plotting
+    if (debug_verbose)
+        kp1h_matched_before_ransac = kp_homo_database_matched;
+        kp2h_matched_before_ransac = kp_homo_query_matched;
+    end
+
     %% Flip keypoints for right input of functions from exercise 5
-    kp_homo_database_fl = kp_homo_database([2 1 3], :);
-    kp_homo_query_fl = kp_homo_query([2 1 3], :);
+    kp_homo_database_fl = kp_homo_database_matched([2 1 3], :);
+    kp_homo_query_fl = kp_homo_query_matched([2 1 3], :);
     
     %% Find fundamental matrix
     tic;
@@ -60,8 +54,8 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     sprintf('Time needed: Find fundamental matrix: %f seconds', toc)
     
     %% Obtain inliers from inlier_mask
-    kp_homo_database = kp_homo_database(:, inlier_mask);
-    kp_homo_query = kp_homo_query(:, inlier_mask);
+    kp_homo_database_matched = kp_homo_database_matched(:, inlier_mask);
+    kp_homo_query_matched = kp_homo_query_matched(:, inlier_mask);
     kp_homo_database_fl = kp_homo_database_fl(:, inlier_mask);
     kp_homo_query_fl = kp_homo_query_fl(:, inlier_mask);    
     
@@ -122,11 +116,11 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     if (debug_verbose)
         figure(5); 
         subplot(2,1,1);
-        showMatchedFeatures(img0, img1, flipud(kp_matches_database)', ...
-            flipud(kp_matches_query)', 'montage');       
+        showMatchedFeatures(img0, img1, flipud(kp1h_matched_before_ransac(1:2,:))', ...
+            flipud(kp2h_matched_before_ransac(1:2,:))', 'montage');       
         subplot(2,1,2);
-        showMatchedFeatures(img0, img1, flipud(kp_homo_database(1:2,:))', ...
-            flipud(kp_homo_query(1:2,:))', 'montage');
+        showMatchedFeatures(img0, img1, flipud(kp_homo_database_matched(1:2,:))', ...
+            flipud(kp_homo_query_matched(1:2,:))', 'montage');
         
         % Plot 3d scene (trajectory and landmarks)
         plot_trajectory_with_landmarks(img0, img1, kp_homo_database_fl, ...
@@ -135,7 +129,7 @@ function [state, T_cw] = monocular_initialisation(img0, img1, K)
     
     %% OUTPUT
     % State
-    state.matches_2d = kp_homo_query;
+    state.matches_2d = kp_homo_query_matched;
     state.landmarks = P;
     
     % Pose (4x4)

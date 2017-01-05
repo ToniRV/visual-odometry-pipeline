@@ -61,11 +61,13 @@ function [kp_homo_database_matched, kp_homo_query_matched] = ...
         corners_2 = detectHarrisFeatures(img1,'FilterSize', 3, 'MinQuality', 0.00001);
 
         % Extract the features
-        [features1, valid_points1] = extractFeatures(img0, corners_1);
-        [features2, valid_points2] = extractFeatures(img1, corners_2);
+        [features1, valid_points1] = extractFeatures(img0, corners_1, ...
+            'Method', 'Block');
+        [features2, valid_points2] = extractFeatures(img1, corners_2, ...
+            'Method', 'Block');
 
         % Find the matches
-        indexPairs = matchFeatures(features1, features2);
+        indexPairs = matchFeatures(features1, features2, 'Unique', true);
         
         % Extract the matched corners
         matchedPoints1 = valid_points1(indexPairs(:,1),:);

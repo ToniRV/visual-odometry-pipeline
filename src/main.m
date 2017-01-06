@@ -10,7 +10,9 @@ rng(1);
 % Kitti_path:/path/to/kitti
 % Malaga_path:/path/to/malaga
 % Parking_path:/path/to/parking
-type dataset_paths.txt % Create this file so we don't need to switch each time paths ;)
+% An example of file is provided under Parameters folder, copy it under
+% dataset_paths.txt with your paths
+type dataset_paths.txt
 fileID = fopen('dataset_paths.txt','r');
 formatSpec = '%s';
 paths = textscan(fileID,formatSpec, 'Delimiter', ':');

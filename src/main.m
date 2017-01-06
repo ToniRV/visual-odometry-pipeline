@@ -21,7 +21,7 @@ dataset_ = 'Kitti';                                             % 'Kitti', 'Mala
 %%% Select initialisation method to run:
 initialisation_ = 'Monocular';                             % 'Monocular', 'Stereo', 'Ground Truth'
 %%% Select if initialisation frames should be picked automatically
-is_auto_frame_monocular_initialisation_ = true;
+is_auto_frame_monocular_initialisation_ = false;
 
 % Parameters
 baseline_  = 0;
@@ -218,7 +218,7 @@ else
         case 'Kitti'
             switch initialisation_
                 case 'Monocular'
-                    bootstrap_frames_ = [0, 1];
+                    bootstrap_frames_ = [1, 3];
                     range_ = (bootstrap_frames_(2)+1):last_frame_;
                 case 'Stereo'
                     bootstrap_frames_ = [0, 0];

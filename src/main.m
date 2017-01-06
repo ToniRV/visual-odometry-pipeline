@@ -17,7 +17,7 @@ paths = textscan(fileID,formatSpec, 'Delimiter', ':');
 fclose(fileID);
 
 % Dataset paths
-paths{1}{2};
+kitti_path_ = paths{1}{2};
 malaga_path_ = paths{1}{4};
 parking_path_ = paths{1}{6};
 

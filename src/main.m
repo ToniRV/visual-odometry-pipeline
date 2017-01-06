@@ -1,24 +1,26 @@
 %% Tabula rasa
-clear all;
+clear variables;
 close all;
 
 % REMOVE
 rng(1);
 
-% Modify dataset_paths.txt with your paths to the datasets
-% Format is:
-% Kitti_path:/path/to/kitti
-% Malaga_path:/path/to/malaga
-% Parking_path:/path/to/parking
-type dataset_paths.txt % Create this file so we don't need to switch each time paths ;)
-fileID = fopen('dataset_paths.txt','r');
+% Modify paths.txt with your paths to the datasets and the
+% visual-odometry-pipeline folder
+% An example of file is provided under Parameters folder 
+% with the name paths_example.txt, copy it under
+% paths.txt with your paths.
+type Parameters/paths.txt
+fileID = fopen('Parameters/paths.txt','r');
 formatSpec = '%s';
-paths = textscan(fileID,formatSpec, 'Delimiter', ':');
+paths = textscan(fileID,formatSpec, 'Delimiter', '"');
 fclose(fileID);
 
-kitti_path_ = paths{1}{2};
-malaga_path_ = paths{1}{4};
-parking_path_ = paths{1}{6};
+vo_path = paths{1}{2};
+addpath(genpath(vo_path));
+kitti_path_ = paths{1}{4};
+malaga_path_ = paths{1}{6};
+parking_path_ = paths{1}{8};
 %% Setup
 
 %%% Select dataset to run:

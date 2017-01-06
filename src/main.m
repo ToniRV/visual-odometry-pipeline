@@ -22,7 +22,8 @@ dataset_ = 'Kitti';                                             % 'Kitti', 'Mala
 initialisation_ = 'Monocular';                                  % 'Monocular', 'Stereo', 'Ground Truth'
 
 %%% Set to true if you want to perform bundle adjustment:
-BA_ = false;
+BA_ = true;
+debugging_BA = true;
 
 % Parameters
 baseline_  = 0;
@@ -205,8 +206,8 @@ num_inliers = zeros(1, last_frame_-(bootstrap_frames_(2)+1));
 if (BA_ == true)
     m_ = 20;
     % Initialize observation vector and index mask:
-    index_mask_ = (1:size(S_i0.p_W_landmarks_correspondences,2))
-    observation_hist = [size(S_i0.p_W_landmarks_correspondences,2);...
+    index_mask_ = (1:size(S_i0.p_W_landmarks_correspondences,2));
+    observation_hist_ = [size(S_i0.p_W_landmarks_correspondences,2);...
         S_i0.keypoints_correspondences(:); index_mask_'];
     % Initialize global landmark vector:
     landmarks_hist_ = S_i0.p_W_landmarks_correspondences;
@@ -280,19 +281,19 @@ for i = range_
         
         % Update corresponding index mask of tracked keypoints:
         index_temp_tracked = index_mask_(:, validity_mask > 0);
-        index_mask_tracked = index_temp_tracked(:, inlier_mask > 0)
+        index_mask_tracked = index_temp_tracked(:, inlier_mask > 0);
         
         % If new landmarks are triangulated add them to the landmark history
         % and update the corresponding index_mask:
         if (isempty(new_3D) == 0)
-            index_mask_new = [(size(landmarks_hist_,2)+1):...
-                (size(landmarks_hist_,2)+size(new_3D,2))]
+            index_mask_new = (size(landmarks_hist_,2)+1):...
+                (size(landmarks_hist_,2)+size(new_3D,2));
             landmarks_hist_ = [landmarks_hist_, new_3D];
-            index_mask = [index_mask_tracked, index_mask_new];
+            index_mask_ = [index_mask_tracked, index_mask_new];
             kp2add = [kp_inliers_tracked(:); new_2D(:)];
             n_kp = size(kp_inliers_tracked,2) + size(new_2D,2);
         else
-            index_mask = index_mask_tracked;
+            index_mask_ = index_mask_tracked;
             kp2add = kp_inliers_tracked(:);
             n_kp = size(kp_inliers_tracked,2);
         end
@@ -300,20 +301,24 @@ for i = range_
         if (i <= range_(m_-1))
             poses_W_hist_ = [poses_W_hist_; tau_i1];
             % Update observation history:
-            observation_hist = [observation_hist; n_kp; kp2add; index_mask'];
-            % Add only newly triangulated landmarks of current frame to the 
-            % global landmark vector:
+            observation_hist_ = [observation_hist_; n_kp; kp2add; index_mask_'];
         else
             % hidden_state = [poses_W_hist; landmarks_hist_m];            
-            % Only need to store the poses/landmarks/keypoints of the last m frames:
+            % Only need to store poses/landmarks/keypoints of the last m frames:
             poses_W_hist_ = [poses_W_hist_(7:6*m_,1); tau_i1];
-
+            num_remove = observation_hist_(1);
+            observation_hist_ = [observation_hist_(num_remove*3+2:end);...
+                n_kp; kp2add; index_mask_'];
             % bundle_adjustment(hidden_state, observations, m, K);
             
             sprintf('Time needed: Perform Bundle Adjustment: %f seconds', toc)
         end
     end
     
+    if (debugging_BA)
+        fprintf('Size of observations_hist: %dx%d \n', size(observation_hist_,1),size(observation_hist_,2))
+        fprintf('Added keypoints to obs_hist: %dx%d \n', n_kp)
+    end
     % Store the number of inliers per frame
     num_inliers(i) = nnz(inlier_mask);
     

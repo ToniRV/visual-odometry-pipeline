@@ -2,22 +2,22 @@ function p = makeHarrisDetector (parameters)
 
     p = @harrisDetector;
     
-    debug_with_figures = parameters.debug_with_figures;
+    debug_with_figures_ = parameters.debug_with_figures;
 
-    num_keypoints = parameters.num_keypoints; %70
-    cols = parameters.cols; %4
-    rows = parameters.rows; %3
+    num_keypoints_ = parameters.num_keypoints; %70
+    cols_ = parameters.cols; %4
+    rows_ = parameters.rows; %3
 
-    algorithm = parameters.algorithm; %1
+    algorithm_ = parameters.algorithm; %1
 
     params_harris_matlab_ = parameters.harris_matlab; % MinFilter set to 5!
-    params_harris_lectures_ = parameters.harris_lectures;
+    params_harris_lecture_ = parameters.harris_lecture;
 
     function query_keypoints = harrisDetector (query_image)
-        switch algorithm
+        switch algorithm_
             case 1 
-                query_keypoints = customUniformHarrisDetector (query_image, num_keypoints, cols, rows);
-                    if (debug_with_figures)
+                query_keypoints = customUniformHarrisDetector (query_image, num_keypoints_, cols_, rows_);
+                    if (debug_with_figures_)
                         figure(23);
                         imshow(query_image); hold on;
                         plot(query_keypoints(2,:),...
@@ -27,8 +27,8 @@ function p = makeHarrisDetector (parameters)
                         hold off;
                     end
             case 2
-                query_keypoints = strongestHarrisDetector(query_image, cols*rows*num_keypoints);
-                   if (debug_with_figures)
+                query_keypoints = strongestHarrisDetector(query_image, cols_*rows_*num_keypoints_);
+                   if (debug_with_figures_)
                         figure(21);
                         imshow(query_image); hold on;
                         plot(query_keypoints(2,:),...
@@ -38,8 +38,8 @@ function p = makeHarrisDetector (parameters)
                         hold off;
                    end 
             case 3
-                query_keypoints = uniformHarrisDetector(query_image, cols*rows*num_keypoints);
-                    if (debug_with_figures)
+                query_keypoints = uniformHarrisDetector(query_image, cols_*rows_*num_keypoints_);
+                    if (debug_with_figures_)
                         figure(22);
                         imshow(query_image); hold on;
                         plot(query_keypoints(2,:),...
@@ -50,8 +50,8 @@ function p = makeHarrisDetector (parameters)
                     end
             case 4
                 query_keypoints = customInClassHarrisDetector (query_image,...
-                    num_keypoints, cols, rows);
-                    if (debug_with_figures)
+                    num_keypoints_, cols_, rows_);
+                    if (debug_with_figures_)
                         figure(22);
                         imshow(query_image); hold on;
                         plot(query_keypoints(2,:),...
@@ -68,9 +68,9 @@ function p = makeHarrisDetector (parameters)
     function query_keypoints = customInClassHarrisDetector (query_image,...
         num_keypoints, cols, rows)
 
-        harris_patch_size = params_harris_lectures_.harris_patch_size;
-        harris_kappa = params_harris_lectures_.harris_kappa;
-        nonmaximum_supression_radius = params_harris_lectures_.nonmaximum_supression_radius;
+        harris_patch_size = params_harris_lecture_.harris_patch_size;
+        harris_kappa = params_harris_lecture_.harris_kappa;
+        nonmaximum_supression_radius = params_harris_lecture_.nonmaximum_supression_radius;
 
         width = size(query_image, 2);
         height = size(query_image, 1);
@@ -145,7 +145,7 @@ function p = makeHarrisDetector (parameters)
                 [best_keypoints(1,:)+h_indices_limits(h)-1; best_keypoints(2,:)+w_indices_limits(w)-1];
 
                 % Debug keypoints taken per bin
-                if (debug_with_figures)
+                if (debug_with_figures_)
                     figure(20);
                     subplot(1, 4, [1 2]);
                     imshow(query_image); hold on;
@@ -176,7 +176,7 @@ function p = makeHarrisDetector (parameters)
             'FilterSize', params_harris_matlab_.FilterSize);
         % Select strongest uniformly
         uniform_strongest = corners.selectUniform(num_keypoints, size(query_image));
-        if(debug_with_figures)
+        if(debug_with_figures_)
             figure(31);
             imshow(query_image); hold on;
             plot(uniform_strongest);
@@ -193,7 +193,7 @@ function p = makeHarrisDetector (parameters)
             'FilterSize', params_harris_matlab_.FilterSize);
         % Select strongest
         strongest = corners.selectStrongest(num_keypoints);
-        if(debug_with_figures)
+        if(debug_with_figures_)
             figure(31);
             imshow(query_image); hold on;
             plot(strongest);

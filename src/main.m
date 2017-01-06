@@ -1,5 +1,5 @@
 %% Tabula rasa
-clear all;
+clear variables;
 close all;
 
 % REMOVE

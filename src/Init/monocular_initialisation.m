@@ -1,4 +1,5 @@
-function [state, T_cw] = monocular_initialisation(img0, img1, K)
+function [state, T_cw, reprojection_errors, costs] = ...
+    monocular_initialisation(img0, img1, K)
 
 %   INPUT:
     %   * img0: First image taken by monocular camera

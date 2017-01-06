@@ -255,23 +255,7 @@ S_i0 = struct(...
     );
 
 % Store Image_i0, aka previous image to kickstart continuous operation.
-prev_image_ = 0;
-switch dataset_
-    case 'Kitti'
-        prev_image_ = imread([kitti_path_ '/00/image_0/' sprintf('%06d.png',i_)]);
-    case 'Malaga'
-        prev_image_ = rgb2gray(imread([malaga_path_ ...
-            '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
-            left_images_(i_).name]));
-    case 'Parking'
-        prev_image_ = im2uint8(rgb2gray(imread([parking_path_ ...
-            sprintf('/images/img_%05d.png',i_)])));
-    otherwise
-        disp(['Wrong dataset: ', dataset_]);
-        assert(false);
-end
-
-prev_img = prev_image_;
+prev_img = getImage(dataset_, i_, kitti_path_, malaga_path_, parking_path_);
 
 params_harris_matlab = struct(...
     'MinQuality', 0.01,...
@@ -304,28 +288,10 @@ processFrame = makeProcessFrame(cont_op_parameters);
     
 for i = range_
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
-    switch dataset_
-        case 'Kitti'
-            image = imread([kitti_path_ '/00/image_0/' sprintf('%06d.png',i)]);
-        case 'Malaga'
-            image = rgb2gray(imread([malaga_path_ ...
-                '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
-                left_images_(i).name]));
-        case 'Parking'
-            image = im2uint8(rgb2gray(imread([parking_path_ ...
-                sprintf('/images/img_%05d.png',i)])));
-        otherwise
-            disp(['Wrong dataset: ', dataset_]);
-            assert(false);
-    end
+    image = getImage(dataset_, i, kitti_path_, malaga_path_, parking_path_);
     
     [S_i1, T_i1, inlier_mask] = processFrame(image, prev_img, S_i0, i);
-%      subplot(1, 3, 3);
-%      scatter3(S_i1.p_W_landmarks_correspondences(1, :), ...
-%          S_i1.p_W_landmarks_correspondences(2, :), ...
-%          S_i1.p_W_landmarks_correspondences(3, :), 5);
 
-    
     % Store the number of inliers per frame
     num_inliers_(i) = nnz(inlier_mask);
     

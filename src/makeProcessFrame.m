@@ -8,6 +8,8 @@ params_harris_detector_ = parameters.harris_detector;
 triangulation_angle_threshold_ = parameters.triangulation_angle_threshold; %35
 suppression_radius_ = parameters.suppression_radius;
 
+ransacLocalization = makeRansacLocalization(parameters.ransac_localization);
+
 function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i0, State_i0, i1)
 %PROCESSFRAME Summary of this function goes here
 %   Detailed explanation goes here

@@ -13,7 +13,7 @@ rng(1);
 type Parameters/paths.txt
 fileID = fopen('Parameters/paths.txt','r');
 formatSpec = '%s';
-paths = textscan(fileID,formatSpec, 'Delimiter', ': ');
+paths = textscan(fileID,formatSpec, 'Delimiter', '"');
 fclose(fileID);
 
 vo_path = paths{1}{2};

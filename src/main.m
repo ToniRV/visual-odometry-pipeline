@@ -143,19 +143,19 @@ params_mono = struct(...
     'correspondences_2D2D', params_correspondences_2D2D, ...
     'ransac', params_ransac);
 
-parameters = struct('stereo', params_stereo, 'mono', params_mono);
+init_parameters = struct('stereo', params_stereo, 'mono', params_mono);
 
 
 keypoints_ = zeros(0);
 p_W_landmarks_ = zeros(0);
 switch initialisation_
     case 'Monocular'
-        mono_init = makeMonoInit(parameters.mono);
+        mono_init = makeMonoInit(init_parameters.mono);
         [state, ~] = mono_init(img0_, img1_);
         keypoints_ = state.matches_2d(1:2,:);
         p_W_landmarks_ = state.landmarks(1:3,:);
     case 'Stereo'
-        stereoInit = makeStereoInit(parameters.stereo);
+        stereoInit = makeStereoInit(init_parameters.stereo);
         [keypoints_, p_W_landmarks_] = stereoInit(img0_, img1_);
     case 'Ground Truth'
         %%% GROUND TRUTH initialisation

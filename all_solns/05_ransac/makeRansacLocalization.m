@@ -8,7 +8,7 @@ pixel_tolerance_ = parameters.pixel_tolerance;
 
 function [R_C_W, t_C_W, valid_tracked_keypoints, valid_p_W_landmarks, validity_mask, inlier_mask, ...
     max_num_inliers_history] = ransacLocalization(...
-    query_image, database_image, database_keypoints, p_W_landmarks, K)
+    query_image, database_image, database_keypoints, p_W_landmarks)
 % query_keypoints should be 2x1000
 % all_matches should be 1x1000 and correspond to the output from the
 %   matchDescriptors() function from exercise 3.
@@ -18,8 +18,8 @@ function [R_C_W, t_C_W, valid_tracked_keypoints, valid_p_W_landmarks, validity_m
 use_p3p = true;
 
 if use_p3p
-    num_iterations = 200;
-    pixel_tolerance = 10;
+    num_iterations = num_iterations_;
+    pixel_tolerance = pixel_tolerance_;
     k = 3;
 else
     num_iterations = 2000;
@@ -56,7 +56,7 @@ for i = 1:num_iterations
     keypoint_sample = matched_query_keypoints(:, idx);
     
     if use_p3p
-        normalized_bearings = K\[keypoint_sample; ones(1, 3)];
+        normalized_bearings = K_\[keypoint_sample; ones(1, 3)];
         for ii = 1:3
             normalized_bearings(:, ii) = normalized_bearings(:, ii) / ...
                 norm(normalized_bearings(:, ii), 2);
@@ -72,7 +72,7 @@ for i = 1:num_iterations
         end
     else
         M_C_W_guess = estimatePoseDLT(...
-            keypoint_sample', landmark_sample', K);
+            keypoint_sample', landmark_sample', K_);
         R_C_W_guess = M_C_W_guess(:, 1:3);
         t_C_W_guess = M_C_W_guess(:, end);
     end
@@ -81,7 +81,7 @@ for i = 1:num_iterations
     projected_points = projectPoints(...
         (R_C_W_guess(:,:,1) * corresponding_landmarks) + ...
         repmat(t_C_W_guess(:,:,1), ...
-        [1 size(corresponding_landmarks, 2)]), K);
+        [1 size(corresponding_landmarks, 2)]), K_);
     difference = matched_query_keypoints - projected_points;
     errors = sum(difference.^2, 1);
     is_inlier = errors < pixel_tolerance^2;
@@ -90,7 +90,7 @@ for i = 1:num_iterations
         projected_points = projectPoints(...
             (R_C_W_guess(:,:,2) * corresponding_landmarks) + ...
             repmat(t_C_W_guess(:,:,2), ...
-            [1 size(corresponding_landmarks, 2)]), K);
+            [1 size(corresponding_landmarks, 2)]), K_);
         difference = matched_query_keypoints - projected_points;
         errors = sum(difference.^2, 1);
         alternative_is_inlier = errors < pixel_tolerance^2;

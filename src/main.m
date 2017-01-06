@@ -133,14 +133,14 @@ if (is_auto_frame_monocular_initialisation_)
     for i = 1:max_num_auto_frames
         switch dataset_
             case 'Kitti'
-                current_frame_ = imread([kitti_path_ '/00/image_0/' ...
+                img1_ = imread([kitti_path_ '/00/image_0/' ...
                     sprintf('%06d.png',i)]);
             case 'Malaga'
-                current_frame_ = rgb2gray(imread([malaga_path_ ...
+                img1_ = rgb2gray(imread([malaga_path_ ...
                  '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
                  left_images(i).name]));
             case 'Parking'
-                current_frame_ = rgb2gray(imread([parking_path_ ...
+                img1_ = rgb2gray(imread([parking_path_ ...
                    sprintf('/images/img_%05d.png',i)]));
             otherwise
                 assert(false);
@@ -151,7 +151,7 @@ if (is_auto_frame_monocular_initialisation_)
             case 'Monocular'
                 mono_init = makeMonoInit(init_parameters.mono);
                 [state_i, T_cw_i, reprojection_errors, costs] = ...
-                    mono_init(img0_, current_frame_);
+                    mono_init(img0_, img1_);
                 keypoints_ = state_i.matches_2d(1:2,:);
                 p_W_landmarks_ = state_i.landmarks(1:3,:);
             otherwise

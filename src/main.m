@@ -316,11 +316,8 @@ S_i0 = struct(...
     'last_obs_candidate_keypoints', zeros(2,0)...                   % 2xM Last keypoint matched corresponding to initial candidate
     );
 
-%num_inliers = zeros(1, last_frame_-(bootstrap_frames_(2)+1));
-
 % Store Image_i0, aka previous image to kickstart continuous operation.
 prev_image_ = 0;
-%i_ = bootstrap_frames_(2);
 switch dataset_
     case 'Kitti'
         prev_image_ = imread([kitti_path_ '/00/image_0/' sprintf('%06d.png',i_)]);

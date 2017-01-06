@@ -10,9 +10,6 @@ addpath('Init');
 % Replace the following with the path to your keypoint matcher code:
 addpath('../../00_camera_projection/code');
 
-% Set 
-
-
 kitti_path_='/Users/amadeus/Documents/MATLAB/Frame_Sets/Kitti';
 malaga_path_='/Users/amadeus/Documents/MATLAB/Frame_Sets/Malaga_07';
 parking_path_='/Users/amadeus/Documents/MATLAB/Frame_Sets/Parking';
@@ -207,9 +204,10 @@ num_inliers = zeros(1, last_frame_-(bootstrap_frames_(2)+1));
 % Bundle Adjustment initialization:
 if (BA_ == true)
     m_ = 20;
-    % Initialize observation vector:
+    % Initialize observation vector and index mask:
+    index_mask = (1:size(S_i0.p_W_landmarks_correspondences,2));
     observation_hist = [size(S_i0.p_W_landmarks_correspondences,2);...
-        S_i0.keypoints_correspondences(:); (1:size(S_i0.p_W_landmarks_correspondences,2))'];
+        S_i0.keypoints_correspondences(:); index_mask'];
     % Initialize the global landmark vector:
     landmarks_hist_ = S_i0.p_W_landmarks_correspondences;
     
@@ -261,7 +259,8 @@ for i = range_
     end
     
     % State and pose update:
-    [S_i1, T_i1, inlier_mask, new_3D, new_2D] = processFrame(image, prev_img, S_i0, i);
+    [S_i1, T_i1, inlier_mask, validity_mask, new_3D, new_2D] = ...
+        processFrame(image, prev_img, S_i0, i);
     % subplot(1, 3, 3);
     % scatter3(S_i1.p_W_landmarks_correspondences(1, :), ...
     % S_i1.p_W_landmarks_correspondences(2, :), ...
@@ -274,14 +273,30 @@ for i = range_
         % Store pose history (w.r.t. first image frame) as 
         % twist vectors of the last m frames as 6x1 twist column vectors:
         tau_i1 = HomogMatrix2twist([T_i1(1:3,1:3), T_i1(1:3,4); zeros(1,3) 1]);
+        
+        % Extract tracked keypoints from previous to current frame:
+        kp_tracked = S_i0.keypoints_correspondences(:, validity_mask > 0);
+        kp_inliers_tracked = kp_tracked(:, inlier_mask > 0);
+        
+        % Update corresponding index mask:
+        index_temp_tracked = index_mask(:, validity_mask > 0);
+        index_mask_tracked = index_temp_tracked(:, validity_mask > 0);
+        
+        % If new landmarks are triangulated add them to the landmark history:
         if (isempty(new_3D) == 0)
             landmarks_hist_ = [landmarks_hist_, new_3D];
         end
         % Make sure that the first m frames passed before calling BA:
         if (i <= range_(m_-1))
             poses_W_hist_ = [poses_W_hist_; tau_i1];
-            % observation_hist = [observation_hist; size(S_i1.p_W_landmarks_correspondences,2);...
-            % S_i1.keypoints_correspondences(:)];
+            % Update observation history:
+            if (isempty(new_3D) == 0)
+                observation_hist = [observation_hist; size(kp_inliers_tracked,2)+size(new_2D,2);...
+                kp_inliers_tracked(:); new_2D(:)];
+            else
+                observation_hist = [observation_hist; size(kp_inliers_tracked,2);...
+                kp_inliers_tracked(:)];
+            end    
             % Add only newly triangulated landmarks of current frame to the 
             % global landmark vector:
         else

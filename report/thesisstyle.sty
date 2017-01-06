@@ -73,7 +73,7 @@
 \thispagestyle{empty}
 \begin{spacing}{1}
 \begin{center}
-{\large \thesistype{} Thesis}\\
+{\large \thesistype{}}\\
 \vspace*{\stretch{1}}
 \begin{spacing}{1.5}
 {\LARGE\bf #1}\\
@@ -83,16 +83,18 @@
 \vspace*{\stretch{3}}
 \thesisadviser{}\\
 {\footnotesize Adviser}\\
-\vspace*{1.5mm}
+\vspace*{3mm}
 \thesisprof{}\\
+{\footnotesize Professor}\\
+\vspace*{3mm}
 \thesisinstitut{}\\
-{\thesisuni{} Swiss Federal Institute of Technology Zurich (ETH)}\\
+{\thesisuni{}}\\
 \thesisinstitutaddress{}
 \vspace*{\stretch{2}}
 {\large #2}\\
 \vspace*{\stretch{2}}
-\begin{tabular*}{\linewidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[height=13mm]{\thesisinstitutlogoname} & \includegraphics[height=13mm]{\thesisunilogoname}
+\begin{tabular*}{\linewidth}{l@{\extracolsep{\fill}}m@{\extracolsep{\fill}}r}
+\includegraphics[height=13mm]{files/UNIlogo.png} & \includegraphics[height=13mm]{\thesisinstitutlogoname} & \includegraphics[height=13mm]{\thesisunilogoname}
 \end{tabular*}
 \end{center}
 \end{spacing}

@@ -47,19 +47,19 @@
 % -------------------------------------------------------------------------------------------------
 % Select type of thesis
 % -------------------------------------------------------------------------------------------------
-\renewcommand{\thesistype}{} % default value: Thesis
+\renewcommand{\thesistype}{Project Report} % default value: Thesis
 
 % -------------------------------------------------------------------------------------------------
 % Set names
 % -------------------------------------------------------------------------------------------------
-\renewcommand{\thesisauthor}{Marius Grimm}
-\renewcommand{\thesisadviser}{Rebekka Burkholz}
-\renewcommand{\thesisprof}{Prof. Dr. Dr. Frank Schweitzer}
-\renewcommand{\thesisinstitut}{Chair of System Design}
+\renewcommand{\thesisauthor}{Marius Grimm, Amadeus Oertel, Toni Rosi\~nol}
+\renewcommand{\thesisadviser}{Titus Cieslewski, Henri Rebecq}
+\renewcommand{\thesisprof}{Prof. Dr. Davide Scaramuzza}
+\renewcommand{\thesisinstitut}{Robotics and Perception Group}
 \renewcommand{\thesisinstitutaddress}{}
-\renewcommand{\thesisuni}{} % default value: Swiss Federal Institute of Technology Zurich (ETH)
-\renewcommand{\thesisinstitutlogoname}{IRISlogo}
-\renewcommand{\thesisunilogoname}{ETHlogo}
+\renewcommand{\thesisuni}{University of Zurich \& Swiss Federal Institute of Technology Zurich (ETH)} % default value: Swiss Federal Institute of Technology Zurich (ETH)
+\renewcommand{\thesisinstitutlogoname}{files/RPGlogo}
+\renewcommand{\thesisunilogoname}{files/ETHlogo}
 
 
 % -------------------------------------------------------------------------------------------------
@@ -75,8 +75,7 @@
 
 % Title page: set title and date preferably formatted according to
 % ISO 8601
-\thesistitlepage{Superb Thesis Title}{2015-05} 
-
+\thesistitlepage{Visual Odometry Pipeline}{2017-01} 
 
 % This is the second part of the front matter. Pages appear with
 % lowercase roman numbering. The first page number is 'i'.
@@ -88,9 +87,9 @@
 \addtocontents{toc}{\vspace{.5\baselineskip}}
 
 % List of tables
-\newpage
-\addcontentsline{toc}{section}{\protect\numberline{}{List of Tables}}
-\listoftables
+%\newpage
+%\addcontentsline{toc}{section}{\protect\numberline{}{List of Tables}}
+%\listoftables
 
 % List of figures
 \newpage
@@ -129,9 +128,9 @@
 
 
 % Appendices (if needed)
-\addtocontents{toc}{\vspace{.5\baselineskip}}
-\appendix
-\include{Appendix}
+%\addtocontents{toc}{\vspace{.5\baselineskip}}
+%\appendix
+%\include{Appendix}
 %\include{Notation}
 \include{Examples}
 

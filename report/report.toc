@@ -1,7 +1,6 @@
 \vspace {.5\baselineskip }
-\contentsline {section}{\numberline {}{List of Tables}}{ii}{section*.1}
-\contentsline {section}{\numberline {}{List of Figures}}{iii}{section*.2}
-\contentsline {section}{\numberline {}{Abstract}}{1}{section*.3}
+\contentsline {section}{\numberline {}{List of Figures}}{ii}{section*.1}
+\contentsline {section}{\numberline {}{Abstract}}{1}{section*.2}
 \contentsline {section}{\numberline {1}Introduction}{2}{section.1}
 \contentsline {section}{\numberline {2}Main Category A}{2}{section.2}
 \contentsline {subsection}{\numberline {2.1}Sub-Category I}{2}{subsection.2.1}
@@ -13,10 +12,8 @@
 \contentsline {section}{\numberline {5}Conclusion}{2}{section.5}
 \vspace {.5\baselineskip }
 \contentsline {section}{\numberline {}{References}}{3}{section.5}
-\vspace {.5\baselineskip }
-\contentsline {section}{\numberline {A}Appendix}{4}{appendix.A}
-\contentsline {section}{\numberline {B}Examples}{5}{appendix.B}
-\contentsline {subsection}{\numberline {B.1}Tables}{5}{subsection.B.1}
-\contentsline {subsection}{\numberline {B.2}Figures}{5}{subsection.B.2}
-\contentsline {subsection}{\numberline {B.3}Units}{5}{subsection.B.3}
-\contentsline {subsection}{\numberline {B.4}Miscellany}{5}{subsection.B.4}
+\contentsline {section}{\numberline {6}Examples}{4}{section.6}
+\contentsline {subsection}{\numberline {6.1}Tables}{4}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}Figures}{4}{subsection.6.2}
+\contentsline {subsection}{\numberline {6.3}Units}{4}{subsection.6.3}
+\contentsline {subsection}{\numberline {6.4}Miscellany}{4}{subsection.6.4}

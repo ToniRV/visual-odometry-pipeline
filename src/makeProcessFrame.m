@@ -214,12 +214,12 @@ function is_triangulable = checkTriangulability(last_kps, last_tf, first_kps, fi
     %%% Tune this threshold
     angle_threshold = triangulation_angle_threshold_;
     %1) Compute last bearing vector in the World frame
-    bearing_vector_last_kps = computeBearing(last_kps, last_tf, K_);
+    bearing_vector_last_kps = computeBearing(last_kps, last_tf);
     %2) Compute first bearing vector in the World frame
     bearing_vector_first_kps = zeros(3, size(first_tfs, 2));
     for i = 1:size(first_kps,2)
         first_tf = reshape(first_tfs(:, i), 3, 4);
-        bearing_vector_first_kps(:, i) = computeBearing(first_kps(:, i), first_tf, K_);
+        bearing_vector_first_kps(:, i) = computeBearing(first_kps(:, i), first_tf);
     end
     %3) Check which current kps are triangulable
     angles = atan2d(norm(cross(bearing_vector_last_kps, bearing_vector_first_kps)), ...

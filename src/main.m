@@ -150,7 +150,7 @@ params_mono = struct(...
 parameters = struct('stereo', params_stereo, 'mono', params_mono);
 
 
-keypoints_ = zeros(0);
+keypoints_ = zeros(0,'double');
 p_W_landmarks_ = zeros(0);
 switch initialisation_
     case 'Monocular'
@@ -211,6 +211,8 @@ if (BA_ == true)
         S_i0.keypoints_correspondences(:); index_mask_'];
     % Initialize global landmark vector:
     landmarks_hist_ = S_i0.p_W_landmarks_correspondences;
+    % Initialize index history for last m frames:
+    index_hist_m_ = index_mask_;
     
     if (strcmp(initialisation_,'Monocular') == 1)
         tau_i0 = HomogMatrix2twist(T_i0);
@@ -297,16 +299,29 @@ for i = range_
             kp2add = kp_inliers_tracked(:);
             n_kp = size(kp_inliers_tracked,2);
         end
-        % Make sure that the first m frames passed before calling BA:
-        if (i <= range_(m_-1))
+        
+        if (i < range_(m_-1)) % Make sure that the first m frames passed before calling BA
+            index_hist_m_ = [index_hist_m_, index_mask_];
             poses_W_hist_ = [poses_W_hist_; tau_i1];
             % Update observation history:
             observation_hist_ = [observation_hist_; n_kp; kp2add; index_mask_'];
+        elseif (i == range_(m_-1)) % Call BA for the first time after the first m frames
+            index_hist_m_ = [index_hist_m_, index_mask_];
+            poses_W_hist_ = [poses_W_hist_; tau_i1];
+            % Update observation history:
+            observation_hist_ = [observation_hist_; n_kp; kp2add; index_mask_'];
+            % Define hidden_state: 
+            hidden_state = [poses_W_hist_; landmarks_hist_(:)];
+            opt_hidden_state = runBA_0(hidden_state, cast(observation_hist_,'double'), K, m_);
         else
             % hidden_state = [poses_W_hist; landmarks_hist_m];            
-            % Only need to store poses/landmarks/keypoints of the last m frames:
-            poses_W_hist_ = [poses_W_hist_(7:6*m_,1); tau_i1];
+            % Track which landmarks have been observed in the last m frames
+            % and extract these 3D points:
             num_remove = observation_hist_(1);
+            index_hist_m_ = [index_hist_m_(num_remove+1:end), index_mask_];
+            % Remove duplicates and sort; store global index:
+            index_hist_m_sorted = unique(index_hist_m_);
+            poses_W_hist_ = [poses_W_hist_(7:6*m_,1); tau_i1];
             observation_hist_ = [observation_hist_(num_remove*3+2:end);...
                 n_kp; kp2add; index_mask_'];
             % bundle_adjustment(hidden_state, observations, m, K);

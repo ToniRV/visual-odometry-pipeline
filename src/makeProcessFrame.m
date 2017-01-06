@@ -178,11 +178,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
         disp(['Frame ' num2str(i1) ' localized with ' ...
             num2str(num_inliers(i1)) ' inliers!']);
         view(0,0);
-        % Since we are successful in localizing
-        State_i1.success = 1;
     else
-        % Since we are NOT successful in localizing
-        State_i1.success = 0;
         disp(['Frame ' num2str(i1) ' failed to localize!']);
     end
 

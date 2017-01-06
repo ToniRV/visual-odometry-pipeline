@@ -1,3 +1,11 @@
+function p = makeRansacLocalization (parameters)
+
+p = @ransacLocalization;
+
+K_ = parameters.K;
+num_iterations_ = parameters.num_iterations;
+pixel_tolerance_ = parameters.pixel_tolerance;
+
 function [R_C_W, t_C_W, valid_tracked_keypoints, valid_p_W_landmarks, validity_mask, inlier_mask, ...
     max_num_inliers_history] = ransacLocalization(...
     query_image, database_image, database_keypoints, p_W_landmarks, K)
@@ -120,5 +128,6 @@ else
     t_C_W = best_t;
 end
 
+end
 end
 

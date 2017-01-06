@@ -5,15 +5,20 @@ close all;
 % REMOVE
 rng(1);
 
-addpath('2d2d_correspondences');
-addpath('Init');
-% Replace the following with the path to your keypoint matcher code:
-addpath('../../00_camera_projection/code');
+% Modify dataset_paths.txt with your paths to the datasets
+% Format is:
+% Kitti_path:/path/to/kitti
+% Malaga_path:/path/to/malaga
+% Parking_path:/path/to/parking
+type dataset_paths.txt % Create this file so we don't need to switch each time paths ;)
+fileID = fopen('dataset_paths.txt','r');
+formatSpec = '%s';
+paths = textscan(fileID,formatSpec, 'Delimiter', ':');
+fclose(fileID);
 
-% Dataset paths
-kitti_path_ = '/home/tonirv/Downloads/kitti';
-malaga_path_ = '/home/tonirv/Downloads/';
-parking_path_ = '/home/tonirv/Documents/Vision Algorithms for Mobile Robotics/VO - Project/parking';
+kitti_path_ = paths{1}{2};
+malaga_path_ = paths{1}{4};
+parking_path_ = paths{1}{6};
 %% Setup
 
 %%% Select dataset to run:

@@ -10,7 +10,8 @@ function image = getImage(dataset, idx, kitti_path, malaga_path, parking_path)
         case 'Parking'
             image = rgb2gray(imread([parking_path ...
                sprintf('/images/img_%05d.png', idx)]));
-        otherwise
+       otherwise
+            disp(['Wrong dataset specified: ', dataset]);
             assert(false);
     end
 end

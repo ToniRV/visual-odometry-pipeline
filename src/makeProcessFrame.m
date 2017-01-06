@@ -6,6 +6,7 @@ params_harris_detector_ = parameters.harris_detector;
 
 %%% Tune this threshold
 triangulation_angle_threshold_ = parameters.triangulation_angle_threshold; %35
+suppression_radius_ = parameters.suppression_radius;
 
 function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i0, State_i0, i1)
 %PROCESSFRAME Summary of this function goes here
@@ -30,7 +31,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     harrisDetector = makeHarrisDetector(params_harris_detector_);
     query_keypoints = harrisDetector (Image_i1);
     
-    query_keypoints = removeDuplicates(query_keypoints, keypoints_correspondences_i1);
+    query_keypoints = removeDuplicates(query_keypoints, keypoints_correspondences_i1, suppression_radius_);
     
     %% Step 3: trying to triangulate new landmarks
     points_2D_global_var = 0;
@@ -143,7 +144,8 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             %%%% Remove duplicates btw query_keypoints and tracked
             %%%% last_obs_cand_kp_i1 since they will represent the same 3D
             %%%% points
-            new_first_obs_cand_kp_i1 = removeDuplicates(query_keypoints, last_obs_cand_kp_i1);
+            new_first_obs_cand_kp_i1 = removeDuplicates(...
+                query_keypoints, last_obs_cand_kp_i1, suppression_radius_);
             disp(['Num of new keypoints: ' num2str(size(new_first_obs_cand_kp_i1,2))]);
             new_first_obs_cand_kp_i1_global_var = new_first_obs_cand_kp_i1;
             new_first_obs_cand_tf_i1 = repmat(reshape(Transform_i1, 12, 1), 1, size(new_first_obs_cand_kp_i1, 2));

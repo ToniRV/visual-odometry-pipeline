@@ -1,0 +1,6 @@
+Kitti_path: /home/tonirv/Downloads/kitti
+Malaga_path: /home/tonirv/Downloads/
+Parking_path: /home/tonirv/Downloads/parking
+
+%%%% THIS IS AN EXAMPLE OF THE FILE FORMAT WHERE TO SPECIFY PATHS %%%%%
+%%%% SET YOUR PATHS AND COPY THIS FILE UNDER THE NAME: dataset_paths.txt  %%%%

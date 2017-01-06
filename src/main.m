@@ -254,9 +254,6 @@ S_i0 = struct(...
     'last_obs_candidate_keypoints', zeros(2,0)...                   % 2xM Last keypoint matched corresponding to initial candidate
     );
 
-% Store Image_i0, aka previous image to kickstart continuous operation.
-prev_img = getImage(dataset_, i_, kitti_path_, malaga_path_, parking_path_);
-
 params_harris_matlab = struct(...
     'MinQuality', 0.01,...
     'FilterSize', 5);
@@ -283,6 +280,9 @@ cont_op_parameters = struct(...
     'triangulation_angle_threshold', 35,...
     'suppression_radius', 4,...
     'ransac_localization', params_ransac_localization);
+
+% Store Image_i0, aka previous image to kickstart continuous operation.
+prev_img = getImage(dataset_, i_, kitti_path_, malaga_path_, parking_path_);
     
 processFrame = makeProcessFrame(cont_op_parameters);
     

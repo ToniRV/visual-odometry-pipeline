@@ -1,3 +1,12 @@
+function p = makeProcessFrame(parameters)
+
+p = @processFrame;
+
+params_harris_detector_ = parameters.harris_detector;
+
+%%% Tune this threshold
+triangulation_angle_threshold_ = parameters.triangulation_angle_threshold; %35
+
 function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i0, State_i0, i1)
 %PROCESSFRAME Summary of this function goes here
 %   Detailed explanation goes here
@@ -18,6 +27,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     p_W_landmarks_correspondences_i1 = valid_p_W_landmarks(:,inlier_mask > 0);
     
     % Detect new keypoints
+    harrisDetector = makeHarrisDetector(params_harris_detector_);
     query_keypoints = harrisDetector (Image_i1);
     
     query_keypoints = removeDuplicates(query_keypoints, keypoints_correspondences_i1);
@@ -204,7 +214,7 @@ function is_triangulable = checkTriangulability(last_kps, last_tf, first_kps, fi
 %%% last_tf: transformation from World to Camera of the last kps
 %%% first_tf: transformation from World to Camera of the first kps
     %%% Tune this threshold
-    threshold = 35;
+    angle_threshold = triangulation_angle_threshold_;
     %1) Compute last bearing vector in the World frame
     bearing_vector_last_kps = computeBearing(last_kps, last_tf, K);
     %2) Compute first bearing vector in the World frame
@@ -216,7 +226,7 @@ function is_triangulable = checkTriangulability(last_kps, last_tf, first_kps, fi
     %3) Check which current kps are triangulable
     angles = atan2d(norm(cross(bearing_vector_last_kps, bearing_vector_first_kps)), ...
         dot(bearing_vector_last_kps, bearing_vector_first_kps));
-    is_triangulable = angles > threshold;
+    is_triangulable = angles > angle_threshold;
 end
 
 function bearing_vector = computeBearing(kps, tfs, K)
@@ -227,4 +237,6 @@ function bearing_vector = computeBearing(kps, tfs, K)
     % Get bearings orientation in world frame
     bearings_in_world_frame = R_C_W*bearings;
     bearing_vector = bearings_in_world_frame;
+end
+
 end

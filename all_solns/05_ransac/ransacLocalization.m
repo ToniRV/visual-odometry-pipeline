@@ -1,4 +1,4 @@
-function [R_C_W, t_C_W, query_keypoints, all_matches, inlier_mask, ...
+function [R_C_W, t_C_W, valid_tracked_keypoints, valid_p_W_landmarks, validity_mask, inlier_mask, ...
     max_num_inliers_history] = ransacLocalization(...
     query_image, database_image, database_keypoints, p_W_landmarks, K)
 % query_keypoints should be 2x1000
@@ -7,17 +7,7 @@ function [R_C_W, t_C_W, query_keypoints, all_matches, inlier_mask, ...
 % inlier_mask should be 1xnum_matched (!!!) and contain, only for the
 %   matched keypoints (!!!), 0 if the match is an outlier, 1 otherwise.
 
-use_p3p = false;
-
-% Parameters form exercise 3.
-harris_patch_size = 9;
-harris_kappa = 0.08;
-nonmaximum_supression_radius = 8;
-descriptor_radius = 9;
-match_lambda = 5;
-
-% Other parameters.
-num_keypoints = 1000;
+use_p3p = true;
 
 if use_p3p
     num_iterations = 200;
@@ -29,29 +19,28 @@ else
     k = 6;
 end
 
-% Detect and match keypoints.
-query_harris = harris(query_image, harris_patch_size, harris_kappa);
-query_keypoints = selectKeypoints(...
-    query_harris, num_keypoints, nonmaximum_supression_radius);
-query_descriptors = describeKeypoints(...
-    query_image, query_keypoints, descriptor_radius);
-database_descriptors = describeKeypoints(...
-    database_image, database_keypoints, descriptor_radius);
-all_matches = matchDescriptors(...
-    query_descriptors, database_descriptors, match_lambda);
+[tracked_keypoints, validity_mask] = KLT(database_keypoints, query_image, database_image);
+valid_tracked_keypoints = tracked_keypoints(:, validity_mask > 0); % WARNING: should we round, or keep sub-pixel accuracy?
+valid_p_W_landmarks = p_W_landmarks(:, validity_mask > 0);
 
-matched_query_keypoints = query_keypoints(:, all_matches > 0);
-corresponding_matches = all_matches(all_matches > 0);
-corresponding_landmarks = p_W_landmarks(:, corresponding_matches);
+% Debug
+num_db_keypoints = size(database_keypoints, 2);
+num_matches = nnz(validity_mask);
+fprintf('Num of database keypoints: %d \n', num_db_keypoints);
+fprintf('Num of matches: %d \n', num_matches);
+
+% Store matched keypoints and landmarks correpondences ci<->Xi
+matched_query_keypoints = valid_tracked_keypoints;
+corresponding_landmarks = valid_p_W_landmarks;
 
 % Initialize RANSAC.
 inlier_mask = zeros(1, size(matched_query_keypoints, 2));
-matched_query_keypoints = flipud(matched_query_keypoints);
+matched_query_keypoints = flipud(matched_query_keypoints); % ?????? flipud here?
 max_num_inliers_history = zeros(1, num_iterations);
 max_num_inliers = 0;
-% Replace the following with the path to your keypoint matcher code:
-addpath('../../00_camera_projection/code');
 
+best_R = [];
+best_t = [];
 % RANSAC
 for i = 1:num_iterations
     [landmark_sample, idx] = datasample(...
@@ -99,12 +88,19 @@ for i = 1:num_iterations
         alternative_is_inlier = errors < pixel_tolerance^2;
         if nnz(alternative_is_inlier) > nnz(is_inlier)
             is_inlier = alternative_is_inlier;
+            tmp_R = R_C_W_guess(:,:,2);
+            tmp_t = t_C_W_guess(:,:,2);
+        else
+            tmp_R = R_C_W_guess(:,:,1);
+            tmp_t = t_C_W_guess(:,:,1);
         end
     end
     
     if nnz(is_inlier) > max_num_inliers && nnz(is_inlier) >= 6
         max_num_inliers = nnz(is_inlier);        
         inlier_mask = is_inlier;
+        best_R = tmp_R;
+        best_t = tmp_t;
     end
     
     max_num_inliers_history(i) = max_num_inliers;
@@ -114,11 +110,14 @@ if max_num_inliers == 0
     R_C_W = [];
     t_C_W = [];
 else
-    M_C_W = estimatePoseDLT(...
-        matched_query_keypoints(:, inlier_mask>0)', ...
-        corresponding_landmarks(:, inlier_mask>0)', K);
-    R_C_W = M_C_W(:, 1:3);
-    t_C_W = M_C_W(:, end);
+    % TODO last DLT estimate has to be removed according to hints?? 
+%     M_C_W = estimatePoseDLT(...
+%         matched_query_keypoints(:, inlier_mask>0)', ...
+%         corresponding_landmarks(:, inlier_mask>0)', K);
+%     R_C_W = M_C_W(:, 1:3);
+%     t_C_W = M_C_W(:, end);
+    R_C_W = best_R;
+    t_C_W = best_t;
 end
 
 end

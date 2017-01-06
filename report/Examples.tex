@@ -1,0 +1,99 @@
+\section{Examples}
+\label{s:Examples}
+
+This appendix provides some additional hints and examples for the
+layout and style of the thesis. It is worthwhile to look at the source
+file \verb|Examples.tex| for this appendix to understand how it was
+created.
+
+
+
+\subsection{Tables}
+
+Tables are left justified and the caption appears on top as seen in
+Table~\ref{t:Translations}.
+
+\begin{table}[ht] % ht = here & top
+\caption[Translations]{\label{t:Translations}Translations.}
+\centering
+\begin{tabular}{ll}
+\hline
+\textbf{English} & \textbf{German}\\
+\hline
+cell phone       & Handy\\
+Diet Coke        & Coca Cola light\\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+\subsection{Figures}
+
+Figure~\ref{f:IRISlogo} shows a simple figure with a single picture
+and Figure~\ref{f:SubfigureExample} shows a more complex figure
+containing subfigures.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=.6\linewidth]{IRISlogo}
+\caption[IRIS logo]{\label{f:IRISlogo}IRIS logo.}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\subfigure[ETH logo]{\includegraphics[height=12mm]{ETHlogo}}\quad
+\subfigure[IRIS logo]{\includegraphics[height=12mm]{IRISlogo}}
+\caption[Subfigure example]{\label{f:SubfigureExample}Two pictures as
+  part of a single figure through the magic of the subfigure package.}
+\end{figure}
+
+
+
+\subsection{Units}
+
+The SIUnits package provides nice spacing for units as demonstrated in
+Table~\ref{t:SIUnits}. Use of the package also makes it easy to change
+the style or even the unit text in the future.
+
+\begin{table}[ht]
+\caption[Spacing for units]{\label{t:SIUnits}Spacing for units.}
+\centering
+\begin{tabular}{ll}
+\hline
+\textbf{Output}   & \textbf{Command}\\
+\hline
+42m               & \verb|42m|\\
+\unit{42}{\metre} & \verb|\unit{42}{\metre}|\\
+42 m              & \verb|42 m|\\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+\subsection{Miscellany}
+
+\begin{description}
+
+\item[Capitalization.] When referring to a named table (such as in the
+  previous section), the word \emph{table} is capitalized. The same is
+  true for figures, chapters and sections.
+
+\item[Naming of structural elements.] Refer to a \verb|\section| in
+  \LaTeX\ as a chapter and call a \verb|\subsection| section. (I don't
+  like the way \verb|\chapter|s are rendered in the report document
+  class. Hence the suboptimal markup/naming correspondence.)
+
+\item[Bibliography.] Use \verb|bibtex| to make your life easier and to
+  produce consistently formatted entries.
+
+\item[Contractions.] Avoid contractions. For instance, use ``do not''
+  rather than ``don't.''
+
+\item[Captions.] A brief version of a caption can be provided for the
+  list of figures and tables as demonstrated with the caption of
+  Figure~\ref{f:SubfigureExample}. The mechanism can also be used to
+  get rid of the final period of a caption in the lists.
+
+\end{description}

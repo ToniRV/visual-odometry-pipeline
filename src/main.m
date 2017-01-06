@@ -111,41 +111,19 @@ img0_ = 0;
 img1_ = 0;
 range_ = 0;
 i_ = 0;
+
+% Automatically choose the best initialisation frames 
 if (is_auto_frame_monocular_initialisation_)
-    % Automatically choose the best initialisation frames    
-    switch dataset_
-        case 'Kitti'
-            img0_ = imread([kitti_path_ '/00/image_0/' ...
-                sprintf('%06d.png',0)]);
-        case 'Malaga'
-            img0_ = rgb2gray(imread([malaga_path_ ...
-             '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
-             left_images(0).name]));
-        case 'Parking'
-            img0_ = rgb2gray(imread([parking_path_ ...
-               sprintf('/images/img_%05d.png',0)]));
-        otherwise
-            assert(false);
-    end
+    % Retrieve the initial image
+    img0_ = getImage(dataset_, 0, kitti_path_, malaga_path_, parking_path_);
     
     max_num_auto_frames = 15;
     min_num_inliers = 30;
     smallest_error = Inf;
     for i = 1:max_num_auto_frames
-        switch dataset_
-            case 'Kitti'
-                current_image = imread([kitti_path_ '/00/image_0/' ...
-                    sprintf('%06d.png',i)]);
-            case 'Malaga'
-                current_image = rgb2gray(imread([malaga_path_ ...
-                 '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
-                 left_images(i).name]));
-            case 'Parking'
-                current_image = rgb2gray(imread([parking_path_ ...
-                   sprintf('/images/img_%05d.png',i)]));
-            otherwise
-                assert(false);
-        end
+        % Retrieve the current image
+         current_image = getImage(dataset_, i, kitti_path_, ...
+             malaga_path_, parking_path_);
 
         % Automatically choosing frames
         switch initialisation_
@@ -358,5 +336,3 @@ for i = range_
          prev_img = image;
 %     end
 end
-
-

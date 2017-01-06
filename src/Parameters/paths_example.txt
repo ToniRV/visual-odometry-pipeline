@@ -1,7 +1,7 @@
-Visual Odometry Pipeline path: /home/tonirv/Documents/visual-odometry-pipeline
-Kitti path: /home/tonirv/Downloads/kitti
-Malaga path: /home/tonirv/Downloads/
-Parking path: /home/tonirv/Downloads/parking
+Visual Odometry Pipeline path: "/home/tonirv/Documents/visual-odometry-pipeline"
+Kitti path: "/home/tonirv/Downloads/kitti"
+Malaga path: "/home/tonirv/Downloads/"
+Parking path: "/home/tonirv/Downloads/parking"
 
 %%%% THIS IS AN EXAMPLE OF THE FILE FORMAT WHERE TO SPECIFY PATHS %%%%
 %%%% SET YOUR PATHS AND COPY THIS FILE UNDER THE NAME: paths.txt     %%%%

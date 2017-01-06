@@ -22,7 +22,7 @@ dataset_ = 'Kitti';                                             % 'Kitti', 'Mala
 initialisation_ = 'Monocular';                                  % 'Monocular', 'Stereo', 'Ground Truth'
 
 %%% Set to true if you want to perform bundle adjustment:
-BA_ = true;
+BA_ = false;
 %%% Set to true to run offline bundle adjusment or false to run online 
 %   bundle adjustment:
 BA_offline_ = true;
@@ -277,7 +277,8 @@ cont_op_parameters = struct(...
     
 processFrame = makeProcessFrame(cont_op_parameters);
     
-for i = range_(1:m_offline_-1)
+% for i = range_(1:m_offline_-1)
+for i = range_
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     switch dataset_
         case 'Kitti'
@@ -415,16 +416,21 @@ end
 
 if (BA_offline_)
     poses = load('/data/poses.txt');
-    p_W_GT_original = poses(:, [4 8 12])'
+    p_W_GT_original = poses(1:150, [4 8 12])';
     
     % Define hidden_state: 
     hidden_state = [poses_W_hist_; landmarks_hist_(:)];
     opt_hidden_state = runBA_0(hidden_state, cast(observation_hist_,'double'), K, m_offline_);
     
-    %% Compare trajectory to ground truth before BA
+    %% Comparision Estimate - Ground truth
+    % Compare the estimated trajectory
+    % Rehape twist vectors in hidden_state to 6 x m_offline_ matrix:
     T_W_frames = reshape(hidden_state(1:m_offline_*6), 6, []);
+    % Initialize pose estimates as 3 x m_offline_ matrix:
     p_W_estimate = zeros(3, m_offline_);
     for i = 1:m_offline_
+        % Need current (homogeneous) transformation only temporarily to
+        % calculate current p_W_estimate(:, i):
         T_W_frame = twist2HomogMatrix(T_W_frames(:, i));
         p_W_estimate(:, i) = T_W_frame(1:3, end);
     end
@@ -432,7 +438,7 @@ if (BA_offline_)
     figure(1);
     plot(p_W_GT_original(3, :), -p_W_GT_original(1, :));
     hold on;
-    plot(p_W_estimate(3, :), -p_W_estimate(1, :));
+    plot(-p_W_estimate(3, :), -p_W_estimate(1, :));
     hold off;
     axis equal;
     axis([-5 95 -30 10]);

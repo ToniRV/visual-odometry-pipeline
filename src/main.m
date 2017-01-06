@@ -193,8 +193,8 @@ S_i0 = struct(...
     'p_W_landmarks_correspondences', p_W_landmarks_,... % 3xL
     'first_obs_candidate_keypoints', zeros(2,0),...                  % 2xM First observed candidate keypoints
     'first_obs_candidate_transform', zeros(12,0),...               % 12xM Transformation matrices of each ofthe candidates
-    'last_obs_candidate_keypoints', zeros(2,0),...                   % 2xM Last keypoint matched corresponding to initial candidate
-    'K', K);
+    'last_obs_candidate_keypoints', zeros(2,0)...                   % 2xM Last keypoint matched corresponding to initial candidate
+    );
 
 num_inliers = zeros(1, last_frame_-(bootstrap_frames_(2)+1));
 

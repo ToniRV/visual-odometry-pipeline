@@ -125,12 +125,12 @@ if (is_auto_frame_monocular_initialisation_)
             assert(false);
     end
     
-    max_num_auto_frames_ = 15;
-    min_num_inliers_ = 30;
-    Transformations_cw_ = zeros(4, 4, max_num_auto_frames_);
-    inliers_ = zeros(max_num_auto_frames_, 1);
-    errors_ = zeros(max_num_auto_frames_, 2);
-    for i = 1:max_num_auto_frames_
+    max_num_auto_frames = 15;
+    min_num_inliers = 30;
+    Transformations_cw = zeros(4, 4, max_num_auto_frames);
+    inliers = zeros(max_num_auto_frames, 1);
+    errors = zeros(max_num_auto_frames, 2);
+    for i = 1:max_num_auto_frames
         switch dataset_
             case 'Kitti'
                 current_frame_ = imread([kitti_path_ '/00/image_0/' ...
@@ -146,7 +146,6 @@ if (is_auto_frame_monocular_initialisation_)
                 assert(false);
         end
 
-        %TODO ALSO FOR STEREO
         % Automatically choosing frames
         switch initialisation_
             case 'Monocular'
@@ -155,36 +154,23 @@ if (is_auto_frame_monocular_initialisation_)
                     mono_init(img0_, current_frame_);
                 keypoints_ = state_i.matches_2d(1:2,:);
                 p_W_landmarks_ = state_i.landmarks(1:3,:);
-            case 'Stereo'
-                stereoInit = makeStereoInit(init_parameters.stereo);
-                [keypoints_, p_W_landmarks_] = stereoInit(img0_, img1_);
-            case 'Ground Truth'
-                %%% GROUND TRUTH initialisation
-                if (strcmp(dataset_, 'Kitti'))
-                    keypoints_ = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/keypoints.txt');
-                    keypoints_ = keypoints_';
-                    p_W_landmarks_ = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/p_W_landmarks.txt');
-                    p_W_landmarks_ = p_W_landmarks_';
-                else
-                    disp('There is no ground truth for the dataset specified');
-                end
             otherwise
-                disp('No correct initialisation specified');
+                disp('Autoframes ONLY with MONOCULAR');
         end
 
-        if (size(state_i.matches_2d, 2) < min_num_inliers_)
+        if (size(state_i.matches_2d, 2) < min_num_inliers)
             break;
         end
 
         states(i,:) = state_i;
-        Transformations_cw_(:,:, i) = T_cw_i; 
-        inliers_(i,:) = size(state_i.matches_2d, 2);
-        errors_(i,:) = reprojection_errors;
+        Transformations_cw(:,:, i) = T_cw_i; 
+        inliers(i,:) = size(state_i.matches_2d, 2);
+        errors(i,:) = reprojection_errors;
     end
 
     smallest_error_ = Inf;
-    for i = 1:nnz(inliers_)
-        error = sum(errors_(i,:))/2;
+    for i = 1:nnz(inliers)
+        error = sum(errors(i,:))/2;
 
         if (error < smallest_error_)
             smallest_error_ = error;
@@ -205,7 +191,7 @@ if (is_auto_frame_monocular_initialisation_)
             end
 
             state = states(i, :);
-            T_cw = Transformations_cw_(:, :, i);
+            T_cw = Transformations_cw(:, :, i);
             
             keypoints_ = state.matches_2d(1:2,:);
             p_W_landmarks_ = state.landmarks(1:3,:);

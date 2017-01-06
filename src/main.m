@@ -29,7 +29,7 @@ dataset_ = 'Kitti';  % 'Kitti', 'Malaga', 'Parking'
 %%% Select initialisation method to run:
 initialisation_ = 'Monocular';  % 'Monocular', 'Stereo', 'Ground Truth'
 %%% Select if initialisation frames should be picked automatically
-is_auto_frame_monocular_initialisation_ = false;
+is_auto_frame_monocular_initialisation_ = true;
 
 % Parameters
 baseline_  = 0;
@@ -110,6 +110,7 @@ init_parameters = struct('stereo', params_stereo, 'mono', params_mono);
 img0_ = 0;
 img1_ = 0;
 range_ = 0;
+i_ = 0;
 if (is_auto_frame_monocular_initialisation_)
     % Automatically choose the best initialisation frames    
     switch dataset_
@@ -129,20 +130,18 @@ if (is_auto_frame_monocular_initialisation_)
     
     max_num_auto_frames = 15;
     min_num_inliers = 30;
-    Transformations_cw = zeros(4, 4, max_num_auto_frames);
-    inliers = zeros(max_num_auto_frames, 1);
-    errors = zeros(max_num_auto_frames, 2);
+    smallest_error = Inf;
     for i = 1:max_num_auto_frames
         switch dataset_
             case 'Kitti'
-                img1_ = imread([kitti_path_ '/00/image_0/' ...
+                current_image = imread([kitti_path_ '/00/image_0/' ...
                     sprintf('%06d.png',i)]);
             case 'Malaga'
-                img1_ = rgb2gray(imread([malaga_path_ ...
+                current_image = rgb2gray(imread([malaga_path_ ...
                  '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
                  left_images(i).name]));
             case 'Parking'
-                img1_ = rgb2gray(imread([parking_path_ ...
+                current_image = rgb2gray(imread([parking_path_ ...
                    sprintf('/images/img_%05d.png',i)]));
             otherwise
                 assert(false);
@@ -153,51 +152,24 @@ if (is_auto_frame_monocular_initialisation_)
             case 'Monocular'
                 mono_init = makeMonoInit(init_parameters.mono);
                 [state_i, T_cw_i, reprojection_errors, costs] = ...
-                    mono_init(img0_, img1_);
-                keypoints_ = state_i.matches_2d(1:2,:);
-                p_W_landmarks_ = state_i.landmarks(1:3,:);
+                    mono_init(img0_, current_image);
             otherwise
                 disp('Autoframes ONLY with MONOCULAR');
         end
 
+        % Check if number of inliers is big enough
         if (size(state_i.matches_2d, 2) < min_num_inliers)
             break;
         end
 
-        states(i,:) = state_i;
-        Transformations_cw(:,:, i) = T_cw_i; 
-        inliers(i,:) = size(state_i.matches_2d, 2);
-        errors(i,:) = reprojection_errors;
-    end
-
-    smallest_error_ = Inf;
-    for i = 1:nnz(inliers)
-        error = sum(errors(i,:))/2;
-
-        if (error < smallest_error_)
-            smallest_error_ = error;
-            
-            switch dataset_
-                case 'Kitti'
-                    img1_ = imread([kitti_path_ '/00/image_0/' ...
-                        sprintf('%06d.png',i)]);
-                case 'Malaga'
-                    img1_ = rgb2gray(imread([malaga_path_ ...
-                     '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
-                     left_images(i).name]));
-                case 'Parking'
-                    img1_ = rgb2gray(imread([parking_path_ ...
-                       sprintf('/images/img_%05d.png',i)]));
-                otherwise
-                    assert(false);
-            end
-
-            state = states(i, :);
-            T_cw = Transformations_cw(:, :, i);
-            
+        % Search for smallest reprojection error
+        if (sum(reprojection_errors) < smallest_error)
+            smallest_error = sum(reprojection_errors);
+            img1_ = current_image;
+            state = state_i;
+            T_cw = T_cw_i;
             keypoints_ = state.matches_2d(1:2,:);
-            p_W_landmarks_ = state.landmarks(1:3,:);
-            
+            p_W_landmarks_ = state.landmarks(1:3,:);  
             i_ = i;
         end
     end

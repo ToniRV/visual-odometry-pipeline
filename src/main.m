@@ -5,21 +5,27 @@ close all;
 % REMOVE
 rng(1);
 
-addpath('2d2d_correspondences');
-addpath('Init');
-% Replace the following with the path to your keypoint matcher code:
-addpath('../../00_camera_projection/code');
+% Modify dataset_paths.txt with your paths to the datasets
+% Format is:
+% Kitti_path:/path/to/kitti
+% Malaga_path:/path/to/malaga
+% Parking_path:/path/to/parking
+type dataset_paths.txt % Create this file so we don't need to switch each time paths ;)
+fileID = fopen('dataset_paths.txt','r');
+formatSpec = '%s';
+paths = textscan(fileID,formatSpec, 'Delimiter', ':');
+fclose(fileID);
 
 % Dataset paths
-kitti_path_ = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/kitti';
-malaga_path_ = '/home/tonirv/Downloads/';
-parking_path_ = '/home/tonirv/Documents/Vision Algorithms for Mobile Robotics/VO - Project/parking';
-%% Setup
+paths{1}{2};
+malaga_path_ = paths{1}{4};
+parking_path_ = paths{1}{6};
 
+%% Setup
 %%% Select dataset to run:
-dataset_ = 'Kitti';                                             % 'Kitti', 'Malaga', 'Parking'
+dataset_ = 'Kitti';  % 'Kitti', 'Malaga', 'Parking'
 %%% Select initialisation method to run:
-initialisation_ = 'Monocular';                             % 'Monocular', 'Stereo', 'Ground Truth'
+initialisation_ = 'Monocular';  % 'Monocular', 'Stereo', 'Ground Truth'
 %%% Select if initialisation frames should be picked automatically
 is_auto_frame_monocular_initialisation_ = false;
 
@@ -97,7 +103,7 @@ params_mono = struct(...
     'correspondences_2D2D', params_correspondences_2D2D, ...
     'ransac', params_ransac);
 
-parameters = struct('stereo', params_stereo, 'mono', params_mono);
+init_parameters = struct('stereo', params_stereo, 'mono', params_mono);
 
 img0_ = 0;
 img1_ = 0;
@@ -144,14 +150,14 @@ if (is_auto_frame_monocular_initialisation_)
         % Automatically choosing frames
         switch initialisation_
             case 'Monocular'
-                mono_init = makeMonoInit(parameters.mono);
+                mono_init = makeMonoInit(init_parameters.mono);
                 [state_i, T_cw_i, reprojection_errors, costs] = ...
                     mono_init(img0_, current_frame_);
                 keypoints_ = state_i.matches_2d(1:2,:);
                 p_W_landmarks_ = state_i.landmarks(1:3,:);
             case 'Stereo'
-                %stereoInit = makeStereoInit(parameters.stereo);
-                %[keypoints_, p_W_landmarks_] = stereoInit(img0_, img1_);
+                stereoInit = makeStereoInit(init_parameters.stereo);
+                [keypoints_, p_W_landmarks_] = stereoInit(img0_, img1_);
             case 'Ground Truth'
                 %%% GROUND TRUTH initialisation
                 if (strcmp(dataset_, 'Kitti'))
@@ -260,12 +266,12 @@ else
     p_W_landmarks_ = zeros(0);
     switch initialisation_
         case 'Monocular'
-            mono_init = makeMonoInit(parameters.mono);
+            mono_init = makeMonoInit(init_parameters.mono);
             [state, ~, ~, ~] = mono_init(img0_, img1_);
             keypoints_ = state.matches_2d(1:2,:);
             p_W_landmarks_ = state.landmarks(1:3,:);
         case 'Stereo'
-            stereoInit = makeStereoInit(parameters.stereo);
+            stereoInit = makeStereoInit(init_parameters.stereo);
             [keypoints_, p_W_landmarks_] = stereoInit(img0_, img1_);
         case 'Ground Truth'
             %%% GROUND TRUTH initialisation
@@ -307,8 +313,8 @@ S_i0 = struct(...
     'p_W_landmarks_correspondences', p_W_landmarks_,... % 3xL
     'first_obs_candidate_keypoints', zeros(2,0),...                  % 2xM First observed candidate keypoints
     'first_obs_candidate_transform', zeros(12,0),...               % 12xM Transformation matrices of each ofthe candidates
-    'last_obs_candidate_keypoints', zeros(2,0),...                   % 2xM Last keypoint matched corresponding to initial candidate
-    'K', K);
+    'last_obs_candidate_keypoints', zeros(2,0)...                   % 2xM Last keypoint matched corresponding to initial candidate
+    );
 
 %num_inliers = zeros(1, last_frame_-(bootstrap_frames_(2)+1));
 
@@ -331,6 +337,35 @@ switch dataset_
 end
 
 prev_img = prev_image_;
+
+params_harris_matlab = struct(...
+    'MinQuality', 0.01,...
+    'FilterSize', 5);
+params_harris_lecture = struct(...
+    'harris_patch_size', 9,...
+    'harris_kappa', 0.08,...
+    'nonmaximum_supression_radius', 8);
+params_harris_detector = struct(...
+    'debug_with_figures', false,...
+    'num_keypoints', 70,...
+    'cols', 4,...
+    'rows', 3,...
+    'algorithm', 1,...
+    'harris_matlab', params_harris_matlab,...
+    'harris_lecture', params_harris_lecture);
+params_ransac_localization = struct(...
+    'K', K,...
+    'num_iterations', 200,...
+    'pixel_tolerance', 10);
+
+cont_op_parameters = struct(...
+    'K', K,...
+    'harris_detector', params_harris_detector,...
+    'triangulation_angle_threshold', 35,...
+    'suppression_radius', 4,...
+    'ransac_localization', params_ransac_localization);
+    
+processFrame = makeProcessFrame(cont_op_parameters);
     
 for i = range_
     fprintf('\n\nProcessing frame %d\n=====================\n', i);

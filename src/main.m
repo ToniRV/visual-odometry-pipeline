@@ -11,7 +11,7 @@ addpath('Init');
 addpath('../../00_camera_projection/code');
 
 % Dataset paths
-kitti_path_ = '/home/tonirv/Downloads/kitti';
+kitti_path_ = '/Users/mgrimm/Documents/Studium/9_Semester/VisionAlgoMobileRobotics/kitti';
 malaga_path_ = '/home/tonirv/Downloads/';
 parking_path_ = '/home/tonirv/Documents/Vision Algorithms for Mobile Robotics/VO - Project/parking';
 %% Setup
@@ -20,6 +20,8 @@ parking_path_ = '/home/tonirv/Documents/Vision Algorithms for Mobile Robotics/VO
 dataset_ = 'Kitti';                                             % 'Kitti', 'Malaga', 'Parking'
 %%% Select initialisation method to run:
 initialisation_ = 'Monocular';                             % 'Monocular', 'Stereo', 'Ground Truth'
+%%% Select if initialisation frames should be picked automatically
+is_auto_frame_monocular_initialisation_ = true;
 
 % Parameters
 baseline_  = 0;
@@ -60,54 +62,6 @@ switch dataset_
         assert(false);
 end
 
-%% Bootstrap frames
-
-bootstrap_frames_ = 0;
-img0_ = 0;
-img1_ = 0;
-range_ = 0;
-switch dataset_
-    case 'Kitti'
-        switch initialisation_
-            case 'Monocular'
-                bootstrap_frames_ = [0, 1];
-                range_ = (bootstrap_frames_(2)+1):last_frame_;
-            case 'Stereo'
-                bootstrap_frames_ = [0, 0];
-                range_ = (bootstrap_frames_(1)+1):last_frame_;
-            case 'Ground Truth'
-                bootstrap_frames_ = [0, 0];
-                range_ = (bootstrap_frames_(1)+1):last_frame_;
-            otherwise
-                disp(['Wrong initialisation ', initialisation_,' method for dataset: ', dataset_]);
-                assert(false);
-        end
-        [img0_, img1_] = parseKittiImages(kitti_path_, bootstrap_frames_, initialisation_);
-    case 'Malaga'
-        switch initialisation_
-            case 'Monocular'
-                bootstrap_frames_ = [1, 2];
-                range_ = (bootstrap_frames_(2)+1):last_frame_;
-            otherwise
-                disp(['Wrong initialisation ', initialisation_,' method for dataset: ', dataset_]);
-                assert(false);
-        end
-        [img0_, img1_] = parseMalagaImages(malaga_path_, left_images_, bootstrap_frames_);
-    case 'Parking'
-        switch initialisation_
-            case 'Monocular'
-                bootstrap_frames_ = [0, 1];
-                range_ = (bootstrap_frames_(2)+1):last_frame_;
-            otherwise
-                disp(['Wrong initialisation ', initialisation_,' method for dataset: ', dataset_]);
-                assert(false);
-        end
-        [img0_, img1_] = parseParkingImages(parking_path_, bootstrap_frames_);
-    otherwise
-        disp(['Wrong dataset: ', dataset_]);
-        assert(false);
-end
-
 %% Initialisation
 params_match_features_matlab = struct(...
     'Method', 'Exhaustive',...
@@ -145,30 +99,190 @@ params_mono = struct(...
 
 parameters = struct('stereo', params_stereo, 'mono', params_mono);
 
-
-keypoints_ = zeros(0);
-p_W_landmarks_ = zeros(0);
-switch initialisation_
-    case 'Monocular'
-        mono_init = makeMonoInit(parameters.mono);
-        [state, ~] = mono_init(img0_, img1_);
-        keypoints_ = state.matches_2d(1:2,:);
-        p_W_landmarks_ = state.landmarks(1:3,:);
-    case 'Stereo'
-        stereoInit = makeStereoInit(parameters.stereo);
-        [keypoints_, p_W_landmarks_] = stereoInit(img0_, img1_);
-    case 'Ground Truth'
-        %%% GROUND TRUTH initialisation
-        if (strcmp(dataset_, 'Kitti'))
-            keypoints_ = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/keypoints.txt');
-            keypoints_ = keypoints_';
-            p_W_landmarks_ = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/p_W_landmarks.txt');
-            p_W_landmarks_ = p_W_landmarks_';
-        else
-            disp('There is no ground truth for the dataset specified');
+img0_ = 0;
+img1_ = 0;
+range_ = 0;
+if (is_auto_frame_monocular_initialisation_)
+    % Automatically choose the best initialisation frames    
+    switch dataset_
+        case 'Kitti'
+            img0_ = imread([kitti_path_ '/00/image_0/' ...
+                sprintf('%06d.png',0)]);
+        case 'Malaga'
+            img0_ = rgb2gray(imread([malaga_path_ ...
+             '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
+             left_images(0).name]));
+        case 'Parking'
+            img0_ = rgb2gray(imread([parking_path_ ...
+               sprintf('/images/img_%05d.png',0)]));
+        otherwise
+            assert(false);
+    end
+    
+    max_num_auto_frames_ = 15;
+    min_num_inliers_ = 30;
+    Transformations_cw_ = zeros(4, 4, max_num_auto_frames_);
+    inliers_ = zeros(max_num_auto_frames_, 1);
+    errors_ = zeros(max_num_auto_frames_, 2);
+    for i = 1:max_num_auto_frames_
+        switch dataset_
+            case 'Kitti'
+                current_frame_ = imread([kitti_path_ '/00/image_0/' ...
+                    sprintf('%06d.png',i)]);
+            case 'Malaga'
+                current_frame_ = rgb2gray(imread([malaga_path_ ...
+                 '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
+                 left_images(i).name]));
+            case 'Parking'
+                current_frame_ = rgb2gray(imread([parking_path_ ...
+                   sprintf('/images/img_%05d.png',i)]));
+            otherwise
+                assert(false);
         end
-    otherwise
-        disp('No correct initialisation specified');
+
+        %TODO ALSO FOR STEREO
+        % Automatically choosing frames
+        switch initialisation_
+            case 'Monocular'
+                mono_init = makeMonoInit(parameters.mono);
+                [state_i, T_cw_i, reprojection_errors, costs] = ...
+                    mono_init(img0_, current_frame_);
+                keypoints_ = state_i.matches_2d(1:2,:);
+                p_W_landmarks_ = state_i.landmarks(1:3,:);
+            case 'Stereo'
+                %stereoInit = makeStereoInit(parameters.stereo);
+                %[keypoints_, p_W_landmarks_] = stereoInit(img0_, img1_);
+            case 'Ground Truth'
+                %%% GROUND TRUTH initialisation
+                if (strcmp(dataset_, 'Kitti'))
+                    keypoints_ = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/keypoints.txt');
+                    keypoints_ = keypoints_';
+                    p_W_landmarks_ = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/p_W_landmarks.txt');
+                    p_W_landmarks_ = p_W_landmarks_';
+                else
+                    disp('There is no ground truth for the dataset specified');
+                end
+            otherwise
+                disp('No correct initialisation specified');
+        end
+
+        if (size(state_i.matches_2d, 2) < min_num_inliers_)
+            break;
+        end
+
+        states(i,:) = state_i;
+        Transformations_cw_(:,:, i) = T_cw_i; 
+        inliers_(i,:) = size(state_i.matches_2d, 2);
+        errors_(i,:) = reprojection_errors;
+    end
+
+    smallest_error_ = Inf;
+    for i = 1:nnz(inliers_)
+        error = sum(errors_(i,:))/2;
+
+        if (error < smallest_error_)
+            smallest_error_ = error;
+            
+            switch dataset_
+                case 'Kitti'
+                    img1_ = imread([kitti_path_ '/00/image_0/' ...
+                        sprintf('%06d.png',i)]);
+                case 'Malaga'
+                    img1_ = rgb2gray(imread([malaga_path_ ...
+                     '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
+                     left_images(i).name]));
+                case 'Parking'
+                    img1_ = rgb2gray(imread([parking_path_ ...
+                       sprintf('/images/img_%05d.png',i)]));
+                otherwise
+                    assert(false);
+            end
+
+            state = states(i, :);
+            T_cw = Transformations_cw_(:, :, i);
+            
+            keypoints_ = state.matches_2d(1:2,:);
+            p_W_landmarks_ = state.landmarks(1:3,:);
+            
+            i_ = i;
+        end
+    end
+    sprintf('Automatically choose Fram 0 and %i for intialisation', i_)
+    
+    num_inliers_ = zeros(1, last_frame_-(i_+1));
+    range_ = (i_+1):last_frame_;
+else
+    %% Bootstrap
+    bootstrap_frames_ = 0;
+    switch dataset_
+        case 'Kitti'
+            switch initialisation_
+                case 'Monocular'
+                    bootstrap_frames_ = [0, 1];
+                    range_ = (bootstrap_frames_(2)+1):last_frame_;
+                case 'Stereo'
+                    bootstrap_frames_ = [0, 0];
+                    range_ = (bootstrap_frames_(1)+1):last_frame_;
+                case 'Ground Truth'
+                    bootstrap_frames_ = [0, 0];
+                    range_ = (bootstrap_frames_(1)+1):last_frame_;
+                otherwise
+                    disp(['Wrong initialisation ', initialisation_,' method for dataset: ', dataset_]);
+                    assert(false);
+            end
+            [img0_, img1_] = parseKittiImages(kitti_path_, bootstrap_frames_, initialisation_);
+        case 'Malaga'
+            switch initialisation_
+                case 'Monocular'
+                    bootstrap_frames_ = [1, 2];
+                    range_ = (bootstrap_frames_(2)+1):last_frame_;
+                otherwise
+                    disp(['Wrong initialisation ', initialisation_,' method for dataset: ', dataset_]);
+                    assert(false);
+            end
+            [img0_, img1_] = parseMalagaImages(malaga_path_, left_images_, bootstrap_frames_);
+        case 'Parking'
+            switch initialisation_
+                case 'Monocular'
+                    bootstrap_frames_ = [0, 1];
+                    range_ = (bootstrap_frames_(2)+1):last_frame_;
+                otherwise
+                    disp(['Wrong initialisation ', initialisation_,' method for dataset: ', dataset_]);
+                    assert(false);
+            end
+            [img0_, img1_] = parseParkingImages(parking_path_, bootstrap_frames_);
+        otherwise
+            disp(['Wrong dataset: ', dataset_]);
+            assert(false);
+    end
+    
+    keypoints_ = zeros(0);
+    p_W_landmarks_ = zeros(0);
+    switch initialisation_
+        case 'Monocular'
+            mono_init = makeMonoInit(parameters.mono);
+            [state, ~, ~, ~] = mono_init(img0_, img1_);
+            keypoints_ = state.matches_2d(1:2,:);
+            p_W_landmarks_ = state.landmarks(1:3,:);
+        case 'Stereo'
+            stereoInit = makeStereoInit(parameters.stereo);
+            [keypoints_, p_W_landmarks_] = stereoInit(img0_, img1_);
+        case 'Ground Truth'
+            %%% GROUND TRUTH initialisation
+            if (strcmp(dataset_, 'Kitti'))
+                keypoints_ = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/keypoints.txt');
+                keypoints_ = keypoints_';
+                p_W_landmarks_ = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/p_W_landmarks.txt');
+                p_W_landmarks_ = p_W_landmarks_';
+            else
+                disp('There is no ground truth for the dataset specified');
+            end
+        otherwise
+            disp('No correct initialisation specified');
+    end
+    
+    num_inliers_ = zeros(1, last_frame_-(bootstrap_frames_(2)+1));
+    i_ = bootstrap_frames_(2);
 end
 
 if (isempty(keypoints_) || isempty(p_W_landmarks_))
@@ -196,11 +310,11 @@ S_i0 = struct(...
     'last_obs_candidate_keypoints', zeros(2,0),...                   % 2xM Last keypoint matched corresponding to initial candidate
     'K', K);
 
-num_inliers = zeros(1, last_frame_-(bootstrap_frames_(2)+1));
+%num_inliers = zeros(1, last_frame_-(bootstrap_frames_(2)+1));
 
 % Store Image_i0, aka previous image to kickstart continuous operation.
 prev_image_ = 0;
-i_ = bootstrap_frames_(2);
+%i_ = bootstrap_frames_(2);
 switch dataset_
     case 'Kitti'
         prev_image_ = imread([kitti_path_ '/00/image_0/' sprintf('%06d.png',i_)]);
@@ -243,7 +357,7 @@ for i = range_
 
     
     % Store the number of inliers per frame
-    num_inliers(i) = nnz(inlier_mask);
+    num_inliers_(i) = nnz(inlier_mask);
     
     % Idea: Update keypoints and 3D landmarks and switch to new keyframe every 5
     % frames, that's why there is a mod there .... 

@@ -115,6 +115,7 @@ keypoints_ = zeros(0);
 p_W_landmarks_ = zeros(0);
 
 % Initialize parameters
+mono_init = 0;
 switch initialisation_
     case 'Monocular'
         mono_init = makeMonoInit(init_parameters.mono);
@@ -145,18 +146,16 @@ if (is_auto_frame_monocular_initialisation_)
         end
 
         % Search for smallest reprojection error
-        if (sum(reprojection_errors) < smallest_error)
+        if (sum(reprojection_errors) < smallest_error)            
             smallest_error = sum(reprojection_errors);
             img1_ = current_image;
-            state = state_i;
-            keypoints_ = state.matches_2d(1:2,:);
-            p_W_landmarks_ = state.landmarks(1:3,:);  
+            keypoints_ = state_i.matches_2d(1:2,:);
+            p_W_landmarks_ = state_i.landmarks(1:3,:);  
             i_ = i;
         end
     end
     sprintf('Automatically choose Fram 0 and %i for intialisation', i_)
     
-    num_inliers_ = zeros(1, last_frame_-(i_+1));
     range_ = (i_+1):last_frame_;
 else
     %% Bootstrap
@@ -165,7 +164,7 @@ else
         case 'Kitti'
             switch initialisation_
                 case 'Monocular'
-                    bootstrap_frames_ = [0, 2];
+                    bootstrap_frames_ = [0, 1];
                     range_ = (bootstrap_frames_(2)+1):last_frame_;
                 case 'Stereo'
                     bootstrap_frames_ = [0, 0];
@@ -226,7 +225,6 @@ else
             disp('No correct initialisation specified');
     end
     
-    num_inliers_ = zeros(1, last_frame_-(bootstrap_frames_(2)+1));
     i_ = bootstrap_frames_(2);
 end
 
@@ -236,7 +234,6 @@ if (isempty(keypoints_) || isempty(p_W_landmarks_))
 end
 
 %% Continuous operation
-
 % Plotting
 figure(5);
 subplot(1, 3, 3);
@@ -292,9 +289,6 @@ for i = range_
     image = getImage(dataset_, i, kitti_path_, malaga_path_, parking_path_);
     
     [S_i1, T_i1, inlier_mask] = processFrame(image, prev_img, S_i0, i);
-
-    % Store the number of inliers per frame
-    num_inliers_(i) = nnz(inlier_mask);
     
     % Idea: Update keypoints and 3D landmarks and switch to new keyframe every 5
     % frames, that's why there is a mod there .... 

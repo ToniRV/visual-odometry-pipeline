@@ -36,7 +36,9 @@ function [kp_homo_database_matched, kp_homo_query_matched] = ...
         %                   highest Harris score in the image are accepted as corners.
         %   --> FilterSize: Defines the filter size of the Gaussian filter used to
         %                   smooth the gradient of the input image.
-        corners_1 = detectHarrisFeatures(img0,'FilterSize', 3, 'MinQuality', 0.00001);
+        min_quality = 0.00001; %0.001
+        corners_1 = detectHarrisFeatures(img0,'FilterSize', 3, ...
+            'MinQuality', min_quality);
 
         if (debug_verbose)
             keypoints_1 = [corners_1.Location];
@@ -57,15 +59,18 @@ function [kp_homo_database_matched, kp_homo_query_matched] = ...
 
         % Detect the Harris corners of the query image and extract their
         % coordinates:
-        corners_2 = detectHarrisFeatures(img1,'FilterSize', 3, 'MinQuality', 0.00001);
+        corners_2 = detectHarrisFeatures(img1,'FilterSize', 3, ...
+            'MinQuality', min_quality);
 
         % Extract the features
-        [features1, valid_points1] = extractFeatures(img0, corners_1);
-        [features2, valid_points2] = extractFeatures(img1, corners_2);
+        [features1, valid_points1] = extractFeatures(img0, corners_1, ...
+            'Method', 'Block');
+        [features2, valid_points2] = extractFeatures(img1, corners_2, ...
+            'Method', 'Block');
 
         % Find the matches
-        indexPairs = matchFeatures(features1, features2);
-
+        indexPairs = matchFeatures(features1, features2, 'Unique', true);
+        
         % Extract the matched corners
         matchedPoints1 = valid_points1(indexPairs(:,1),:);
         matchedPoints2 = valid_points2(indexPairs(:,2),:);

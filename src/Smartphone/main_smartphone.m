@@ -1,3 +1,7 @@
+clear all;
+close all;
+clc
+
 debug = true;
 
 parameters = struct(...
@@ -7,13 +11,13 @@ parameters = struct(...
 % Get camera parameters
 cameraParams = calibrateSmartphone(parameters);
 
+% Create video reader
+ReadFilename = 'video.mov';
+videoFReader = vision.VideoFileReader(ReadFilename, 'ImageColorSpace', 'Intensity');
+
 % Create video writer
 WriteFilename = 'undistorted_video.mov';
 videoFWriter = vision.VideoFileWriter(WriteFilename, 'FileFormat', 'AVI', 'FrameRate',videoFReader.info.VideoFrameRate);
-
-% Create video reader
-ReadFilename = 'video.mov';
-videoFReader = vision.VideoFileReader(ReadFilename, 'ImageColorSpace', Intensity);
 
 % Create video player
 videoPlayer = vision.VideoPlayer;

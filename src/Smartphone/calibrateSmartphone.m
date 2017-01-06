@@ -25,7 +25,7 @@ function cameraParams = calibrateSmartphone (parameters)
         'EstimateSkew', false, 'EstimateTangentialDistortion', false, ...
         'NumRadialDistortionCoefficients', 2, 'WorldUnits', 'mm', ...
         'InitialIntrinsicMatrix', [], 'InitialRadialDistortion', []);
-
+debug_with_figures = true;
     if (debug_with_figures)
         % View reprojection errors
         h1=figure; showReprojectionErrors(cameraParams, 'BarGraph');

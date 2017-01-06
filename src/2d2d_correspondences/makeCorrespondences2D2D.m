@@ -79,8 +79,10 @@ function p = makeCorrespondences2D2D(parameters)
             corners_2 = detectHarrisFeatures(img1,'FilterSize', filter_size_, 'MinQuality', min_quality_);
 
             % Extract the features
-            [features1, valid_points1] = extractFeatures(img0, corners_1);
-            [features2, valid_points2] = extractFeatures(img1, corners_2);
+            [features1, valid_points1] = extractFeatures(img0, corners_1, ...
+                'Method', 'Block');
+            [features2, valid_points2] = extractFeatures(img1, corners_2, ...
+                'Method', 'Block');
 
             % Find the matches
             indexPairs = matchFeatures(features1, features2,...

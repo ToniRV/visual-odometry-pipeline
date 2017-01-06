@@ -238,6 +238,8 @@ cont_op_parameters = struct(...
     'params_harris_detector', params_harris_detector,...
     'triangulation_angle_threshold', 35);
     
+processFrame = makeProcessFrame(cont_op_parameters);
+    
 for i = range_
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     switch dataset_

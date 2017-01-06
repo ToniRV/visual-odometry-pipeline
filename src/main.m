@@ -23,7 +23,10 @@ initialisation_ = 'Monocular';                                  % 'Monocular', '
 
 %%% Set to true if you want to perform bundle adjustment:
 BA_ = true;
-debugging_BA = true;
+%%% Set to true to run offline bundle adjusment or false to run online 
+%   bundle adjustment:
+BA_offline_ = true;
+debugging_BA = false;
 
 % Parameters
 baseline_  = 0;
@@ -203,8 +206,9 @@ S_i0 = struct(...
 num_inliers = zeros(1, last_frame_-(bootstrap_frames_(2)+1));
 
 % Bundle Adjustment initialization:
-if (BA_ == true)
-    m_ = 20;
+if (BA_)
+    m_ = 20; % Perform online BA on last m frame
+    m_offline_ = 150; % Number of frames to pass before performing offline BA
     % Initialize observation vector and index mask:
     index_mask_ = (1:size(S_i0.p_W_landmarks_correspondences,2));
     observation_hist_ = [size(S_i0.p_W_landmarks_correspondences,2);...
@@ -244,7 +248,7 @@ end
 
 prev_img = prev_image_;
     
-for i = range_
+for i = range_(1:m_offline_-1)
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     switch dataset_
         case 'Kitti'
@@ -271,69 +275,104 @@ for i = range_
   
     % BUNDLE ADJUSTMENT
     % Refines camera poses and 3D landmark positions of the last m frames.
-    if (BA_ == true)
-        tic;
-        % Store pose history (w.r.t. first image frame)
-        % of the last m frames as 6x1 twist column vectors:
-        tau_i1 = HomogMatrix2twist([T_i1(1:3,1:3), T_i1(1:3,4); zeros(1,3) 1]);
-        
-        % Extract tracked keypoints from previous to current frame:
-        kp_tracked = S_i0.keypoints_correspondences(:, validity_mask > 0);
-        kp_inliers_tracked = kp_tracked(:, inlier_mask > 0);
-        
-        % Update corresponding index mask of tracked keypoints:
-        index_temp_tracked = index_mask_(:, validity_mask > 0);
-        index_mask_tracked = index_temp_tracked(:, inlier_mask > 0);
-        
-        % If new landmarks are triangulated add them to the landmark history
-        % and update the corresponding index_mask:
-        if (isempty(new_3D) == 0)
-            index_mask_new = (size(landmarks_hist_,2)+1):...
-                (size(landmarks_hist_,2)+size(new_3D,2));
-            landmarks_hist_ = [landmarks_hist_, new_3D];
-            index_mask_ = [index_mask_tracked, index_mask_new];
-            kp2add = [kp_inliers_tracked(:); new_2D(:)];
-            n_kp = size(kp_inliers_tracked,2) + size(new_2D,2);
-        else
-            index_mask_ = index_mask_tracked;
-            kp2add = kp_inliers_tracked(:);
-            n_kp = size(kp_inliers_tracked,2);
-        end
-        
-        if (i < range_(m_-1)) % Make sure that the first m frames passed before calling BA
-            index_hist_m_ = [index_hist_m_, index_mask_];
-            poses_W_hist_ = [poses_W_hist_; tau_i1];
-            % Update observation history:
-            observation_hist_ = [observation_hist_; n_kp; kp2add; index_mask_'];
-        elseif (i == range_(m_-1)) % Call BA for the first time after the first m frames
-            index_hist_m_ = [index_hist_m_, index_mask_];
-            poses_W_hist_ = [poses_W_hist_; tau_i1];
-            % Update observation history:
-            observation_hist_ = [observation_hist_; n_kp; kp2add; index_mask_'];
-            % Define hidden_state: 
-            hidden_state = [poses_W_hist_; landmarks_hist_(:)];
-            opt_hidden_state = runBA_0(hidden_state, cast(observation_hist_,'double'), K, m_);
-        else
-            % hidden_state = [poses_W_hist; landmarks_hist_m];            
-            % Track which landmarks have been observed in the last m frames
-            % and extract these 3D points:
-            num_remove = observation_hist_(1);
-            index_hist_m_ = [index_hist_m_(num_remove+1:end), index_mask_];
-            % Remove duplicates and sort; store global index:
-            index_hist_m_sorted = unique(index_hist_m_);
-            poses_W_hist_ = [poses_W_hist_(7:6*m_,1); tau_i1];
-            observation_hist_ = [observation_hist_(num_remove*3+2:end);...
-                n_kp; kp2add; index_mask_'];
-            % bundle_adjustment(hidden_state, observations, m, K);
+    if (BA_)
+        if (BA_offline_)
+            % Refine pose offline after recording 150 frames.
+            tic
+            % Store pose history (w.r.t. first image frame)
+            % of the last m frames as 6x1 twist column vectors:
+            tau_i1 = HomogMatrix2twist([T_i1(1:3,1:3), T_i1(1:3,4); zeros(1,3) 1]);
+
+            % Extract tracked keypoints from previous to current frame:
+            kp_tracked = S_i0.keypoints_correspondences(:, validity_mask > 0);
+            kp_inliers_tracked = kp_tracked(:, inlier_mask > 0);
+
+            % Update corresponding index mask of tracked keypoints:
+            index_temp_tracked = index_mask_(:, validity_mask > 0);
+            index_mask_tracked = index_temp_tracked(:, inlier_mask > 0);
+
+            % If new landmarks are triangulated add them to the landmark history
+            % and update the corresponding index_mask:
+            if (isempty(new_3D) == 0)
+                index_mask_new = (size(landmarks_hist_,2)+1):...
+                    (size(landmarks_hist_,2)+size(new_3D,2));
+                landmarks_hist_ = [landmarks_hist_, new_3D];
+                index_mask_ = [index_mask_tracked, index_mask_new];
+                kp2add = [kp_inliers_tracked(:); new_2D(:)];
+                n_kp = size(kp_inliers_tracked,2) + size(new_2D,2);
+            else
+                index_mask_ = index_mask_tracked;
+                kp2add = kp_inliers_tracked(:);
+                n_kp = size(kp_inliers_tracked,2);
+            end
             
-            sprintf('Time needed: Perform Bundle Adjustment: %f seconds', toc)
+            poses_W_hist_ = [poses_W_hist_; tau_i1];
+            % Update observation history:
+            observation_hist_ = [observation_hist_; n_kp; kp2add; index_mask_'];
+        else
+            tic;
+            % Store pose history (w.r.t. first image frame)
+            % of the last m frames as 6x1 twist column vectors:
+            tau_i1 = HomogMatrix2twist([T_i1(1:3,1:3), T_i1(1:3,4); zeros(1,3) 1]);
+
+            % Extract tracked keypoints from previous to current frame:
+            kp_tracked = S_i0.keypoints_correspondences(:, validity_mask > 0);
+            kp_inliers_tracked = kp_tracked(:, inlier_mask > 0);
+
+            % Update corresponding index mask of tracked keypoints:
+            index_temp_tracked = index_mask_(:, validity_mask > 0);
+            index_mask_tracked = index_temp_tracked(:, inlier_mask > 0);
+
+            % If new landmarks are triangulated add them to the landmark history
+            % and update the corresponding index_mask:
+            if (isempty(new_3D) == 0)
+                index_mask_new = (size(landmarks_hist_,2)+1):...
+                    (size(landmarks_hist_,2)+size(new_3D,2));
+                landmarks_hist_ = [landmarks_hist_, new_3D];
+                index_mask_ = [index_mask_tracked, index_mask_new];
+                kp2add = [kp_inliers_tracked(:); new_2D(:)];
+                n_kp = size(kp_inliers_tracked,2) + size(new_2D,2);
+            else
+                index_mask_ = index_mask_tracked;
+                kp2add = kp_inliers_tracked(:);
+                n_kp = size(kp_inliers_tracked,2);
+            end
+
+            if (i < range_(m_-1)) % Make sure that the first m frames passed before calling BA
+                index_hist_m_ = [index_hist_m_, index_mask_];
+                poses_W_hist_ = [poses_W_hist_; tau_i1];
+                % Update observation history:
+                observation_hist_ = [observation_hist_; n_kp; kp2add; index_mask_'];
+            elseif (i == range_(m_-1)) % Call BA for the first time after the first m frames
+                index_hist_m_ = [index_hist_m_, index_mask_];
+                poses_W_hist_ = [poses_W_hist_; tau_i1];
+                % Update observation history:
+                observation_hist_ = [observation_hist_; n_kp; kp2add; index_mask_'];
+                % Define hidden_state: 
+                hidden_state = [poses_W_hist_; landmarks_hist_(:)];
+                opt_hidden_state = runBA_0(hidden_state, cast(observation_hist_,'double'), K, m_);
+            else          
+                % Track which landmarks have been observed in the last m frames
+                % and extract these 3D points:
+                num_remove = observation_hist_(1);
+                index_hist_m_ = [index_hist_m_(num_remove+1:end), index_mask_];
+                % Remove duplicates and sort:
+                index_hist_m_sorted = unique(index_hist_m_);
+
+                poses_W_hist_ = [poses_W_hist_(7:6*m_,1); tau_i1];
+                observation_hist_ = [observation_hist_(num_remove*3+2:end);...
+                    n_kp; kp2add; index_mask_'];
+                opt_hidden_state = runBA(hidden_state, cast(observation_hist_,'double'), K, m_);
+
+                sprintf('Time needed: Perform Bundle Adjustment: %f seconds', toc)
+            end
         end
     end
     
-    if (debugging_BA)
-        fprintf('Size of observations_hist: %dx%d \n', size(observation_hist_,1),size(observation_hist_,2))
-        fprintf('Added keypoints to obs_hist: %dx%d \n', n_kp)
-    end
+        if (debugging_BA)
+            fprintf('Size of observations_hist: %dx%d \n', size(observation_hist_,1),size(observation_hist_,2))
+            fprintf('Added keypoints to obs_hist: %dx%d \n', n_kp)
+        end
     % Store the number of inliers per frame
     num_inliers(i) = nnz(inlier_mask);
     
@@ -345,4 +384,73 @@ for i = range_
 %     end
 end
 
+if (BA_offline_)
+    poses = load('/data/poses.txt');
+    p_W_GT_original = poses(:, [4 8 12])'
+    
+    % Define hidden_state: 
+    hidden_state = [poses_W_hist_; landmarks_hist_(:)];
+    opt_hidden_state = runBA_0(hidden_state, cast(observation_hist_,'double'), K, m_offline_);
+    
+    %% Compare trajectory to ground truth before BA
+    T_W_frames = reshape(hidden_state(1:m_offline_*6), 6, []);
+    p_W_estimate = zeros(3, m_offline_);
+    for i = 1:m_offline_
+        T_W_frame = twist2HomogMatrix(T_W_frames(:, i));
+        p_W_estimate(:, i) = T_W_frame(1:3, end);
+    end
 
+    figure(1);
+    plot(p_W_GT_original(3, :), -p_W_GT_original(1, :));
+    hold on;
+    plot(p_W_estimate(3, :), -p_W_estimate(1, :));
+    hold off;
+    axis equal;
+    axis([-5 95 -30 10]);
+    legend('Ground truth', 'Estimate', 'Location', 'SouthWest');
+    
+    %% Align estimate to ground truth before BA
+    p_W_estimate_aligned = alignEstimateToGroundTruth(...
+        p_W_GT_original, p_W_estimate);
+
+    figure(2);
+    plot(p_W_GT_original(3, :), -p_W_GT_original(1, :));
+    hold on;
+    plot(p_W_estimate(3, :), -p_W_estimate(1, :));
+    plot(p_W_estimate_aligned(3, :), -p_W_estimate_aligned(1, :));
+    hold off;
+    axis equal;
+    axis([-5 95 -30 10]);
+    legend('Ground truth', 'Original estimate', 'Aligned estimate', ...
+        'Location', 'SouthWest');
+    
+    %% Full problem
+    figure(1);
+    plotMap(hidden_state, [0 40 -10 10], m_offline_);
+    title('Full problem before bundle adjustment');
+    figure(2);
+    plotMap(opt_hidden_state, [0 40 -10 10], m_offline_);
+    title('Full problem after bundle adjustment');
+    
+    %% Align optimized estimate
+    T_W_frames = reshape(opt_hidden_state(1:num_frames*6), 6, []);
+    p_W_estimate = zeros(3, num_frames);
+    for i = 1:num_frames
+        T_W_frame = twist2HomogMatrix(T_W_frames(:, i));
+        p_W_estimate(:, i) = T_W_frame(1:3, end);
+    end
+
+    p_W_optim_estimate_aligned = alignEstimateToGroundTruth(...
+        p_W_GT_original, p_W_estimate);
+
+    figure(3);
+    plot(p_W_GT_original(3, :), -p_W_GT_original(1, :));
+    hold on;
+    plot(p_W_estimate_aligned(3, :), -p_W_estimate_aligned(1, :));
+    plot(p_W_optim_estimate_aligned(3, :), -p_W_optim_estimate_aligned(1, :));
+    hold off;
+    axis equal;
+    axis([-5 95 -30 10]);
+    legend('Ground truth', 'Original estimate','Optimized estimate', ...
+        'Location', 'SouthWest');
+end

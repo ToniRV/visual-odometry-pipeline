@@ -1,6 +1,5 @@
-function plotMap(hidden_state, observations, range)
+function plotMap(hidden_state, range, num_frames)
 
-num_frames = observations(1);
 T_W_frames = reshape(hidden_state(1:num_frames*6), 6, []);
 p_W_landmarks = reshape(hidden_state(num_frames*6+1:end), 3, []);
 

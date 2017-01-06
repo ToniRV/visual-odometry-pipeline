@@ -46,7 +46,7 @@ end
 % Define the error function passed to lsqnonlin:
 error_terms = @(hidden_state) baError(hidden_state, observations, K, num_frames);
 options = optimoptions(@lsqnonlin, 'Display', 'iter', ...
-    'MaxIter', 200);
+    'MaxIter', 40);
 if with_pattern
     options.JacobPattern = pattern;
     options.UseParallel = false;

@@ -1,5 +1,28 @@
 \section{Introduction}
 \label{s:Introduction}
 
-Explain scope and structure of report. What this review is about:
-short summary, motivation
+Grading
+
+
+You will be graded according to three things:
+1. The quality of the pose estimation from your VO pipeline. We will run your code, and read it (please note that particularly unreadable code will be penalized).
+2. The text report that you will have to hand in.
+3. Whether you implemented one or multiple bonus features, or did something in addition to the basic requirements (and explained it in the report). A (non-exhaustive) list of ideas is given in 1.4.
+
+
+We will not do a strict quantitative evaluation of the quality of your VO pipelines (i.e. we will not compute any positional error compared to the ground truth). Instead, we will run your code on several datasets, and judge it from a qualitative point of view, paying particular attention to the following points (sorted by decreasing order of importance):
+
+1) he features you implemented. The maximum grade can only be achieved with a completely monocular pipeline.
+– If your pipeline requires stereo frames in continuous operation, your grade will be ≤ 4.5. – If your pipeline requires stereo frames for initialization only, your grade will be ≤ 5. Note
+that no penalty is given if a bonus feature (see 1.4) requires stereo frames.
+
+2) How far does the pipeline go without failing or deviating significantly from the ground truth. Note that with the KITTI and Malaga sequences, scale drift will be difficult to avoid, we will take that into account when judging your VO pipelines).
+
+
+3) How fast does your code run (in particular for Matlab code, we will check whether you paid attention to using vectorized operations instead of for loops whenever possible).
+Project report The project report should summarize the work that you did and specify exactly what your VO pipeline does. For example, whether it is monocular or stereo, and how well it performs on the provided datasets (with plots showing the trajectory estimated). The project report is also the place to describe the (eventual) bonus features that you implemented, or the additional work you did beyond the basic VO pipeline required, and how this impacts the quality of your VO pipeline. Note that having implemented an additional feature which degrades the quality of your VO pipeline will be accepted and valued as long as: i) the implemented feature is properly motivated and described, and ii) an analysis showing the effect of your additional feature is provided in the report. You should also upload or attach a video of your working pipeline.
+
+
+subsection{Report and Video}
+
+The content of the report has been detailed above. Note that the maximum number of pages allowed for the report is 5 pages (excluding plots, images and installation/run instructions). If you have a working pipeline, you should also upload or attach a video of it.

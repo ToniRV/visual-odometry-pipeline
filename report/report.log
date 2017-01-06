@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.3.16)  6 JAN 2017 04:10
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.3.16)  6 JAN 2017 04:26
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -300,7 +300,7 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip62
 )
-(./report.aux (./Examples.aux))
+(./report.aux (./Appendix.aux) (./Examples.aux))
 \openout1 = `report.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 68.
@@ -387,19 +387,19 @@ l.78 ...tlepage{Visual Odometry Pipeline}{2017-01}
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
-<files/UNIlogo.png, id=67, 401.5pt x 126.4725pt>
+<files/UNIlogo.png, id=71, 401.5pt x 126.4725pt>
 File: files/UNIlogo.png Graphic file (type png)
  <use files/UNIlogo.png>
 Package pdftex.def Info: files/UNIlogo.png used on input line 78.
 (pdftex.def)             Requested size: 117.42448pt x 36.98857pt.
 
-<files/RPGlogo.png, id=68, 385.9218pt x 223.7961pt>
+<files/RPGlogo.png, id=72, 385.9218pt x 223.7961pt>
 File: files/RPGlogo.png Graphic file (type png)
  <use files/RPGlogo.png>
 Package pdftex.def Info: files/RPGlogo.png used on input line 78.
 (pdftex.def)             Requested size: 63.78033pt x 36.98857pt.
 
-<files/ETHlogo.png, id=70, 1027.84pt x 266.9975pt>
+<files/ETHlogo.png, id=74, 1027.84pt x 266.9975pt>
 File: files/ETHlogo.png Graphic file (type png)
  <use files/ETHlogo.png>
 Package pdftex.def Info: files/ETHlogo.png used on input line 78.
@@ -426,58 +426,69 @@ r (name{page.1}) has been already used, duplicate ignored
 l.112 \newpage
                [1
 
-] (./Introduction.tex) (./GreatWork.tex
+] (./Introduction.tex
+Missing character: There is no â in font cmr12!
+Missing character: There is no € in font cmr12!
+Missing character: There is no “ in font cmr12!
+Missing character: There is no â in font cmr12!
+Missing character: There is no ‰ in font cmr12!
+Missing character: There is no ¤ in font cmr12!
+Missing character: There is no â in font cmr12!
+Missing character: There is no € in font cmr12!
+Missing character: There is no “ in font cmr12!
+Missing character: There is no â in font cmr12!
+Missing character: There is no ‰ in font cmr12!
+Missing character: There is no ¤ in font cmr12!
+) (./GreatWork.tex [2]) (./Conclusion.tex) [3] (./report.bbl) [4]
+\openout2 = `Appendix.aux'.
 
-LaTeX Warning: Reference `s:Appendix' on page 2 undefined on input line 16.
+ (./Appendix.tex) [5
 
-) (./Conclusion.tex) [2] (./report.bbl) [3]
+]
 \openout2 = `Examples.aux'.
 
  (./Examples.tex
-<files/IRISlogo.png, id=137, 459.3963pt x 89.3739pt>
-File: files/IRISlogo.png Graphic file (type png)
- <use files/IRISlogo.png>
-Package pdftex.def Info: files/IRISlogo.png used on input line 39.
-(pdftex.def)             Requested size: 307.29288pt x 59.78473pt.
-File: files/ETHlogo.png Graphic file (type png)
+File: files/UNIlogo.png Graphic file (type png)
 
-<use files/ETHlogo.png>
+<use files/UNIlogo.png>
+Package pdftex.def Info: files/UNIlogo.png used on input line 39.
+(pdftex.def)             Requested size: 307.29288pt x 96.80324pt.
+File: files/ETHlogo.png Graphic file (type png)
+ <use files/ETHlogo.png>
 Package pdftex.def Info: files/ETHlogo.png used on input line 45.
 (pdftex.def)             Requested size: 131.42819pt x 34.1433pt.
-File: files/IRISlogo.png Graphic file (type png)
- <use files/IRISlogo.png>
-Package pdftex.def Info: files/IRISlogo.png used on input line 46.
-(pdftex.def)             Requested size: 175.5047pt x 34.1433pt.
+File: files/UNIlogo.png Graphic file (type png)
+ <use files/UNIlogo.png>
+Package pdftex.def Info: files/UNIlogo.png used on input line 46.
+(pdftex.def)             Requested size: 108.39418pt x 34.1433pt.
 
+[6
+
+
+]
 Overfull \hbox (6.16185pt too wide) in paragraph at lines 83--87
 []\OT1/cmr/m/n/12 Refer to a []\OT1/cmtt/m/n/12 \section \OT1/cmr/m/n/12 in L[]
 T[]X as a chap-ter and call a []\OT1/cmtt/m/n/12 \subsection
  []
 
-[4
-
- <./files/IRISlogo.png>]) [5]
+) [7]
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 138.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 138.
- (./report.aux (./Examples.aux))
+ (./report.aux (./Appendix.aux) (./Examples.aux))
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 138.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 138.
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 1BFC1C04426677D7A1755C2F787F78FF;841.
-
-
-LaTeX Warning: There were undefined references.
-
+(rerunfilecheck)             Checksum: 437DB953435D1B406195CBF42BD2E8E5;891.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 138.
  ) 
 Here is how much of TeX's memory you used:
- 7577 strings out of 493117
- 113059 string characters out of 6135433
- 201918 words of memory out of 5000000
- 10896 multiletter control sequences out of 15000+600000
+ 7584 strings out of 493117
+ 113089 string characters out of 6135433
+ 201363 words of memory out of 5000000
+ 10894 multiletter control sequences out of 15000+600000
  11842 words of font info for 43 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 36i,10n,45p,263b,399s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,10n,45p,886b,397s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 ></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><
 /usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></u
@@ -485,10 +496,10 @@ sr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/
 local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loc
 al/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/loca
 l/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on report.pdf (8 pages, 298240 bytes).
+Output written on report.pdf (10 pages, 238093 bytes).
 PDF statistics:
- 191 PDF objects out of 1000 (max. 8388607)
- 165 compressed objects within 2 object streams
- 37 named destinations out of 1000 (max. 500000)
- 149 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 204 PDF objects out of 1000 (max. 8388607)
+ 177 compressed objects within 2 object streams
+ 40 named destinations out of 1000 (max. 500000)
+ 152 words of extra memory for PDF output out of 10000 (max. 10000000)
 

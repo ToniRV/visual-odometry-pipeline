@@ -3,17 +3,19 @@
 \contentsline {section}{\numberline {}{Abstract}}{1}{section*.2}
 \contentsline {section}{\numberline {1}Introduction}{2}{section.1}
 \contentsline {section}{\numberline {2}Main Category A}{2}{section.2}
-\contentsline {subsection}{\numberline {2.1}Sub-Category I}{2}{subsection.2.1}
-\contentsline {subsubsection}{\numberline {2.1.1}Sub-Sub-Category (if necessary)}{2}{subsubsection.2.1.1}
-\contentsline {subsection}{\numberline {2.2}Sub-Category II}{2}{subsection.2.2}
-\contentsline {section}{\numberline {3}Main Category B}{2}{section.3}
-\contentsline {subsection}{\numberline {3.1}Sub-Category I}{2}{subsection.3.1}
-\contentsline {section}{\numberline {4}Discussion}{2}{section.4}
-\contentsline {section}{\numberline {5}Conclusion}{2}{section.5}
+\contentsline {subsection}{\numberline {2.1}Sub-Category I}{3}{subsection.2.1}
+\contentsline {subsubsection}{\numberline {2.1.1}Sub-Sub-Category (if necessary)}{3}{subsubsection.2.1.1}
+\contentsline {subsection}{\numberline {2.2}Sub-Category II}{3}{subsection.2.2}
+\contentsline {section}{\numberline {3}Main Category B}{3}{section.3}
+\contentsline {subsection}{\numberline {3.1}Sub-Category I}{3}{subsection.3.1}
+\contentsline {section}{\numberline {4}Discussion}{3}{section.4}
+\contentsline {section}{\numberline {5}Conclusion}{3}{section.5}
 \vspace {.5\baselineskip }
-\contentsline {section}{\numberline {}{References}}{3}{section.5}
-\contentsline {section}{\numberline {6}Examples}{4}{section.6}
-\contentsline {subsection}{\numberline {6.1}Tables}{4}{subsection.6.1}
-\contentsline {subsection}{\numberline {6.2}Figures}{4}{subsection.6.2}
-\contentsline {subsection}{\numberline {6.3}Units}{4}{subsection.6.3}
-\contentsline {subsection}{\numberline {6.4}Miscellany}{4}{subsection.6.4}
+\contentsline {section}{\numberline {}{References}}{4}{section.5}
+\vspace {.5\baselineskip }
+\contentsline {section}{\numberline {A}Appendix}{5}{appendix.A}
+\contentsline {section}{\numberline {B}Examples}{6}{appendix.B}
+\contentsline {subsection}{\numberline {B.1}Tables}{6}{subsection.B.1}
+\contentsline {subsection}{\numberline {B.2}Figures}{6}{subsection.B.2}
+\contentsline {subsection}{\numberline {B.3}Units}{6}{subsection.B.3}
+\contentsline {subsection}{\numberline {B.4}Miscellany}{7}{subsection.B.4}

@@ -283,7 +283,9 @@ for i = range_
     % S_i1.p_W_landmarks_correspondences(3, :), 5);
   
     % BUNDLE ADJUSTMENT
-    if (strcmp(BA_,'None') == 0)
+    if (numel(T_i1) == 0)
+        break
+    elseif (strcmp(BA_,'None') == 0)
         if (strcmp(BA_,'Offline') == 1)
             [poses_W_hist_, landmarks_hist_, observation_hist_, index_mask_] =...
             BA_offline_hist_update(S_i0, T_i1, validity_mask, inlier_mask, index_mask_,...

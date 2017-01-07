@@ -26,7 +26,7 @@ smartphone_path_ = '/home/tonirv/Documents/visual-odometry-pipeline/src/Smartpho
 
 %% Setup
 %%% Select dataset to run:
-dataset_ = 'Kitti';                                             % 'Kitti', 'Malaga', 'Parking', 'Smartphone'
+dataset_ = 'Smartphone';                                             % 'Kitti', 'Malaga', 'Parking', 'Smartphone'
 %%% Select initialisation method to run:
 initialisation_ = 'Monocular';  % 'Monocular', 'Stereo', 'Ground Truth'
 %%% Select if initialisation frames should be picked automatically
@@ -69,7 +69,7 @@ switch dataset_
     case 'Smartphone'
         load('./Smartphone/data/cameraParams.mat');
         K = cameraParams.IntrinsicMatrix';
-        last_frame_ = 5;
+        last_frame_ = 12;
     otherwise
         disp(' No correct dataset specified');
         assert(false);
@@ -213,7 +213,7 @@ else
         case 'Smartphone'
             switch initialisation_
                 case 'Monocular'
-                    bootstrap_frames_ = [1, 4];
+                    bootstrap_frames_ = [1, 2];
                     range_ = (bootstrap_frames_(2)+1):last_frame_;
                 otherwise
                     disp(['Wrong initialisation ', initialisation_,' method for dataset: ', dataset_]);

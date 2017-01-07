@@ -28,8 +28,8 @@ P = zeros(4,NumPoints);
 % Linear algorithm
 for j=1:NumPoints
     % Built matrix of linear homogeneous system of equations
-    A1 = cross2Matrix(p1(:,j))*M1;
-    A2 = cross2Matrix(p2(:,j))*M2;
+    A1 = Cross2Matrix(p1(:,j))*M1;
+    A2 = Cross2Matrix(p2(:,j))*M2;
     A = [A1; A2];
     
     % Solve the linear homogeneous system of equations

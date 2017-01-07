@@ -115,8 +115,8 @@ function p = makeMonoInit (parameters)
         errorqu = sum(sqrt(errors_qu))/sqrt(size(P,2));
 
         % Check the epipolar constraint x2(i).' * F * x1(i) = 0 for all points i.
-        N_ = size(kp_homo_query_fl,2);
-        cost_algebraic = norm( sum(kp_homo_query_fl.*(F*kp_homo_database_fl)) ) / sqrt(N_);
+        N = size(kp_homo_query_fl,2);
+        cost_algebraic = norm( sum(kp_homo_query_fl.*(F*kp_homo_database_fl)) ) / sqrt(N);
         cost_dist_epi_line = distPoint2EpipolarLine(F,kp_homo_database_fl, ...
             kp_homo_query_fl);
 

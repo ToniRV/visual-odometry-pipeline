@@ -18,7 +18,7 @@ fclose(fileID);
 
 % Dataset paths
 vo_path = paths{1}{2};
-addpath(genpath(vo_path));
+%addpath(genpath(vo_path));
 kitti_path_ = paths{1}{4};
 malaga_path_ = paths{1}{6};
 parking_path_ = paths{1}{8};
@@ -198,7 +198,7 @@ else
         case 'Kitti'
             switch initialisation_
                 case 'Monocular'
-                    bootstrap_frames_ = [1, 3];
+                    bootstrap_frames_ = [0, 1];
                     range_ = (bootstrap_frames_(2)+1):last_frame_;
                 case 'Stereo'
                     bootstrap_frames_ = [0, 0];

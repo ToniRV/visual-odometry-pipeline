@@ -8,6 +8,7 @@ function p = makeCorrespondences2D2D(parameters)
     
     if(flag_harris_matlab_)
         params_match_features_ = parameters.match_features;
+        params_extract_features_ = parameters.extract_features;
         filter_size_ = parameters.filter_size;
         min_quality_ = parameters.min_quality;
     else
@@ -79,8 +80,10 @@ function p = makeCorrespondences2D2D(parameters)
             corners_2 = detectHarrisFeatures(img1,'FilterSize', filter_size_, 'MinQuality', min_quality_);
 
             % Extract the features
-            [features1, valid_points1] = extractFeatures(img0, corners_1);
-            [features2, valid_points2] = extractFeatures(img1, corners_2);
+            [features1, valid_points1] = extractFeatures(img0, corners_1, ...
+                'Method', params_extract_features_.Method);
+            [features2, valid_points2] = extractFeatures(img1, corners_2, ...
+                'Method', params_extract_features_.Method);
 
             % Find the matches
             indexPairs = matchFeatures(features1, features2,...

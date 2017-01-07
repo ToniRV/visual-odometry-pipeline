@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.3.16)  6 JAN 2017 04:26
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.3.16)  7 JAN 2017 11:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -387,19 +387,19 @@ l.78 ...tlepage{Visual Odometry Pipeline}{2017-01}
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
-<files/UNIlogo.png, id=71, 401.5pt x 126.4725pt>
+<files/UNIlogo.png, id=99, 401.5pt x 126.4725pt>
 File: files/UNIlogo.png Graphic file (type png)
  <use files/UNIlogo.png>
 Package pdftex.def Info: files/UNIlogo.png used on input line 78.
 (pdftex.def)             Requested size: 117.42448pt x 36.98857pt.
 
-<files/RPGlogo.png, id=72, 385.9218pt x 223.7961pt>
+<files/RPGlogo.png, id=100, 385.9218pt x 223.7961pt>
 File: files/RPGlogo.png Graphic file (type png)
  <use files/RPGlogo.png>
 Package pdftex.def Info: files/RPGlogo.png used on input line 78.
 (pdftex.def)             Requested size: 63.78033pt x 36.98857pt.
 
-<files/ETHlogo.png, id=74, 1027.84pt x 266.9975pt>
+<files/ETHlogo.png, id=102, 1027.84pt x 266.9975pt>
 File: files/ETHlogo.png Graphic file (type png)
  <use files/ETHlogo.png>
 Package pdftex.def Info: files/ETHlogo.png used on input line 78.
@@ -426,23 +426,11 @@ r (name{page.1}) has been already used, duplicate ignored
 l.112 \newpage
                [1
 
-] (./Introduction.tex
-Missing character: There is no â in font cmr12!
-Missing character: There is no € in font cmr12!
-Missing character: There is no “ in font cmr12!
-Missing character: There is no â in font cmr12!
-Missing character: There is no ‰ in font cmr12!
-Missing character: There is no ¤ in font cmr12!
-Missing character: There is no â in font cmr12!
-Missing character: There is no € in font cmr12!
-Missing character: There is no “ in font cmr12!
-Missing character: There is no â in font cmr12!
-Missing character: There is no ‰ in font cmr12!
-Missing character: There is no ¤ in font cmr12!
-) (./GreatWork.tex [2]) (./Conclusion.tex) [3] (./report.bbl) [4]
+] (./Introduction.tex) (./GreatWork.tex) (./Conclusion.tex)
+[2] (./report.bbl) [3]
 \openout2 = `Appendix.aux'.
 
- (./Appendix.tex) [5
+ (./Appendix.tex) [4
 
 ]
 \openout2 = `Examples.aux'.
@@ -462,7 +450,7 @@ File: files/UNIlogo.png Graphic file (type png)
 Package pdftex.def Info: files/UNIlogo.png used on input line 46.
 (pdftex.def)             Requested size: 108.39418pt x 34.1433pt.
 
-[6
+[5
 
 
 ]
@@ -471,35 +459,34 @@ Overfull \hbox (6.16185pt too wide) in paragraph at lines 83--87
 T[]X as a chap-ter and call a []\OT1/cmtt/m/n/12 \subsection
  []
 
-) [7]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 138.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 138.
+) [6]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 137.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 137.
  (./report.aux (./Appendix.aux) (./Examples.aux))
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 138.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 138.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 137.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 137.
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 437DB953435D1B406195CBF42BD2E8E5;891.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 138.
+(rerunfilecheck)             Checksum: C6694600A017B451D41B71518E2B320F;1493.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 137.
  ) 
 Here is how much of TeX's memory you used:
- 7584 strings out of 493117
- 113089 string characters out of 6135433
- 201363 words of memory out of 5000000
- 10894 multiletter control sequences out of 15000+600000
- 11842 words of font info for 43 fonts, out of 8000000 for 9000
+ 7597 strings out of 493117
+ 113369 string characters out of 6135433
+ 201601 words of memory out of 5000000
+ 10904 multiletter control sequences out of 15000+600000
+ 10539 words of font info for 38 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 36i,10n,45p,886b,397s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,10n,45p,263b,397s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 ></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><
 /usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></u
-sr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/
-local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loc
-al/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/loca
-l/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on report.pdf (10 pages, 238093 bytes).
+sr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/
+local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/l
+ocal/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
+Output written on report.pdf (9 pages, 231196 bytes).
 PDF statistics:
- 204 PDF objects out of 1000 (max. 8388607)
- 177 compressed objects within 2 object streams
- 40 named destinations out of 1000 (max. 500000)
- 152 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 229 PDF objects out of 1000 (max. 8388607)
+ 203 compressed objects within 3 object streams
+ 45 named destinations out of 1000 (max. 500000)
+ 208 words of extra memory for PDF output out of 10000 (max. 10000000)
 

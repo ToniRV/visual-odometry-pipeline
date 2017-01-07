@@ -5,44 +5,44 @@ The style file: abbrv.bst
 A level-1 auxiliary file: Appendix.aux
 A level-1 auxiliary file: Examples.aux
 Database file #1: report.bib
-You've used 1 entry,
+You've used 4 entries,
             2118 wiz_defined-function locations,
-            505 strings with 3943 characters,
-and the built_in function-call counts, 410 in all, are:
-= -- 39
-> -- 23
+            521 strings with 4431 characters,
+and the built_in function-call counts, 1186 in all, are:
+= -- 112
+> -- 67
 < -- 0
-+ -- 9
-- -- 8
-* -- 34
-:= -- 76
-add.period$ -- 3
-call.type$ -- 1
-change.case$ -- 7
++ -- 27
+- -- 22
+* -- 86
+:= -- 219
+add.period$ -- 12
+call.type$ -- 4
+change.case$ -- 23
 chr.to.int$ -- 0
-cite$ -- 1
-duplicate$ -- 11
-empty$ -- 27
-format.name$ -- 8
-if$ -- 78
+cite$ -- 4
+duplicate$ -- 41
+empty$ -- 81
+format.name$ -- 22
+if$ -- 232
 int.to.chr$ -- 0
-int.to.str$ -- 1
-missing$ -- 1
-newline$ -- 8
-num.names$ -- 2
-pop$ -- 5
+int.to.str$ -- 4
+missing$ -- 4
+newline$ -- 23
+num.names$ -- 8
+pop$ -- 17
 preamble$ -- 1
-purify$ -- 6
+purify$ -- 19
 quote$ -- 0
-skip$ -- 7
+skip$ -- 32
 stack$ -- 0
-substring$ -- 30
-swap$ -- 1
+substring$ -- 46
+swap$ -- 4
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 4
+type$ -- 16
 warning$ -- 0
-while$ -- 4
-width$ -- 2
-write$ -- 13
+while$ -- 10
+width$ -- 5
+write$ -- 45

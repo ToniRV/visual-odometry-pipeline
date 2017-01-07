@@ -2,20 +2,27 @@
 \contentsline {section}{\numberline {}{List of Figures}}{ii}{section*.1}
 \contentsline {section}{\numberline {}{Abstract}}{1}{section*.2}
 \contentsline {section}{\numberline {1}Introduction}{2}{section.1}
-\contentsline {section}{\numberline {2}Main Category A}{2}{section.2}
-\contentsline {subsection}{\numberline {2.1}Sub-Category I}{3}{subsection.2.1}
-\contentsline {subsubsection}{\numberline {2.1.1}Sub-Sub-Category (if necessary)}{3}{subsubsection.2.1.1}
-\contentsline {subsection}{\numberline {2.2}Sub-Category II}{3}{subsection.2.2}
-\contentsline {section}{\numberline {3}Main Category B}{3}{section.3}
-\contentsline {subsection}{\numberline {3.1}Sub-Category I}{3}{subsection.3.1}
-\contentsline {section}{\numberline {4}Discussion}{3}{section.4}
-\contentsline {section}{\numberline {5}Conclusion}{3}{section.5}
+\contentsline {section}{\numberline {2}Initialisation}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}Stereo Initialisation}{2}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Monocular Initialisation}{2}{subsection.2.2}
+\contentsline {section}{\numberline {3}Continous Operation}{2}{section.3}
+\contentsline {subsection}{\numberline {3.1}KLT}{2}{subsection.3.1}
+\contentsline {section}{\numberline {4}Bonus Features}{2}{section.4}
+\contentsline {subsection}{\numberline {4.1}Plotting}{2}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Automatic Selection of Frames for Initialisation}{2}{subsection.4.2}
+\contentsline {subsection}{\numberline {4.3}Relocalisation}{2}{subsection.4.3}
+\contentsline {subsection}{\numberline {4.4}Full Bundle Adjustment}{2}{subsection.4.4}
+\contentsline {subsection}{\numberline {4.5}Calibrated Smartphone Camera and own Dataset}{2}{subsection.4.5}
+\contentsline {subsection}{\numberline {4.6}Quantitative Analysis}{2}{subsection.4.6}
+\contentsline {subsubsection}{\numberline {4.6.1}Keypoint Tracking via Block Matching versus KLT}{2}{subsubsection.4.6.1}
+\contentsline {subsection}{\numberline {4.7}Monocular Initialisation Harris Detector via Matlab versus Exercise Harris Detector}{2}{subsection.4.7}
+\contentsline {section}{\numberline {5}Conclusion}{2}{section.5}
 \vspace {.5\baselineskip }
-\contentsline {section}{\numberline {}{References}}{4}{section.5}
+\contentsline {section}{\numberline {}{References}}{3}{section.5}
 \vspace {.5\baselineskip }
-\contentsline {section}{\numberline {A}Appendix}{5}{appendix.A}
-\contentsline {section}{\numberline {B}Examples}{6}{appendix.B}
-\contentsline {subsection}{\numberline {B.1}Tables}{6}{subsection.B.1}
-\contentsline {subsection}{\numberline {B.2}Figures}{6}{subsection.B.2}
-\contentsline {subsection}{\numberline {B.3}Units}{6}{subsection.B.3}
-\contentsline {subsection}{\numberline {B.4}Miscellany}{7}{subsection.B.4}
+\contentsline {section}{\numberline {A}Appendix}{4}{appendix.A}
+\contentsline {section}{\numberline {B}Examples}{5}{appendix.B}
+\contentsline {subsection}{\numberline {B.1}Tables}{5}{subsection.B.1}
+\contentsline {subsection}{\numberline {B.2}Figures}{5}{subsection.B.2}
+\contentsline {subsection}{\numberline {B.3}Units}{5}{subsection.B.3}
+\contentsline {subsection}{\numberline {B.4}Miscellany}{6}{subsection.B.4}

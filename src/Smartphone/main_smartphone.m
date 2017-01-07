@@ -19,7 +19,7 @@ imageNames = {imageNames.name}';
 % Loop over frames
 for i = 1:size(imageNames, 1)
     img_gray = rgb2gray(imread(fullfile(dataset_path,imageNames{i})));
-    img_undistorted = undistortImage(img_gray, cameraParams);
+    img_undistorted = undistortImage(img_gray, cameraParams, 'OutputView', 'valid');
     if (debug)
         figure();
         subplot(1, 2, 1);
@@ -29,5 +29,5 @@ for i = 1:size(imageNames, 1)
         imshow(img_undistorted);
         title('Undistorted image');
     end
-    imwrite(img_undistorted,strcat(int2str(i),'.jpg'));
+    imwrite(img_undistorted, strcat(int2str(i), '.jpg'));
 end

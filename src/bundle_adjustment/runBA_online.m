@@ -1,12 +1,13 @@
 function [poses_W_opt_, landmarks_opt_] = runBA_online(poses_W_hist_,...
-        landmarks_hist_, observation_hist_, ground_truth_pose_, K, m_on_)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
-
+          landmarks_hist_, index_hist_m_, observation_hist_,...
+          ground_truth_pose_, K, m_on_);
+% Perform online bundle adjustment on the last m_on_ frames
 p_W_GT = ground_truth_pose_(1:m_on_, [4 8 12])';
-    
-% Define current hidden_state, i.e. poses and landmarks of last m_on_ frames: 
-hidden_state = [poses_W_hist_; landmarks_hist_(:)];
+
+% Define current hidden_state, i.e. poses and landmarks of last m_on_ frames:
+idx_m = unique(index_hist_m_);
+landmarks_m = landmarks_hist_(:,idx_m);
+hidden_state = [poses_W_hist_; landmarks_m(:)];
 opt_hidden_state = runBA_0(hidden_state, cast(observation_hist_,'double'), K, m_on_);
 poses_W_opt_ = opt_hidden_state(1:6*m_on_);
 landmarks_opt_ = reshape(opt_hidden_state(6*m_on_+1:end), 3, []);

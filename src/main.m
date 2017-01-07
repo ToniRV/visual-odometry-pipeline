@@ -136,7 +136,9 @@ if (is_auto_frame_monocular_initialisation_)
     min_num_inliers = 30;
     smallest_error = Inf;
     for i = (idx_initial_image+1):(max_num_auto_frames+idx_initial_image)
+        % Seed the random generator every time
         rng(1);
+        
         % Retrieve the current image
          current_image = getImage(dataset_, i, kitti_path_, ...
              malaga_path_, parking_path_);
@@ -211,8 +213,8 @@ else
     switch initialisation_
         case 'Monocular'
             [state, ~, ~, ~] = monoInit(img0_, img1_);
-            keypoints_ = state.matches_2d(1:2,:)
-            p_W_landmarks_ = state.landmarks(1:3,:)
+            keypoints_ = state.matches_2d(1:2,:);
+            p_W_landmarks_ = state.landmarks(1:3,:);
         case 'Stereo'
             stereoInit = makeStereoInit(init_parameters.stereo);
             [keypoints_, p_W_landmarks_] = stereoInit(img0_, img1_);

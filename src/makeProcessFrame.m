@@ -11,7 +11,9 @@ suppression_radius_ = parameters.suppression_radius;
 
 ransacLocalization = makeRansacLocalization(parameters.ransac_localization);
 
-function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i0, State_i0, i1)
+function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = ...
+    processFrame(Image_i1, Image_i0, State_i0, i1)
+
 %PROCESSFRAME Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -42,6 +44,8 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     final_keypoints_correspondences_i1 = keypoints_correspondences_i1;
     final_p_W_landmarks_correspondences_i1 = p_W_landmarks_correspondences_i1;
           
+    new_3D = [];
+    new_2D = [];
     
     %First time we start:
     if (isempty(State_i0.first_obs_candidate_keypoints))
@@ -127,6 +131,9 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             % IS THIS CORRECT?
             points_3D_W = points_3D_cam_frame;
             points_2D = triangulable_last_kp(:, valid_indices);
+            
+            new_3D = points_3D_W;
+            new_2D = points_2D;
             
             %%%% b) Append to already known 2D-3D correspondences
             final_keypoints_correspondences_i1 = [keypoints_correspondences_i1,  points_2D];

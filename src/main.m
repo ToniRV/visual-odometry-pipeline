@@ -148,7 +148,6 @@ params_mono = struct(...
 
 init_parameters = struct('stereo', params_stereo, 'mono', params_mono);
 
-
 keypoints_ = zeros(0,'double');
 p_W_landmarks_ = zeros(0);
 switch initialisation_
@@ -294,7 +293,11 @@ for i = range_
         elseif (strcmp(BA_,'Online') == 1)
             [poses_W_hist_, landmarks_hist_, observation_hist_, index_mask_, index_hist_m_] =...
             BA_online_hist_update(S_i0, T_i1, validity_mask, inlier_mask, index_mask_, index_hist_m_,...
-            new_3D, new_2D, poses_W_hist_, landmarks_hist_, observation_hist_, range_, m_on_, i);   
+            new_3D, new_2D, poses_W_hist_, landmarks_hist_, observation_hist_, range_, m_on_, i);
+            if (i >= range_(m_on_-1))
+               [poses_W_opt_, landmarks_opt_] = runBA_online(poses_W_hist_,...
+                landmarks_hist_, observation_hist_, ground_truth_pose_, K, m_on_); 
+            end
         else
             disp(['Unidentified BA method: ', BA_]);
             assert(false);

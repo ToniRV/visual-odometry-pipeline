@@ -115,10 +115,9 @@ keypoints_ = zeros(0);
 p_W_landmarks_ = zeros(0);
 
 % Initialize parameters
-mono_init = 0;
 switch initialisation_
     case 'Monocular'
-        mono_init = makeMonoInit(init_parameters.mono);
+        monoInit = makeMonoInit(init_parameters.mono);
     otherwise
         disp('Autoframes ONLY with MONOCULAR');
 end
@@ -126,19 +125,22 @@ end
 % Automatically choose the best initialisation frames 
 if (is_auto_frame_monocular_initialisation_)
     % Retrieve the initial image
-    img0_ = getImage(dataset_, 0, kitti_path_, malaga_path_, parking_path_);
-    
-    max_num_auto_frames = 15;
+    idx_initial_image = 1;
+    img0_ = getImage(dataset_, idx_initial_image, ...
+        kitti_path_, malaga_path_, parking_path_);
+        
+    max_num_auto_frames = 10;
     min_num_inliers = 30;
     smallest_error = Inf;
-    for i = 1:max_num_auto_frames
+    for i = (idx_initial_image+1):(max_num_auto_frames+idx_initial_image)
+        rng(1);
         % Retrieve the current image
          current_image = getImage(dataset_, i, kitti_path_, ...
              malaga_path_, parking_path_);
 
         % Monocular initialisation with repro errors
         [state_i, ~, reprojection_errors, ~] = ...
-            mono_init(img0_, current_image);
+            monoInit(img0_, current_image);
 
         % Check if number of inliers is big enough
         if (size(state_i.matches_2d, 2) < min_num_inliers)
@@ -150,11 +152,12 @@ if (is_auto_frame_monocular_initialisation_)
             smallest_error = sum(reprojection_errors);
             img1_ = current_image;
             keypoints_ = state_i.matches_2d(1:2,:);
-            p_W_landmarks_ = state_i.landmarks(1:3,:);  
+            p_W_landmarks_ = state_i.landmarks(1:3,:);
             i_ = i;
         end
     end
-    sprintf('Automatically choose Fram 0 and %i for intialisation', i_)
+    sprintf('Automatically choose Fram %i and %i for intialisation', ...
+        idx_initial_image, i_)
     
     range_ = (i_+1):last_frame_;
 else
@@ -164,7 +167,7 @@ else
         case 'Kitti'
             switch initialisation_
                 case 'Monocular'
-                    bootstrap_frames_ = [0, 1];
+                    bootstrap_frames_ = [1, 3];
                     range_ = (bootstrap_frames_(2)+1):last_frame_;
                 case 'Stereo'
                     bootstrap_frames_ = [0, 0];
@@ -204,10 +207,9 @@ else
     
     switch initialisation_
         case 'Monocular'
-            mono_init = makeMonoInit(init_parameters.mono);
-            [state, ~, ~, ~] = mono_init(img0_, img1_);
-            keypoints_ = state.matches_2d(1:2,:);
-            p_W_landmarks_ = state.landmarks(1:3,:);
+            [state, ~, ~, ~] = monoInit(img0_, img1_);
+            keypoints_ = state.matches_2d(1:2,:)
+            p_W_landmarks_ = state.landmarks(1:3,:)
         case 'Stereo'
             stereoInit = makeStereoInit(init_parameters.stereo);
             [keypoints_, p_W_landmarks_] = stereoInit(img0_, img1_);

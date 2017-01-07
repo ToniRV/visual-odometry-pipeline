@@ -116,6 +116,7 @@ img1_ = 0;
 range_ = 0;
 i_ = 0;
 keypoints_ = zeros(0);
+
 p_W_landmarks_ = zeros(0);
 
 % % Initialize parameters
@@ -345,7 +346,16 @@ for i = range_
                 index_mask_] = BA_offline_hist_update(S_i0, T_i1, ...
                 validity_mask, inlier_mask, index_mask_, new_3D, new_2D, ...
                 poses_W_hist_, landmarks_hist_, observation_hist_);
-            n_off_ = n_off_ + 1;  
+            n_off_ = n_off_ + 1;
+        elseif (strcmp(BA_,'Online') == 1)
+            [poses_W_hist_, landmarks_hist_, observation_hist_, index_mask_, index_hist_m_] =...
+            BA_online_hist_update(S_i0, T_i1, validity_mask, inlier_mask, index_mask_, index_hist_m_,...
+            new_3D, new_2D, poses_W_hist_, landmarks_hist_, observation_hist_, range_, m_on_, i);
+            if (i >= range_(m_on_-1))
+               [poses_W_opt_, landmarks_opt_] = runBA_online(poses_W_hist_,...
+                landmarks_hist_, index_hist_m_, observation_hist_,...
+                ground_truth_pose_, K, m_on_); 
+            end
         else
             disp(['Unidentified BA method: ', BA_]);
             assert(false);

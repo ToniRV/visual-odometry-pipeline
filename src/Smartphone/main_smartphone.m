@@ -29,5 +29,5 @@ for i = 1:size(imageNames, 1)
         imshow(img_undistorted);
         title('Undistorted image');
     end
-    imwrite(img_undistorted,strcat(i,'.jpg'));
+    imwrite(img_undistorted,strcat(int2str(i),'.jpg'));
 end

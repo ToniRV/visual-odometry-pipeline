@@ -21,12 +21,13 @@ addpath(genpath(vo_path));
 kitti_path_ = paths{1}{4};
 malaga_path_ = paths{1}{6};
 parking_path_ = paths{1}{8};
+smartphone_path_ = '/home/tonirv/Documents/visual-odometry-pipeline/src/Smartphone/';
 %% Setup
 
 %%% Select dataset to run:
-dataset_ = 'Kitti';                                             % 'Kitti', 'Malaga', 'Parking'
+dataset_ = 'Smartphone';                                             % 'Kitti', 'Malaga', 'Parking'
 %%% Select initialisation method to run:
-initialisation_ = 'Monocular';                             % 'Monocular', 'Stereo', 'Ground Truth'
+initialisation_ = 'Monocular';                             % 'Monocular', 'Stereo', 'Ground Truth', 'Smartphone'
 
 % Parameters
 baseline_  = 0;
@@ -62,6 +63,10 @@ switch dataset_
         K = load([parking_path_ '/K.txt']);
         ground_truth = load([parking_path_ '/poses.txt']);
         ground_truth = ground_truth(:, [end-8 end]);
+    case 'Smartphone'
+        load('./Smartphone/data/cameraParams.mat');
+        K = cameraParams.IntrinsicMatrix';
+        last_frame_ = 5;
     otherwise
         disp(' No correct dataset specified');
         assert(false);
@@ -110,6 +115,17 @@ switch dataset_
                 assert(false);
         end
         [img0_, img1_] = parseParkingImages(parking_path_, bootstrap_frames_);
+    case 'Smartphone'
+        switch initialisation_
+            case 'Monocular'
+                bootstrap_frames_ = [1, 4];
+                range_ = (bootstrap_frames_(2)+1):last_frame_;
+            otherwise
+                disp(['Wrong initialisation ', initialisation_,' method for dataset: ', dataset_]);
+                assert(false);
+        end
+        img0_ = parseSmartphoneImages(smartphone_path_, bootstrap_frames_(1));
+        img1_ = parseSmartphoneImages(smartphone_path_, bootstrap_frames_(2));
     otherwise
         disp(['Wrong dataset: ', dataset_]);
         assert(false);
@@ -221,6 +237,8 @@ switch dataset_
     case 'Parking'
         prev_image_ = im2uint8(rgb2gray(imread([parking_path_ ...
             sprintf('/images/img_%05d.png',i_)])));
+    case 'Smartphone'
+        prev_image_ = parseSmartphoneImages(smartphone_path_, i_);
     otherwise
         disp(['Wrong dataset: ', dataset_]);
         assert(false);
@@ -269,6 +287,8 @@ for i = range_
         case 'Parking'
             image = im2uint8(rgb2gray(imread([parking_path_ ...
                 sprintf('/images/img_%05d.png',i)])));
+        case 'Smartphone'
+            image = parseSmartphoneImages(smartphone_path_, i);
         otherwise
             disp(['Wrong dataset: ', dataset_]);
             assert(false);

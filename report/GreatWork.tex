@@ -30,7 +30,7 @@ An examplary output of the 2D-2D module can be seen in Figure~\ref{s:KLT_2d2d}. 
 
 Due to efficiency reasons we decided to use the epipolar line distance as a measure to validate the estimated Fundamental Matrices. In theory the reprojection error would have yielded better results (sacrificing efficiency); however, in our case the differences were neglectable.
 
-\section{Continous Operation}
+\section{Continuous Operation}
 \label{s:ContOp}
 
 \subsection{KLT}
@@ -43,11 +43,12 @@ Due to efficiency reasons we decided to use the epipolar line distance as a meas
 
 \subsection{Automatic Selection of Frames for Initialisation}
 
+
 \subsection{Relocalisation}
 
 \subsection{Full Bundle Adjustment}
 
-\subsection{Calibrated Smartphone Camera and own Dataset}
+\subsection{Calibrated Smartphone Camera and Own Dataset}
 
 In order to assess the robustness of our VO pipeline, we decided to record our own dataset.
 For this endeavour, we printed a checkerboard to calibrate the camera of an smartphone.
@@ -59,12 +60,12 @@ In order to achieve good results for the calibration, we made sure that we follo
 3) Take frames of the checkerboard from sufficiently different angles and distances.
 
 Once the calibration dataset recorded, we proceeded to find the intrinsics of the camera.
-As a first approach we used the matlab toolbox (REFERENCE TO THE TOOLBOX https://www.vision.caltech.edu/bouguetj/calib_doc/).
+As a first approach we used the Matlab toolbox (REFERENCE TO THE TOOLBOX \href{https://www.vision.caltech.edu/bouguetj/calib_doc/}).
 Unfortunately, we could not get good calibration results.
 This was in part due to the fact that the interface requires you to click on the
 corners of the checkerboard in the image, and therefore limits the amount of images you can process in a given time.
 We also used OpenCV to retrieve the calibration matrix of the camera. Nonetheless, we found that the most user-friendly
-calibration tool was the one offerd as a matlab app named Camera Calibrator.
+calibration tool was the one offered as a Matlab app named Camera Calibrator.
 
 Using this last tool, we managed to retrieve approximately the same intrinsic parameters independently of the calibration images.
 Once calibrated, we processed the images to get a gray-scaled, resized and undistorted set of images. Then we fed the new
@@ -72,16 +73,16 @@ dataset to our VO pipeline and checked the results with our ground truth.
 The ground truth was taken approximately with no special instrumentation other than a meter.
 
 We encountered many problems while recording the dataset, to name a few: motion blur when moving, changes of illumination on the scene,
-mantaining a constant focus, transferring images, having enough features on the scene, etc.
+maintaining a constant focus, transferring images, having enough features on the scene, etc.
 
 In the end, we found that monocular initialisation was having difficulties to output a sufficient amount of 2D-3D correspondences.
-This led the continuous operation part to stop after two frames on average. The reprojetion errors on the triangulated keypoints were of
-the order of magnitude of tens of pixels, depending on parameters and bootsrap_frames.
+This led the continuous operation part to stop after two frames on average. The reprojection errors on the triangulated keypoints were of
+the order of magnitude of tens of pixels, depending on parameters and bootstrap\_frames.
 
 In the end, we learned about different tools available for camera calibration and about the difficulties of recording a satisfiable dataset
 for visual odometry. Or seen from another perspective, we learned about the limits of our VO pipeline.
 
-Our calibration files and images of the dataset are provided under the folder Smartphone.
+Our calibration files and images of the dataset are provided under the folder smartphone.
 
 
 

@@ -16,7 +16,7 @@
 
 function F = fundamentalEightPoint(p1,p2)
 
-speed = false;
+fundamentalEightPoint_speed_flag = true;
 
 [dim,NumPoints] = size(p1);
 [dim2,NumPoints2] = size(p2);
@@ -30,7 +30,7 @@ assert(NumPoints>=8,'Insufficient number of points to compute fundamental matrix
 % solution is the vector representing the fundamental matrix.
 A = zeros(NumPoints,9);
 for i=1:NumPoints
-    if (speed)
+    if (fundamentalEightPoint_speed_flag)
         A(i,:) = [...
         p1(1,i)*p2(1,i), p1(2,i)*p2(1,i), p2(1,i), ...
         p1(1,i)*p2(2,i), p1(2,i)*p2(2,i), p2(2,i), ...

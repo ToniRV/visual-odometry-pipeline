@@ -1,5 +1,5 @@
 %% Tabula rasa
-clear variables;
+clear all;
 close all;
 
 % REMOVE
@@ -28,7 +28,9 @@ smartphone_path_ = '/home/tonirv/Documents/visual-odometry-pipeline/src/Smartpho
 %%% Select dataset to run:
 dataset_ = 'Smartphone';                                             % 'Kitti', 'Malaga', 'Parking', 'Smartphone'
 %%% Select initialisation method to run:
-initialisation_ = 'Monocular';  % 'Monocular', 'Stereo', 'Ground Truth'
+initialisation_ = 'Monocular';     % 'Monocular', 'Stereo', 'Ground Truth'
+%%% Select bundle adjustment method:
+BA_ = 'Offline';                   % 'Offline', 'Online', 'None'
 %%% Select if initialisation frames should be picked automatically
 is_auto_frame_monocular_initialisation_ = false;
 
@@ -42,8 +44,7 @@ switch dataset_
     case 'Kitti'
         % need to set kitti_path to folder containing "00" and "poses"
         assert(exist('kitti_path_', 'var') ~= 0);
-        gound_truth_pose_ = load([kitti_path_ '/poses/00.txt']);
-        gound_truth_pose_ = gound_truth_pose_(:, [end-8 end]);
+        ground_truth_pose_ = load([kitti_path_ '/poses/00.txt']);
         baseline_ = 0.54; % Given by the KITTI dataset:
         last_frame_ = 4540;
         K = [7.188560000000e+02 0 6.071928000000e+02
@@ -149,7 +150,7 @@ if (is_auto_frame_monocular_initialisation_)
              malaga_path_, parking_path_, smartphone_path_);
 
         % Monocular initialisation with repro errors
-        [state_i, ~, reprojection_errors, ~] = ...
+        [state_i, T_i0, reprojection_errors, ~] = ...
             monoInit(img0_, current_image);
 
         % Check if number of inliers is big enough
@@ -228,7 +229,7 @@ else
     
     switch initialisation_
         case 'Monocular'
-            [state, ~, ~, ~] = monoInit(img0_, img1_);
+            [state, T_i0, ~, ~] = monoInit(img0_, img1_);
             keypoints_ = state.matches_2d(1:2,:);
             p_W_landmarks_ = state.landmarks(1:3,:);
         case 'Stereo'
@@ -268,11 +269,11 @@ axis vis3d;
 grid on;
 
 S_i0 = struct(...
-    'keypoints_correspondences', keypoints_,...                     % 2xL
-    'p_W_landmarks_correspondences', p_W_landmarks_,... % 3xL
-    'first_obs_candidate_keypoints', zeros(2,0),...                  % 2xM First observed candidate keypoints
-    'first_obs_candidate_transform', zeros(12,0),...               % 12xM Transformation matrices of each ofthe candidates
-    'last_obs_candidate_keypoints', zeros(2,0)...                   % 2xM Last keypoint matched corresponding to initial candidate
+    'keypoints_correspondences', keypoints_,...          % 2xL
+    'p_W_landmarks_correspondences', p_W_landmarks_,...  % 3xL
+    'first_obs_candidate_keypoints', zeros(2,0),...      % 2xM First observed candidate keypoints
+    'first_obs_candidate_transform', zeros(12,0),...     % 12xM Transformation matrices of each ofthe candidates
+    'last_obs_candidate_keypoints', zeros(2,0)...        % 2xM Last keypoint matched corresponding to initial candidate
     );
 
 params_harris_matlab = struct(...
@@ -298,9 +299,17 @@ params_ransac_localization = struct(...
 cont_op_parameters = struct(...
     'K', K,...
     'harris_detector', params_harris_detector,...
-    'triangulation_angle_threshold', 35,...
-    'suppression_radius', 4,...
+    'triangulation_angle_threshold', 3,...
+    'suppression_radius', 3,...
+    'reprojection_error_threshold', 200,...
     'ransac_localization', params_ransac_localization);
+
+% Bundle Adjustment initialization:
+if (strcmp(BA_,'None') == 0)
+    [m_on_, n_off_, index_mask_, index_hist_m_, poses_W_hist_,...
+        landmarks_hist_, observation_hist_] = ...
+        BA_init(S_i0, T_i0, initialisation_);
+end
 
 % Store Image_i0, aka previous image to kickstart continuous operation.
 prev_img = getImage(dataset_, i_, kitti_path_, malaga_path_, parking_path_, smartphone_path_);
@@ -312,7 +321,29 @@ for i = range_
 
     image = getImage(dataset_, i, kitti_path_, malaga_path_, parking_path_, smartphone_path_);
     
-    [S_i1, T_i1, inlier_mask] = processFrame(image, prev_img, S_i0, i);
+    % State and pose update:
+    [S_i1, T_i1, inlier_mask, validity_mask, new_3D, new_2D] = ...
+        processFrame(image, prev_img, S_i0, i);
+    % subplot(1, 3, 3);
+    % scatter3(S_i1.p_W_landmarks_correspondences(1, :), ...
+    % S_i1.p_W_landmarks_correspondences(2, :), ...
+    % S_i1.p_W_landmarks_correspondences(3, :), 5);
+  
+    % BUNDLE ADJUSTMENT
+    if (numel(T_i1) == 0)
+        break;
+    elseif (strcmp(BA_,'None') == 0)
+        if (strcmp(BA_,'Offline') == 1)
+            [poses_W_hist_, landmarks_hist_, observation_hist_, ...
+                index_mask_] = BA_offline_hist_update(S_i0, T_i1, ...
+                validity_mask, inlier_mask, index_mask_, new_3D, new_2D, ...
+                poses_W_hist_, landmarks_hist_, observation_hist_);
+            n_off_ = n_off_ + 1;  
+        else
+            disp(['Unidentified BA method: ', BA_]);
+            assert(false);
+        end
+    end
     
     % Idea: Update keypoints and 3D landmarks and switch to new keyframe every 5
     % frames, that's why there is a mod there .... 
@@ -320,4 +351,11 @@ for i = range_
          S_i0 = S_i1;
          prev_img = image;
 %     end
+end
+
+%% Offline Bundle Adjustment
+
+if (strcmp(BA_,'Offline') == 1)
+   [poses_W_opt_, landmarks_opt_] = runBA_offline(poses_W_hist_,...
+        landmarks_hist_, observation_hist_, ground_truth_pose_, K, n_off_);
 end

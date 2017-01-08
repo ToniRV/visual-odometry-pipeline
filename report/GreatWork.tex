@@ -42,7 +42,14 @@ Due to efficiency reasons we decided to use the epipolar line distance as a meas
 
 
 \subsection{Automatic Selection of Frames for Initialisation}
+We have further implemented the Bonus Feature "Automatic Selection of Frames for Initialisation". The initialisation will try to find correspondences between different frames in the beginning of the datasets. If a pair of initialisation candidates has enough correspondence inliers the automatic selection tries to find the best pair which minimizes:
 
+\begin{enumerate}
+\item The average reprojection error and 
+\item the average epipolar line distance.
+\end{enumerate}
+
+Once the minimizing pair was found, the monocular initialisation is recomputed with the new initialisation set of images.
 
 \subsection{Relocalisation}
 

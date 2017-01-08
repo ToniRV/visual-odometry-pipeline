@@ -9,9 +9,6 @@
 
 # Images
 *.img
-*.jpg
-*.jpeg
-*.png
 
 # Videos
 *.mp4

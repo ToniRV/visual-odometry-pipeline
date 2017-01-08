@@ -123,13 +123,11 @@ function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = 
             %%% III) Update state
             %%%% a) Store new 2D-3D correspondences which are valid
             reprojectionError_threshold = 0.5; % WARNING: this guy gets rid of MANY possible landmarks!
-            valid_errors = list_reprojection_errors < reprojectionError_threshold;
-            valid_depth = X_s(3,:) > 0;
-            valid_indices = valid_errors & valid_depth;
+            valid_indices = list_reprojection_errors < reprojectionError_threshold;
             fprintf('Number of valid triangulated points: %d \n', nnz(valid_indices));
-            points_3D_cam_frame = X_s(:, valid_indices);
+            points_3D_world_frame = X_s(:, valid_indices);
             % IS THIS CORRECT?
-            points_3D_W = points_3D_cam_frame;
+            points_3D_W = points_3D_world_frame;
             points_2D = triangulable_last_kp(:, valid_indices);
             
             new_3D = points_3D_W;

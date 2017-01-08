@@ -1,8 +1,6 @@
 \section{Initialisation}
 \label{s:Initialisation}
 
-\subsection{Stereo Initialisation}
-
 \subsection{Monocular Initialisation}
 The monocular initialisation is a key module in the Visual-Odometry pipeline.
 We decided to implement different approaches to initialize with a monocular camera:
@@ -30,6 +28,46 @@ We decided to implement different approaches to initialize with a monocular came
 
 \subsection{Calibrated Smartphone Camera and own Dataset}
 
+In order to assess the robustness of our VO pipeline, we decided to record our own dataset.
+For this endeavour, we printed a checkerboard to calibrate the camera of an smartphone.
+We then used the calibrated camera to record the dataset.
+In order to achieve good results for the calibration, we made sure that we followed the following procedure:
+
+1) Set focus and exposure mode of the smartphone to fixed.
+2) Ensure that the checkerboard is over a planar surface and presents no light reflections.
+3) Take frames of the checkerboard from sufficiently different angles and distances.
+
+Once the calibration dataset recorded, we proceeded to find the intrinsics of the camera.
+As a first approach we used the matlab toolbox (REFERENCE TO THE TOOLBOX https://www.vision.caltech.edu/bouguetj/calib_doc/).
+Unfortunately, we could not get good calibration results.
+This was in part due to the fact that the interface requires you to click on the
+corners of the checkerboard in the image, and therefore limits the amount of images you can process in a given time.
+We also used OpenCV to retrieve the calibration matrix of the camera. Nonetheless, we found that the most user-friendly
+calibration tool was the one offerd as a matlab app named Camera Calibrator.
+
+Using this last tool, we managed to retrieve approximately the same intrinsic parameters independently of the calibration images.
+Once calibrated, we processed the images to get a gray-scaled, resized and undistorted set of images. Then we fed the new
+dataset to our VO pipeline and checked the results with our ground truth.
+The ground truth was taken approximately with no special instrumentation other than a meter.
+
+We encountered many problems while recording the dataset, to name a few: motion blur when moving, changes of illumination on the scene,
+mantaining a constant focus, transferring images, having enough features on the scene, etc.
+
+In the end, we found that monocular initialisation was having difficulties to output a sufficient amount of 2D-3D correspondences.
+This led the continuous operation part to stop after two frames on average. The reprojetion errors on the triangulated keypoints were of
+the order of magnitude of tens of pixels, depending on parameters and bootsrap_frames.
+
+In the end, we learned about different tools available for camera calibration and about the difficulties of recording a satisfiable dataset
+for visual odometry. Or seen from another perspective, we learned about the limits of our VO pipeline.
+
+
+
+
+
+
+
+
 \subsection{Quantitative Analysis}
 \subsubsection{Keypoint Tracking via Block Matching versus KLT}
+
 \subsection{Monocular Initialisation Harris Detector via Matlab versus Exercise Harris Detector}

@@ -28,6 +28,7 @@ else
     index_mask_ = index_mask_tracked;
     kp2add = kp_inliers_tracked(:);
     n_kp = size(kp_inliers_tracked,2);
+    landmarks_hist_ = landmarks_hist_0;
 end
 
 if (i <= range_(m_on_-1)) % Make sure that the first m_on_ frames passed before calling BA

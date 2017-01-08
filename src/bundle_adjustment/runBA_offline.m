@@ -1,13 +1,14 @@
 function [poses_W_opt_, landmarks_opt_] = runBA_offline(poses_W_hist_,...
         landmarks_hist_, observation_hist_, ground_truth_pose_, K, n_off_)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+% Performs offline bundle adjustment 
 
+% Extract ground truth translations for plotting:
 p_W_GT = ground_truth_pose_(1:n_off_, [4 8 12])';
-    
+% Set number of iterations for offline NLLS optimization:
+n_iter = 40;
 % Define hidden_state: 
 hidden_state = [poses_W_hist_; landmarks_hist_(:)];
-opt_hidden_state = runBA_0(hidden_state, cast(observation_hist_,'double'), K, n_off_);
+opt_hidden_state = runBA_0(hidden_state, cast(observation_hist_,'double'), K, n_off_, n_iter);
 poses_W_opt_ = opt_hidden_state(1:6*n_off_);
 landmarks_opt_ = reshape(opt_hidden_state(6*n_off_+1:end), 3, []);
 

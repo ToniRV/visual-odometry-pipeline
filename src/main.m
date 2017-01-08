@@ -29,7 +29,7 @@ dataset_ = 'Kitti';                % 'Kitti', 'Malaga', 'Parking'
 %%% Select initialisation method to run:
 initialisation_ = 'Monocular';     % 'Monocular', 'Stereo', 'Ground Truth'
 %%% Select bundle adjustment method:
-BA_ = 'Offline';                   % 'Offline', 'Online', 'None'
+BA_ = 'Online';                   % 'Offline', 'Online', 'None'
 %%% Select if initialisation frames should be picked automatically
 is_auto_frame_monocular_initialisation_ = false;
 
@@ -38,6 +38,8 @@ baseline_  = 0;
 gound_truth_pose_ = 0;
 last_frame_ = 0;
 left_images_ = 0;
+m_on_ = 1; % Set number of frames used for online BA
+m_off_ = 250; % Set number of frames used for offline BA
 
 switch dataset_
     case 'Kitti'
@@ -315,16 +317,19 @@ cont_op_parameters = struct(...
 
 % Bundle Adjustment initialization:
 if (strcmp(BA_,'None') == 0)
-    [m_on_, n_off_, index_mask_, index_hist_m_, poses_W_hist_,...
+    [index_mask_, index_hist_m_, poses_W_hist_, poses_W_opt_,...
         landmarks_hist_, observation_hist_] = ...
-        BA_init(S_i0, T_i0, initialisation_);
+        BA_init(S_i0, T_i0, initialisation_, m_on_);
 end
 
 % Store Image_i0, aka previous image to kickstart continuous operation.
 prev_img = getImage(dataset_, i_, kitti_path_, malaga_path_, parking_path_);
     
 processFrame = makeProcessFrame(cont_op_parameters);
-    
+
+% TEST!!!!!!
+plot_pose_hist_ = [];
+
 for i = range_
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     image = getImage(dataset_, i, kitti_path_, malaga_path_, parking_path_);
@@ -338,24 +343,35 @@ for i = range_
     % S_i1.p_W_landmarks_correspondences(3, :), 5);
   
     % BUNDLE ADJUSTMENT
-    if (numel(T_i1) == 0)
-        break;
-    elseif (strcmp(BA_,'None') == 0)
+    if (strcmp(BA_,'None') == 0)
         if (strcmp(BA_,'Offline') == 1)
             [poses_W_hist_, landmarks_hist_, observation_hist_, ...
                 index_mask_] = BA_offline_hist_update(S_i0, T_i1, ...
-                validity_mask, inlier_mask, index_mask_, new_3D, new_2D, ...
+                validity_mask, inlier_mask, index_mask_, new_3D, new_2D,...
                 poses_W_hist_, landmarks_hist_, observation_hist_);
-            n_off_ = n_off_ + 1;
-        elseif (strcmp(BA_,'Online') == 1)
-            [poses_W_hist_, landmarks_hist_, observation_hist_, index_mask_, index_hist_m_] =...
-            BA_online_hist_update(S_i0, T_i1, validity_mask, inlier_mask, index_mask_, index_hist_m_,...
-            new_3D, new_2D, poses_W_hist_, landmarks_hist_, observation_hist_, range_, m_on_, i);
-            if (i >= range_(m_on_-1))
-               [poses_W_opt_, landmarks_opt_] = runBA_online(poses_W_hist_,...
-                landmarks_hist_, index_hist_m_, observation_hist_,...
-                ground_truth_pose_, K, m_on_); 
+            % Stop VO pipeline if enough frames to perform offline BA have
+            % been recorded:
+            if (i == range_(m_off_-1))
+                break;
             end
+        elseif (strcmp(BA_,'Online') == 1)
+            [poses_W_hist_, landmarks_hist_, observation_hist_,...
+                index_mask_, index_hist_m_] = BA_online_hist_update(...
+                S_i0, T_i1, validity_mask, inlier_mask, index_mask_,...
+                index_hist_m_, new_3D, new_2D, poses_W_hist_,...
+                landmarks_hist_, observation_hist_, range_, i, i);
+            if (i >= range_(i-1))
+                [poses_W_opt_, landmarks_hist_] = runBA_online(...
+                   poses_W_hist_, landmarks_hist_, index_hist_m_,...
+                   observation_hist_, K, i);
+                % Use optimized landmarks for next pose update:
+                State_i1.p_W_landmarks_correspondences =...
+                landmarks_hist_(index_mask_);
+            end
+            %BA_plot_update(poses_W_opt_, T_i1, T_i0,...
+            %    ground_truth_pose_, i, range_, i);
+            plot_pose_hist_ = BA_plot_update(poses_W_opt_, T_i1, T_i0,...
+                ground_truth_pose_, i, range_, i, landmarks_hist_, plot_pose_hist_);
         else
             disp(['Unidentified BA method: ', BA_]);
             assert(false);
@@ -367,6 +383,7 @@ for i = range_
 %     if (mod(i,5) == 0)
          S_i0 = S_i1;
          prev_img = image;
+         %m_on_ = m_on_ + 1;
 %     end
 end
 
@@ -374,5 +391,5 @@ end
 
 if (strcmp(BA_,'Offline') == 1)
    [poses_W_opt_, landmarks_opt_] = runBA_offline(poses_W_hist_,...
-        landmarks_hist_, observation_hist_, ground_truth_pose_, K, n_off_);
+        landmarks_hist_, observation_hist_, ground_truth_pose_, K, m_off_);
 end

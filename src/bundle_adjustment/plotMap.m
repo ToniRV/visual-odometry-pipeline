@@ -12,7 +12,7 @@ for i = 1:num_frames
    p_W_frames(:,i) = T_W_frame(1:3,4);
 end
 
-plot(p_W_landmarks(3, :), -p_W_landmarks(1, :), '.');
+plot(p_W_landmarks(3, :), -p_W_landmarks(1, :), '.r');
 hold on;
 plot(p_W_frames(3, :), -p_W_frames(1, :), 'rx', 'Linewidth', 2);
 hold off;

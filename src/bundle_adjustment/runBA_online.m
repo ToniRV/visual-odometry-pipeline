@@ -1,92 +1,39 @@
-function [poses_W_opt_, landmarks_opt_] = runBA_online(poses_W_hist_,...
-          landmarks_hist_, index_hist_m_, observation_hist_,...
-          ground_truth_pose_, K, m_on_);
+function [poses_W_opt_, landmarks_hist_] = runBA_online(poses_W_hist_,...
+          landmarks_hist_, index_hist_m_, observation_hist_, K, m_on_)
 % Perform online bundle adjustment on the last m_on_ frames
-p_W_GT = ground_truth_pose_(1:m_on_, [4 8 12])';
+
+% Set number of iterations for lsqnonlin solver:
+n_iter = 20;
 
 % Define current hidden_state, i.e. poses and landmarks of last m_on_ frames:
 idx_m = unique(index_hist_m_);
 landmarks_m = landmarks_hist_(:,idx_m);
 hidden_state = [poses_W_hist_; landmarks_m(:)];
-opt_hidden_state = runBA_0(hidden_state, cast(observation_hist_,'double'), K, m_on_);
+
+% Update keypoint indices to access corresponding landmarks in current
+% landmarks_m vector:
+observation_i = 1;
+pointer_3D_m = zeros(1, size(landmarks_hist_,2));
+pointer_3D_m(idx_m) = 1:size(idx_m);
+
+for frame_i = 1:m_on_
+    num_keypoints_in_frame = observation_hist_(observation_i);
+    observation_hist_((observation_i+2*num_keypoints_in_frame+1:...
+        observation_i+3*num_keypoints_in_frame)) = ...
+        pointer_3D_m(observation_hist_(...
+        observation_i+2*num_keypoints_in_frame+1:...
+        observation_i+3*num_keypoints_in_frame));
+    observation_i = observation_i + 1 + 3*num_keypoints_in_frame;
+end
+
+opt_hidden_state = runBA_0(hidden_state,...
+    cast(observation_hist_,'double'), K, m_on_, n_iter);
 poses_W_opt_ = opt_hidden_state(1:6*m_on_);
-landmarks_opt_ = reshape(opt_hidden_state(6*m_on_+1:end), 3, []);
 
-%% Comparision Estimate - Aligned Estimate - Ground truth 
-% Compare the estimated and aligned estimate trajectory to the ground truth 
-% Reshape twist vectors in hidden_state to 6 x m_offline_ matrix:
-T_W_frames = reshape(hidden_state(1:m_on_*6), 6, []);
-% Extract pose estimates as 3 x m_offline_ matrix:
-p_W_estimate = zeros(3, m_on_);
-for i = 1:m_on_
-    % Need current (homogeneous) transformation only temporarily to
-    % calculate current p_W_estimate(:, i):
-    T_W_frame = twist2HomogMatrix(T_W_frames(:, i));
-    p_W_estimate(:,i) = T_W_frame(1:3,4);
-end
-% Align the estimate without BA to the ground truth for performance
-% evaluation.
-p_W_estimate_aligned = alignEstimateToGroundTruth(...
-    p_W_GT, p_W_estimate);
 
-figure(1);
-plot(p_W_GT(3, :), -p_W_GT(1, :));
-hold on;
-plot(p_W_estimate(3, :), -p_W_estimate(1, :));
-plot(p_W_estimate_aligned(3, :), -p_W_estimate_aligned(1, :));
-hold off;
-axis equal;
-axis([-10 100 -40 20]);
-legend('Ground truth', 'Original estimate', 'Aligned estimate', ...
-    'Location', 'SouthWest');
-
-%% Full problem
-figure(2);
-subplot(1,2,1);
-plotMap(hidden_state, [-10 100 -40 20], m_on_);
-subplot(1,2,2);
-plotMap(opt_hidden_state, [-10 100 -40 20], m_on_);
-
-%% Evaluation of BA Performance
-p_W_optim_estimate_aligned = alignEstimateToGroundTruth(...
-    p_W_GT, p_W_estimate);
-
-figure(3);
-plot(p_W_GT(3, :), -p_W_GT(1, :));
-hold on;
-plot(p_W_estimate_aligned(3, :), -p_W_estimate_aligned(1, :));
-plot(p_W_optim_estimate_aligned(3, :), -p_W_optim_estimate_aligned(1, :));
-hold off;
-axis equal;
-axis([-5 95 -30 10]);
-legend('Ground truth', 'Original estimate','Optimized estimate', ...
-    'Location', 'SouthWest');
-
-T_W_frames = reshape(opt_hidden_state(1:m_on_*6), 6, []);
-% Extract pose estimates as 3 x m_offline_ matrix:
-p_W_opt_estimate = zeros(3, m_on_);
-for i = 1:m_on_
-    % Need current (homogeneous) transformation only temporarily to
-    % calculate current p_W_estimate(:, i):
-    T_W_frame = twist2HomogMatrix(T_W_frames(:, i));
-    p_W_opt_estimate(:,i) = T_W_frame(1:3,4);
-end
-% Align the estimate without BA to the ground truth for performance
-% evaluation.
-p_W_opt_estimate_aligned = alignEstimateToGroundTruth(...
-    p_W_GT, p_W_opt_estimate);
-
-figure(3);
-plot(p_W_GT(3, :), -p_W_GT(1, :));
-hold on;
-plot(p_W_estimate_aligned(3, :), -p_W_estimate_aligned(1, :));
-plot(p_W_opt_estimate_aligned(3, :), -p_W_opt_estimate_aligned(1, :));
-hold off;
-axis equal;
-axis([-10 100 -40 20]);
-legend('Ground truth', 'Original (aligned) estimate',...
-    'Optimized (aligned) estimate', 'Location', 'SouthWest');
-
+% Update optimized landmarks:
+landmarks_opt = reshape(opt_hidden_state(6*m_on_+1:end), 3, []);
+landmarks_hist_(:, idx_m) = landmarks_opt;
 
 end
 

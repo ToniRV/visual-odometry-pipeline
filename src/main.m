@@ -38,7 +38,7 @@ baseline_  = 0;
 gound_truth_pose_ = 0;
 last_frame_ = 0;
 left_images_ = 0;
-m_on_ = 1; % Set number of frames used for full online BA
+m_on_ = 10; % Set number of frames used for full online BA
 m_off_ = 150; % Set number of frames used for full offline BA
 
 switch dataset_
@@ -358,7 +358,6 @@ for i = range_
 %     if (mod(i,5) == 0)
          S_i0 = S_i1;
          prev_img = image;
-         %m_on_ = m_on_ + 1;
 %     end
 end
 

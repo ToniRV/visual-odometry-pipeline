@@ -18,7 +18,7 @@ fclose(fileID);
 
 % Dataset paths
 vo_path = paths{1}{2};
-%addpath(genpath(vo_path));
+addpath(genpath(vo_path));
 kitti_path_ = paths{1}{4};
 malaga_path_ = paths{1}{6};
 parking_path_ = paths{1}{8};

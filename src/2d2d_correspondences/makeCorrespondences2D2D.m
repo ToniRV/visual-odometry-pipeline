@@ -41,6 +41,8 @@ function p = makeCorrespondences2D2D(parameters)
         %   *   descriptors_2: The descriptors corresponding to the keypoints 
         %       in the query image.
         
+        is_KLT_init = false;
+        
         if (flag_harris_matlab_)
             %% Part 1 - Harris Score Calculation & Keypoint Selection
             % Selects the N pixels with the highest Harris scores while performing
@@ -117,6 +119,8 @@ function p = makeCorrespondences2D2D(parameters)
             kp_homo_query_matched = ...
             [keypoints_2; ones(1, size(keypoints_2, 2))];
 
+        elseif (is_KLT_init)
+            [keypoints_2, inlier_mask] = KLT(keypoints_1, img1, img0);
         else
             %% Part 1 - Harris scores
             % Calculate the Harris scores of the database image

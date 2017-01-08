@@ -10,7 +10,7 @@ if (i > range_(1))
     % Plot ground truth for the first 600 frames:
     plot(p_W_GT(3, :), -p_W_GT(1, :),'--k');
     hold on;
-    plot(landmarks_hist_(3, :), -landmarks_hist_(1, :),'.r','MarkerSize', 4);
+    % plot(landmarks_hist_(3, :), -landmarks_hist_(1, :),'.r','MarkerSize', 4);
 end
 
 if (i == range_(1))        

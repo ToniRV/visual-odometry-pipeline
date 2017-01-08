@@ -29,7 +29,7 @@ dataset_ = 'Kitti';                % 'Kitti', 'Malaga', 'Parking'
 %%% Select initialisation method to run:
 initialisation_ = 'Monocular';     % 'Monocular', 'Stereo', 'Ground Truth'
 %%% Select bundle adjustment method:
-BA_ = 'Online';                   % 'Offline', 'Online', 'None'
+BA_ = 'Offline';                   % 'Offline', 'Online', 'None'
 %%% Select if initialisation frames should be picked automatically
 is_auto_frame_monocular_initialisation_ = false;
 
@@ -38,8 +38,8 @@ baseline_  = 0;
 gound_truth_pose_ = 0;
 last_frame_ = 0;
 left_images_ = 0;
-m_on_ = 1; % Set number of frames used for online BA
-m_off_ = 250; % Set number of frames used for offline BA
+m_on_ = 1; % Set number of frames used for full online BA
+m_off_ = 150; % Set number of frames used for full offline BA
 
 switch dataset_
     case 'Kitti'
@@ -120,31 +120,6 @@ i_ = 0;
 keypoints_ = zeros(0);
 
 p_W_landmarks_ = zeros(0);
-
-% % Initialize parameters
-% switch initialisation_
-%     case 'Monocular'
-%         mono_init = makeMonoInit(init_parameters.mono);
-%         [state, T_i0] = mono_init(img0_, img1_);
-%         keypoints_ = state.matches_2d(1:2,:);
-%         p_W_landmarks_ = state.landmarks(1:3,:);
-%     case 'Stereo'
-%         stereoInit = makeStereoInit(init_parameters.stereo);
-%         [keypoints_, p_W_landmarks_] = stereoInit(img0_, img1_);
-%     case 'Ground Truth'
-%         %%% GROUND TRUTH initialisation
-%         if (strcmp(dataset_, 'Kitti'))
-%             keypoints_ = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/keypoints.txt');
-%             keypoints_ = keypoints_';
-%             p_W_landmarks_ = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/p_W_landmarks.txt');
-%             p_W_landmarks_ = p_W_landmarks_';
-%         else
-%             disp('There is no ground truth for the dataset specified');
-%         end
-%         monoInit = makeMonoInit(init_parameters.mono);
-%     otherwise
-%         disp('Autoframes ONLY with MONOCULAR');
-% end
 
 % Initialize parameters
 switch initialisation_

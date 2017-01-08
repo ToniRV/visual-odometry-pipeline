@@ -100,15 +100,12 @@ for visual odometry. Or seen from another perspective, we learned about the limi
 
 Our calibration files and images of the dataset are provided under the folder smartphone.
 
-
-
-
-
-
-
-
 \subsection{Quantitative Analysis}
 \subsubsection{Keypoint Tracking via Block Matching versus KLT}
+Our first approach to keypoint tracking was to implement a block matching algorithm. After describing the keypoints by a block of pixels around it
+we simply computed the sum of squared differences to match different blocks. This approach, while simplistic, performed reasonably well and we 
+were able to actually localize reliably. Nonetheless, knowing that the range of movement is constrained in our datasets (small translational displacements) we thought that it would be appropriate to use a more performant tracker such as the KLT algorithm.
+The simple replacement of the Block Matching algorithm by the KLT algorithm offered a overall better performance of the estimation due to its sub-pixel accuracy when tracking keypoints.
 
 \subsubsection{Analysis of performance of different ways to extract Harris features}
 Extracting keypoints from the images is one of the most important parts of a visual odometry pipeline. For that reason, we

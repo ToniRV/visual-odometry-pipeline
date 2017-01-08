@@ -2,23 +2,22 @@
 \BOOKMARK [1][-]{section*.2}{Abstract}{}% 2
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 3
 \BOOKMARK [1][-]{section.2}{Initialisation}{}% 4
-\BOOKMARK [2][-]{subsection.2.1}{Stereo Initialisation}{section.2}% 5
-\BOOKMARK [2][-]{subsection.2.2}{Monocular Initialisation}{section.2}% 6
-\BOOKMARK [1][-]{section.3}{Continous Operation}{}% 7
-\BOOKMARK [2][-]{subsection.3.1}{KLT}{section.3}% 8
-\BOOKMARK [1][-]{section.4}{Bonus Features}{}% 9
-\BOOKMARK [2][-]{subsection.4.1}{Plotting}{section.4}% 10
-\BOOKMARK [2][-]{subsection.4.2}{Automatic Selection of Frames for Initialisation}{section.4}% 11
-\BOOKMARK [2][-]{subsection.4.3}{Relocalisation}{section.4}% 12
-\BOOKMARK [2][-]{subsection.4.4}{Full Bundle Adjustment}{section.4}% 13
-\BOOKMARK [2][-]{subsection.4.5}{Calibrated Smartphone Camera and own Dataset}{section.4}% 14
-\BOOKMARK [2][-]{subsection.4.6}{Quantitative Analysis}{section.4}% 15
-\BOOKMARK [2][-]{subsection.4.7}{Monocular Initialisation Harris Detector via Matlab versus Exercise Harris Detector}{section.4}% 16
-\BOOKMARK [1][-]{section.5}{Conclusion}{}% 17
-\BOOKMARK [1][-]{section.5}{References}{}% 18
-\BOOKMARK [1][-]{appendix.A}{Appendix}{}% 19
-\BOOKMARK [1][-]{appendix.B}{Examples}{}% 20
-\BOOKMARK [2][-]{subsection.B.1}{Tables}{appendix.B}% 21
-\BOOKMARK [2][-]{subsection.B.2}{Figures}{appendix.B}% 22
-\BOOKMARK [2][-]{subsection.B.3}{Units}{appendix.B}% 23
-\BOOKMARK [2][-]{subsection.B.4}{Miscellany}{appendix.B}% 24
+\BOOKMARK [2][-]{subsection.2.1}{Monocular Initialisation}{section.2}% 5
+\BOOKMARK [1][-]{section.3}{Continuous Operation}{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{KLT}{section.3}% 7
+\BOOKMARK [1][-]{section.4}{Bonus Features}{}% 8
+\BOOKMARK [2][-]{subsection.4.1}{Plotting}{section.4}% 9
+\BOOKMARK [2][-]{subsection.4.2}{Automatic Selection of Frames for Initialisation}{section.4}% 10
+\BOOKMARK [2][-]{subsection.4.3}{Relocalisation}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.4}{Full Bundle Adjustment}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.5}{Calibrated Smartphone Camera and Own Dataset}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.6}{Quantitative Analysis}{section.4}% 14
+\BOOKMARK [2][-]{subsection.4.7}{Monocular Initialisation Harris Detector via Matlab versus Exercise Harris Detector}{section.4}% 15
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 16
+\BOOKMARK [1][-]{section.5}{References}{}% 17
+\BOOKMARK [1][-]{appendix.A}{Appendix}{}% 18
+\BOOKMARK [1][-]{appendix.B}{Examples}{}% 19
+\BOOKMARK [2][-]{subsection.B.1}{Tables}{appendix.B}% 20
+\BOOKMARK [2][-]{subsection.B.2}{Figures}{appendix.B}% 21
+\BOOKMARK [2][-]{subsection.B.3}{Units}{appendix.B}% 22
+\BOOKMARK [2][-]{subsection.B.4}{Miscellany}{appendix.B}% 23

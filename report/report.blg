@@ -2,11 +2,10 @@ This is BibTeX, Version 0.99d (TeX Live 2014)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: report.aux
 The style file: abbrv.bst
-A level-1 auxiliary file: Appendix.aux
 Database file #1: report.bib
 You've used 4 entries,
             2118 wiz_defined-function locations,
-            520 strings with 4419 characters,
+            519 strings with 4407 characters,
 and the built_in function-call counts, 1186 in all, are:
 = -- 112
 > -- 67

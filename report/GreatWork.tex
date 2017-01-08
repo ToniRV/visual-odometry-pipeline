@@ -4,7 +4,13 @@
 \subsection{Stereo Initialisation}
 
 \subsection{Monocular Initialisation}
+The monocular initialisation is a key module in the Visual-Odometry pipeline.
+We decided to implement different approaches to initialize with a monocular camera:
 
+\begin{enumerate}
+\item Exercise implementation of Harris descriptor and detector to find the 2D correnspondences.
+\item Implementation of the Lucas-Kanade Tracker (KLT) to initialize.
+\end{enumerate}
 
 \section{Continous Operation}
 \label{s:ContOp}

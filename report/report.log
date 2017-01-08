@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.3.16)  8 JAN 2017 14:13
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.3.16)  8 JAN 2017 20:10
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -427,10 +427,10 @@ l.112 \newpage
                [1
 
 ] (./Introduction.tex) (./GreatWork.tex) (./Conclusion.tex)
-[2] (./report.bbl) [3]
+[2] [3] (./report.bbl) [4]
 \openout2 = `Appendix.aux'.
 
- (./Appendix.tex) [4
+ (./Appendix.tex) [5
 
 ]
 \openout2 = `Examples.aux'.
@@ -450,7 +450,7 @@ File: files/UZHlogo.jpg Graphic file (type jpg)
 Package pdftex.def Info: files/UZHlogo.jpg used on input line 46.
 (pdftex.def)             Requested size: 100.26215pt x 34.1433pt.
 
-[5
+[6
 
 
 ]
@@ -459,7 +459,7 @@ Overfull \hbox (6.16185pt too wide) in paragraph at lines 83--87
 T[]X as a chap-ter and call a []\OT1/cmtt/m/n/12 \subsection
  []
 
-) [6]
+) [7]
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 137.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 137.
  (./report.aux (./Appendix.aux) (./Examples.aux))
@@ -470,23 +470,24 @@ Package rerunfilecheck Info: File `report.out' has not changed.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 137.
  ) 
 Here is how much of TeX's memory you used:
- 7600 strings out of 493117
- 113381 string characters out of 6135433
- 201601 words of memory out of 5000000
+ 7610 strings out of 493117
+ 113441 string characters out of 6135433
+ 202601 words of memory out of 5000000
  10904 multiletter control sequences out of 15000+600000
  10539 words of font info for 38 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  36i,10n,45p,263b,397s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
-></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><
-/usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></u
-sr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/
-local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/l
-ocal/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on report.pdf (9 pages, 441212 bytes).
+></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb>
+</usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></
+usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></us
+r/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/l
+ocal/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/lo
+cal/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
+Output written on report.pdf (10 pages, 451185 bytes).
 PDF statistics:
- 228 PDF objects out of 1000 (max. 8388607)
- 203 compressed objects within 3 object streams
- 45 named destinations out of 1000 (max. 500000)
+ 247 PDF objects out of 1000 (max. 8388607)
+ 220 compressed objects within 3 object streams
+ 55 named destinations out of 1000 (max. 500000)
  208 words of extra memory for PDF output out of 10000 (max. 10000000)
 

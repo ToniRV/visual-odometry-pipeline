@@ -1,5 +1,5 @@
 #!/bin/bash
-FILES=/home/tonirv/Downloads/dataset/*
+FILES=/home/tonirv/Downloads/frame_set_3/*
 i=0
 for f in $FILES
 do

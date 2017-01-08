@@ -11,6 +11,7 @@ suppression_radius_ = parameters.suppression_radius;
 reprojection_error_threshold_ = parameters.reprojection_error_threshold;
 
 ransacLocalization = makeRansacLocalization(parameters.ransac_localization);
+is_exercise_triangulation_ = true;
 
 function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = ...
     processFrame(Image_i1, Image_i0, State_i0, i1)
@@ -110,21 +111,33 @@ function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = 
             num_triang_kps = size(triangulable_last_kp, 2);
             X_s = zeros(3, num_triang_kps);
             list_reprojection_errors = zeros(1, num_triang_kps);
-            for i = 1:num_triang_kps
-                [newX_cam_frame, reprojectionError] = ...
-                triangulate(flipud(triangulable_last_kp(:, i))',...
-                                  flipud(triangulable_first_kp(:, i))',...
-                                  (K_*triangulable_last_tf)',...
-                                  (K_*reshape(triangulable_first_tf(:,i), 3, 4))');
-                newX_cam_frame = newX_cam_frame';
-                X_s(:, i) = newX_cam_frame;
-                list_reprojection_errors(i) = reprojectionError;
+            
+            if (is_exercise_triangulation_)
+                homo_keypoints_last_fliped = [flipud(triangulable_last_kp) ; ones(1, size(triangulable_last_kp,2))]; % TODO not sure if this zeros should instead 
+                homo_keypoints_first_fliped = [flipud(triangulable_first_kp) ; ones(1, size(triangulable_first_kp,2))];
+                for i = 1:num_triang_kps
+                    newX_cam_frame = linearTriangulation(homo_keypoints_last_fliped(:, i),...
+                        homo_keypoints_first_fliped(:, i),...
+                        (K_*triangulable_last_tf),...
+                        (K_*reshape(triangulable_first_tf(:,i), 3, 4)));
+                     X_s(:, i) = newX_cam_frame(1:3,:);
+                end
+            else
+                for i = 1:num_triang_kps
+                    [newX_cam_frame, reprojectionError] = ...
+                    triangulate(flipud(triangulable_last_kp(:, i))',...
+                                      flipud(triangulable_first_kp(:, i))',...
+                                      (K_*triangulable_last_tf)',...
+                                      (K_*reshape(triangulable_first_tf(:,i), 3, 4))');
+                    newX_cam_frame = newX_cam_frame';
+                    X_s(:, i) = newX_cam_frame;
+                    list_reprojection_errors(i) = reprojectionError;
+                end
             end
 
             %%% III) Update state
             %%%% a) Store new 2D-3D correspondences which are valid
-            reprojectionError_threshold = reprojection_error_threshold_; % WARNING: this guy gets rid of MANY possible landmarks!
-            valid_reprojection = list_reprojection_errors < reprojectionError_threshold;
+            valid_reprojection = list_reprojection_errors < reprojection_error_threshold_;
             X_cam_frame = Inversed_Transform_i1*[X_s; ones(1,size(X_s,2))];
             valid_depth = X_cam_frame(3,:)>0;
             valid_indices = valid_depth & valid_reprojection;

@@ -116,8 +116,31 @@ decided to do a quantitative analysis of the performance of the way we used the 
 In our implementation we added four different methods to apply Harris.
 The first consists in an implementation that we believed could improve the performance of the keypoints extraction.
 While running the pipeline we noticed that the keypoints were not uniformly detected over the image.
-In order to get a more uniform set of keypoints over the image we decided to divide the
+In order to get a more uniform set of keypoints over the image we decided to divide the frame into sub-images. We will refer to them
+as bins. In each of these bins we run the matlab implementation of "detectHarrisFeatures".
 
+\begin{figure}
+  \includegraphics[width=0.99\textwidth]{files/custom_uniform.jpg}
+  \caption[\label{f:custom_uniform}Uniform Harris implementation.]
+\end{figure}
 
+This provides us with localy optimal corners in
+the bin. Applying this approach recursevely over the bins gives us an homogeneous extraction of features of the image. Figure~\ref{f:custom_uniform} 
+presents the result of this implementation on the first frame of the Kitti dataset.
+
+The other two algorithms that we may use consist in running the Harris corner detector over the whole image, as it is usually done. They differ
+between them in that one selects the strongest detected keypoints while the other selects them more uniformly. As it can be seen in figure~\ref{f:strongest} and figure ~\ref{f:uniform}, the uniform selection of keypoints performed by matlab is still not homogeneous over the image.
+This should not be a problem if the quality of the corners is good. Nonetheless, we experienced in practice that a mapping of keypoints on different
+patches of the image gives overall better results and is more robust to occlusions.
+
+\begin{subfigure}
+  \includegraphics[width=0.99\textwidth]{files/strongest_uniform.jpg}
+  \caption[\label{f:strongest}Strongest Harris features.]
+\end{subfigure}
+
+\begin{subfigure}
+  \includegraphics[width=0.99\textwidth]{files/uniform.jpg}
+  \caption[\label{f:custom_uniform}Uniform Harris features.]
+\end{subfigure}
 
 \subsection{Monocular Initialisation Harris Detector via Matlab versus Exercise Harris Detector}

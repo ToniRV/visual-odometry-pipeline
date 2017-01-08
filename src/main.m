@@ -84,11 +84,11 @@ params_correspondences_2D2D = struct(...
     'debug_verbose', false,...
     'flag_harris_matlab', false,...
     'descriptor_radius', 9,... % A total of 361 pixels per descriptor patch    % Only used if flag_harris_matlab is false
-    'match_lambda', 4,... % Trades of false positives and false negatives    % Only used if flag_harris_matlab is false
+    'match_lambda', 5,... % Trades of false positives and false negatives    % Only used if flag_harris_matlab is false
     'harris_patch_size', 9,...                                                                         % Only used if flag_harris_matlab is false
     'harris_kappa', 0.08,... % Typical values between 0.04 - 0.15                 % Only used if flag_harris_matlab is false
     'num_keypoints', 1000,...                                                                       % Only used if flag_harris_matlab is false
-    'nonmaximum_suppression_radius', 2,...                                               % Only used if flag_harris_matlab is false
+    'nonmaximum_suppression_radius', 8,...                                               % Only used if flag_harris_matlab is false
     'filter_size', 3,...                                                                                      % Only used if flag_harris_matlab is true
     'min_quality', 0.00001,...
     'match_features', params_match_features_matlab,...
@@ -103,7 +103,7 @@ params_stereo = struct(...
     'K', K,...
     'correspondences_2D2D', params_correspondences_2D2D);
 params_mono = struct(...
-    'debug_verbose', false,...
+    'debug_verbose', true,...
     'num_keypoints', 1000,...
     'K', K,...
     'correspondences_2D2D', params_correspondences_2D2D, ...
@@ -129,12 +129,12 @@ end
 % Automatically choose the best initialisation frames 
 if (is_auto_frame_monocular_initialisation_)
     % Retrieve the initial image
-    idx_initial_image = 1;
+    idx_initial_image = 0;
     img0_ = getImage(dataset_, idx_initial_image, ...
         kitti_path_, malaga_path_, parking_path_);
         
     max_num_auto_frames = 10;
-    min_num_inliers = 30;
+    min_num_inliers = 20;
     smallest_error = Inf;
     for i = (idx_initial_image+1):(max_num_auto_frames+idx_initial_image)
         % Seed the random generator every time
@@ -173,7 +173,7 @@ else
         case 'Kitti'
             switch initialisation_
                 case 'Monocular'
-                    bootstrap_frames_ = [1, 3];
+                    bootstrap_frames_ = [6, 7];
                     range_ = (bootstrap_frames_(2)+1):last_frame_;
                 case 'Stereo'
                     bootstrap_frames_ = [0, 0];

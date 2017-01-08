@@ -175,43 +175,6 @@ function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = 
     % F) FINAL RESULTS
     State_i1.keypoints_correspondences = final_keypoints_correspondences_i1;
     State_i1.p_W_landmarks_correspondences = final_p_W_landmarks_correspondences_i1;
-      
-%% Plotting
-% Distinguish success from failure.
-    if (numel(R_C_W) > 0)
-        subplot(1, 3, 3);
-        num_inliers(i1) = nnz(inlier_mask);
-        plotCoordinateFrame(R_C_W', -R_C_W'*t_C_W, 1);
-        disp(['Frame ' num2str(i1) ' localized with ' ...
-            num2str(num_inliers(i1)) ' inliers!']);
-        view(0,0);
-    else
-        disp(['Frame ' num2str(i1) ' failed to localize!']);
-    end
-
-    subplot(1, 3, [1 2]);
-    imshow(Image_i1);
-    hold on;
-    plot(valid_tracked_keypoints(2, (1-inlier_mask)>0), ...
-        valid_tracked_keypoints(1, (1-inlier_mask)>0), 'rx', 'Linewidth', 2);
-    if (nnz(inlier_mask) > 0)
-        plot(keypoints_correspondences_i1(2, :), ...
-            keypoints_correspondences_i1(1, :), 'gx', 'Linewidth', 2);
-    end
-    % Plot all the new keypoints
-%     if (new_first_obs_cand_kp_i1_global_var ~= 0)
-%         plot(new_first_obs_cand_kp_i1_global_var(2,:), new_first_obs_cand_kp_i1_global_var(1,:),'yx', 'Linewidth', 2);
-%     end
-    % Plot the new 2D<->3D correspondences
-%     if (points_2D_global_var ~= 0)
-%         plot (points_2D_global_var(2, :), points_2D_global_var(1, :), 'bx', 'Linewidth', 2);
-%     end
-    valid_keypoints_correspondences_i0 = State_i0.keypoints_correspondences(:, validity_mask > 0);
-    keypoints_correspondences_i0 = valid_keypoints_correspondences_i0(:, inlier_mask > 0);
-    
-    hold off;
-    title('Inlier and outlier matches');
-    pause(0.001);
 
 end
 

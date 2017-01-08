@@ -16,7 +16,7 @@ git clone git@github.com:ToniRV/visual-odometry-pipeline.git
 
 2. Modify the paths to the datasets that you can download from [here](http://rpg.ifi.uzh.ch/docs/teaching/2016/kitti00.zip)
 Copy this [file](visual-odometry-pipeline/src/Parameters/paths_example.txt) and rename it to paths.txt
-Modify your paths accordingly.
+Modify your paths inside this file accordingly.
 Then store it in the Parameters folder.
 
 3. Now you can head to matlab and open main. You can now press Run.

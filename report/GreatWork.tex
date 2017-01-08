@@ -36,6 +36,20 @@ Due to efficiency reasons we decided to use the epipolar line distance as a meas
 
 \subsection{KLT}
 
+The first part is done by using KLT as a feature tracker. The features that are correctly tracked are then used to estimate the new pose of the camera
+by running P3P together with RANSAC. This last step will also provide us with a list of inliers and outliers.
+This mask will let us discard the outliers while updating the 2D-3D correspondences with only inliers.
+Next, the last observed kps that were in the candidates bin are also tracked in the new frame with KLT. If the tracking is successful, then
+they have to pass a triangulability check to see if they will result in a good triangulation.
+For this, we simply compute the angle between the bearing vectors of the current keypoint and the first time we saw it.
+If the triangulability test does not pass it is simply stored for further processing in next frame.
+If it does pass, then the keypoint is used together with the current transform, to triangulate a new landmark.
+The landmark is then checked if it falls in front of the camera.
+Before, we used to check also if the reprojection error of this landmark was
+good, but now we just triangulate using the function used in the exercises (more information in the quantitative analysis section).
+Finally we update the set of 2D-3D correspondences with this new landmark.
+In case the triangulation did not result in a satisfactory landmark, it gets discarded together with its corresponding keypoint.
+
 \section{Bonus Features}
 \label{s:BF}
 

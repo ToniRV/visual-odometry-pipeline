@@ -32,8 +32,6 @@ function plot_main(img1, state1, inlier_mask, ...
         cam_center1_all(3,:)', 'b-', 'Linewidth', 3);
     hold off;
     axis equal;
-    xlim([-10 10]);
-    ylim([0 inf]);
     title('Full trajectory');
     set(gcf, 'GraphicsSmoothing', 'on');
     view(0,0);

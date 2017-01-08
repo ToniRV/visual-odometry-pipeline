@@ -232,8 +232,11 @@ function is_triangulable = checkTriangulability(last_kps, last_tf, first_kps, fi
         bearing_vector_first_kps(:, i) = computeBearing(first_kps(:, i), first_tf);
     end
     %3) Check which current kps are triangulable
-    angles = atan2d(norm(cross(bearing_vector_last_kps, bearing_vector_first_kps)), ...
-        dot(bearing_vector_last_kps, bearing_vector_first_kps));
+    angles = zeros(1, size(bearing_vector_last_kps,2));
+    for i = 1:size(bearing_vector_last_kps,2)
+        angles(i) = atan2d(norm(cross(bearing_vector_last_kps(:,i)', bearing_vector_first_kps(:,i)')), ...
+            dot(bearing_vector_last_kps(:,i)', bearing_vector_first_kps(:,i)'));
+    end
     is_triangulable = angles > angle_threshold;
 end
 

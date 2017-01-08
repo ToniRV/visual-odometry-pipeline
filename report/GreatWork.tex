@@ -39,6 +39,15 @@ Due to efficiency reasons we decided to use the epipolar line distance as a meas
 \label{s:BF}
 
 \subsection{Plotting}
+The source code provides extensive plottings to help debug the pipeline. These are enabled by using the debug_with_figures flags
+on the different modules of the pipeline. Moreover, in order to properly visualize the logic of the pipeline, we show a figure 
+with the main output of the odometry estimation.
+At the top left of the mentioned figure it is shown the current frame that is being processed. On top of it we plot the keypoints
+triangulated in green, while in yellow we plot the ones that have not yet been triangulated but are potentially going to be
+triangulated.
+The figures below the image present both the number of landmarks that are being tracked (left image) and the global trajectory
+estimated by the algorithm.
+Finally, the figure on the right shows the last poses of the camera together with the last triangulated landmarks.
 
 
 \subsection{Automatic Selection of Frames for Initialisation}
@@ -92,5 +101,15 @@ Our calibration files and images of the dataset are provided under the folder Sm
 
 \subsection{Quantitative Analysis}
 \subsubsection{Keypoint Tracking via Block Matching versus KLT}
+
+\subsubsection{Analysis of performance of different ways to extract Harris features}
+Extracting keypoints from the images is one of the most important parts of a visual odometry pipeline. For that reason, we
+decided to do a quantitative analysis of the performance of the way we used the Harris detector.
+In our implementation we added four different methods to apply Harris.
+The first consists in an implementation that we believed could improve the performance of the keypoints extraction.
+While running the pipeline we noticed that the keypoints were not uniformly detected over the image.
+In order to get a more uniform set of keypoints over the image we decided to divide the
+
+
 
 \subsection{Monocular Initialisation Harris Detector via Matlab versus Exercise Harris Detector}

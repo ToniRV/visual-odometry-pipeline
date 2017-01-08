@@ -171,6 +171,3 @@ presents the result of this implementation on the first frame of the Kitti datas
 The other two algorithms that we may use consist in running the Harris corner detector over the whole image, as it is usually done. They differ between them in that one selects the strongest detected keypoints while the other selects them more uniformly. As it can be seen in figure~\ref{f:strongest} and figure ~\ref{f:uniform}, the uniform selection of keypoints performed by Matlab is still not homogeneous over the image.
 This should not be a problem if the quality of the corners is good. Nonetheless, we experienced in practice that a mapping of keypoints on different
 patches of the image gives overall better results and is more robust to occlusions.
-
-
-\subsection{Monocular Initialisation Harris Detector via Matlab versus Exercise Harris Detector}

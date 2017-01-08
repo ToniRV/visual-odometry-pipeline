@@ -18,5 +18,3 @@
 \contentsline {section}{\numberline {5}Conclusion}{7}{section.5}
 \vspace {.5\baselineskip }
 \contentsline {section}{\numberline {}{References}}{8}{section.5}
-\vspace {.5\baselineskip }
-\contentsline {section}{\numberline {A}Appendix}{9}{appendix.A}

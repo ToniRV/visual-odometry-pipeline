@@ -23,7 +23,7 @@ We have implemented two different approaches for finding the 2D-2D correspondenc
 
 \begin{figure}
 \includegraphics[width=0.98\textwidth]{files/KLT_2d2d.jpg}
-\caption[\label{s:KLT_2d2d}]{2D-2D correspondences with KLT.}
+\caption[\label{s:KLT_2d2d}2D-2D Correspondences with KLT]{2D-2D Correspondences with KLT.}
 \end{figure}
 
 An examplary output of the 2D-2D module can be seen in Figure~\ref{s:KLT_2d2d}. The correspondences between two images are indicated.
@@ -39,7 +39,7 @@ Due to efficiency reasons we decided to use the epipolar line distance as a meas
 \label{s:BF}
 
 \subsection{Plotting}
-The source code provides extensive plottings to help debug the pipeline. These are enabled by using the $debug_with_figures$ flags
+The source code provides extensive plottings to help debug the pipeline. These are enabled by using the $debug\_with\_figures$ flags
 on the different modules of the pipeline. Moreover, in order to properly visualize the logic of the pipeline, we show a Figure 
 with the main output of the odometry estimation.
 At the top left of the mentioned Figure, it is shown the current frame that is being processed. On top of it we plot the keypoints
@@ -76,7 +76,7 @@ In order to achieve good results for the calibration, we made sure that we follo
 3) Take frames of the checkerboard from sufficiently different angles and distances.
 
 Once the calibration dataset recorded, we proceeded to find the intrinsics of the camera.
-As a first approach we used the Matlab toolbox (REFERENCE TO THE TOOLBOX \href{https://www.vision.caltech.edu/bouguetj/calib_doc/}{Matlab toolbox}).
+As a first approach we used the \href{https://www.vision.caltech.edu/bouguetj/calib_doc/}{Matlab Toolbox}.
 Unfortunately, we could not get good calibration results.
 This was in part due to the fact that the interface requires you to click on the
 corners of the checkerboard in the image, and therefore limits the amount of images you can process in a given time.
@@ -117,30 +117,25 @@ In our implementation we added four different methods to apply Harris.
 The first consists in an implementation that we believed could improve the performance of the keypoints extraction.
 While running the pipeline we noticed that the keypoints were not uniformly detected over the image.
 In order to get a more uniform set of keypoints over the image we decided to divide the frame into sub-images. We will refer to them
-as bins. In each of these bins we run the matlab implementation of "detectHarrisFeatures".
+as bins. In each of these bins we run the Matlab implementation of "detectHarrisFeatures".
 
 \begin{figure}
-  \includegraphics[width=0.99\textwidth]{files/custom_uniform.jpg}
-  \caption[\label{f:custom_uniform}Uniform Harris implementation.]
+  \includegraphics[width=0.99\textwidth]{files/custom_uniform_keypoints.jpg}
+  \caption[\label{f:custom_uniform}Uniform Harris Implementation]{Uniform Harris Implementation.}
 \end{figure}
 
 This provides us with localy optimal corners in
 the bin. Applying this approach recursevely over the bins gives us an homogeneous extraction of features of the image. Figure~\ref{f:custom_uniform} 
 presents the result of this implementation on the first frame of the Kitti dataset.
 
-The other two algorithms that we may use consist in running the Harris corner detector over the whole image, as it is usually done. They differ
-between them in that one selects the strongest detected keypoints while the other selects them more uniformly. As it can be seen in figure~\ref{f:strongest} and figure ~\ref{f:uniform}, the uniform selection of keypoints performed by matlab is still not homogeneous over the image.
+The other two algorithms that we may use consist in running the Harris corner detector over the whole image, as it is usually done. They differ between them in that one selects the strongest detected keypoints while the other selects them more uniformly. As it can be seen in figure~\ref{f:strongest} and figure ~\ref{f:uniform}, the uniform selection of keypoints performed by Matlab is still not homogeneous over the image.
 This should not be a problem if the quality of the corners is good. Nonetheless, we experienced in practice that a mapping of keypoints on different
 patches of the image gives overall better results and is more robust to occlusions.
 
-\begin{subfigure}
-  \includegraphics[width=0.99\textwidth]{files/strongest_uniform.jpg}
-  \caption[\label{f:strongest}Strongest Harris features.]
-\end{subfigure}
-
-\begin{subfigure}
-  \includegraphics[width=0.99\textwidth]{files/uniform.jpg}
-  \caption[\label{f:custom_uniform}Uniform Harris features.]
-\end{subfigure}
+\begin{figure}[b]
+\subfigure[\label{f:strongest}Strongest Harris Features.]{\includegraphics[width=0.49\textwidth]{files/strongest_keypoints.jpg}}
+\subfigure[\label{f:custom_uniform}Uniform Harris Features.]{\includegraphics[width=0.49\textwidth]{files/uniform_keypoints.jpg}}
+\caption[\label{f:harris}Harris Features]{Harris Features.}
+\end{figure}
 
 \subsection{Monocular Initialisation Harris Detector via Matlab versus Exercise Harris Detector}

@@ -25,8 +25,9 @@ function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = 
     ransacLocalization(Image_i1, Image_i0,  State_i0.keypoints_correspondences, ...
                                   State_i0.p_W_landmarks_correspondences);
     
-    % B) Retrieve transformation
+    % B) Retrieve transformation of points from cam to world
     Transform_i1 = [R_C_W, t_C_W];
+    Inversed_Transform_i1 = [R_C_W', -R_C_W'*t_C_W];
     isLocalized = numel(R_C_W)>0;
     
     keypoints_correspondences_i1 = valid_tracked_keypoints(:, inlier_mask > 0); % WARNING: should we round, ceil floor?
@@ -123,7 +124,10 @@ function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = 
             %%% III) Update state
             %%%% a) Store new 2D-3D correspondences which are valid
             reprojectionError_threshold = 0.5; % WARNING: this guy gets rid of MANY possible landmarks!
-            valid_indices = list_reprojection_errors < reprojectionError_threshold;
+            valid_reprojection = list_reprojection_errors < reprojectionError_threshold;
+            X_cam_frame = Inversed_Transform_i1*[X_s; ones(1,size(X_s,2))];
+            valid_depth = X_cam_frame(3,:)>0;
+            valid_indices = valid_depth & valid_reprojection;
             fprintf('Number of valid triangulated points: %d \n', nnz(valid_indices));
             points_3D_world_frame = X_s(:, valid_indices);
             % IS THIS CORRECT?

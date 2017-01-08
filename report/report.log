@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.3.16)  7 JAN 2017 11:30
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.3.16)  8 JAN 2017 14:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -387,11 +387,11 @@ l.78 ...tlepage{Visual Odometry Pipeline}{2017-01}
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
-<files/UNIlogo.png, id=99, 401.5pt x 126.4725pt>
-File: files/UNIlogo.png Graphic file (type png)
- <use files/UNIlogo.png>
-Package pdftex.def Info: files/UNIlogo.png used on input line 78.
-(pdftex.def)             Requested size: 117.42448pt x 36.98857pt.
+<files/UZHlogo.jpg, id=99, 183.92715pt x 62.634pt>
+File: files/UZHlogo.jpg Graphic file (type jpg)
+ <use files/UZHlogo.jpg>
+Package pdftex.def Info: files/UZHlogo.jpg used on input line 78.
+(pdftex.def)             Requested size: 108.6199pt x 36.98857pt.
 
 <files/RPGlogo.png, id=100, 385.9218pt x 223.7961pt>
 File: files/RPGlogo.png Graphic file (type png)
@@ -408,7 +408,7 @@ Package pdftex.def Info: files/ETHlogo.png used on input line 78.
 [1
 
 {/usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./files
-/UNIlogo.png> <./files/RPGlogo.png> <./files/ETHlogo.png>] (./report.toc)
+/UZHlogo.jpg> <./files/RPGlogo.png> <./files/ETHlogo.png>] (./report.toc)
 \tf@toc=\write4
 \openout4 = `report.toc'.
 
@@ -436,19 +436,19 @@ l.112 \newpage
 \openout2 = `Examples.aux'.
 
  (./Examples.tex
-File: files/UNIlogo.png Graphic file (type png)
+File: files/UZHlogo.jpg Graphic file (type jpg)
 
-<use files/UNIlogo.png>
-Package pdftex.def Info: files/UNIlogo.png used on input line 39.
-(pdftex.def)             Requested size: 307.29288pt x 96.80324pt.
+<use files/UZHlogo.jpg>
+Package pdftex.def Info: files/UZHlogo.jpg used on input line 39.
+(pdftex.def)             Requested size: 307.29288pt x 104.65573pt.
 File: files/ETHlogo.png Graphic file (type png)
  <use files/ETHlogo.png>
 Package pdftex.def Info: files/ETHlogo.png used on input line 45.
 (pdftex.def)             Requested size: 131.42819pt x 34.1433pt.
-File: files/UNIlogo.png Graphic file (type png)
- <use files/UNIlogo.png>
-Package pdftex.def Info: files/UNIlogo.png used on input line 46.
-(pdftex.def)             Requested size: 108.39418pt x 34.1433pt.
+File: files/UZHlogo.jpg Graphic file (type jpg)
+ <use files/UZHlogo.jpg>
+Package pdftex.def Info: files/UZHlogo.jpg used on input line 46.
+(pdftex.def)             Requested size: 100.26215pt x 34.1433pt.
 
 [5
 
@@ -470,8 +470,8 @@ Package rerunfilecheck Info: File `report.out' has not changed.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 137.
  ) 
 Here is how much of TeX's memory you used:
- 7597 strings out of 493117
- 113369 string characters out of 6135433
+ 7600 strings out of 493117
+ 113381 string characters out of 6135433
  201601 words of memory out of 5000000
  10904 multiletter control sequences out of 15000+600000
  10539 words of font info for 38 fonts, out of 8000000 for 9000
@@ -483,9 +483,9 @@ Here is how much of TeX's memory you used:
 sr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/
 local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/l
 ocal/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on report.pdf (9 pages, 231196 bytes).
+Output written on report.pdf (9 pages, 441212 bytes).
 PDF statistics:
- 229 PDF objects out of 1000 (max. 8388607)
+ 228 PDF objects out of 1000 (max. 8388607)
  203 compressed objects within 3 object streams
  45 named destinations out of 1000 (max. 500000)
  208 words of extra memory for PDF output out of 10000 (max. 10000000)

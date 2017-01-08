@@ -118,31 +118,6 @@ i_ = 0;
 keypoints_ = zeros(0);
 p_W_landmarks_ = zeros(0);
 
-% % Initialize parameters
-% switch initialisation_
-%     case 'Monocular'
-%         mono_init = makeMonoInit(init_parameters.mono);
-%         [state, T_i0] = mono_init(img0_, img1_);
-%         keypoints_ = state.matches_2d(1:2,:);
-%         p_W_landmarks_ = state.landmarks(1:3,:);
-%     case 'Stereo'
-%         stereoInit = makeStereoInit(init_parameters.stereo);
-%         [keypoints_, p_W_landmarks_] = stereoInit(img0_, img1_);
-%     case 'Ground Truth'
-%         %%% GROUND TRUTH initialisation
-%         if (strcmp(dataset_, 'Kitti'))
-%             keypoints_ = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/keypoints.txt');
-%             keypoints_ = keypoints_';
-%             p_W_landmarks_ = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/p_W_landmarks.txt');
-%             p_W_landmarks_ = p_W_landmarks_';
-%         else
-%             disp('There is no ground truth for the dataset specified');
-%         end
-%         monoInit = makeMonoInit(init_parameters.mono);
-%     otherwise
-%         disp('Autoframes ONLY with MONOCULAR');
-% end
-
 % Initialize parameters
 switch initialisation_
     case 'Monocular'
@@ -198,7 +173,7 @@ else
         case 'Kitti'
             switch initialisation_
                 case 'Monocular'
-                    bootstrap_frames_ = [0, 1];
+                    bootstrap_frames_ = [1, 3];
                     range_ = (bootstrap_frames_(2)+1):last_frame_;
                 case 'Stereo'
                     bootstrap_frames_ = [0, 0];

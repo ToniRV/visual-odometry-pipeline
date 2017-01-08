@@ -32,8 +32,11 @@ Due to efficiency reasons we decided to use the epipolar line distance as a meas
 
 \section{Continuous Operation}
 \label{s:ContOp}
+The continuous operation part of the project performs basically three tasks:
+1) Updates the correspondences 2D-3D to the new frame using KLT
+2) Localizes using the new correspondences by applying P3P plus RANSAC
+3) Stores new candidate keypoints and triangulates new landmarks, also with KLT.
 
-\subsection{KLT}
 
 \section{Bonus Features}
 \label{s:BF}
@@ -142,6 +145,17 @@ The simple replacement of the Block Matching algorithm by the KLT algorithm offe
   \includegraphics[width=0.99\textwidth]{files/block_tracker.jpg}
   \caption[\label{f:block_tracker} Block Matching tracker]{Block Matching tracker.}
 \end{figure}
+
+\subsubsection{Triangulation functions}
+During the early development of the pipeline we decided to use the linear triangulation function developped during the exercises.
+For the first iterations of the pipeline it gave us good results that were satisfactory. Nonetheless, the reprojection error of the newly
+triangulated keypoints was not taken into account when considering the keypoints.
+Since the matlab implementation of the triangulation function outputs at the same time the reprojection errors of each newly triangulated
+keypoint we decided to implemented and quantify the performance gain.
+Overall, linearTriangulation, the function done in the exercises, performs faster than the triangulation function of Matlab. This is
+comprehensible since the reprojection errors are also computed in the Matlab implementation. However, the few keypoints that had a big reprojection
+error were actually behind the camera, which they were easy to remove from the correct triangulations. Finally, we decided to use the function
+done in the exercises since the increase of speed outperformed the slightly better reprojection errors of the matlab implementation.
 
 \subsubsection{Analysis of performance of different ways to extract Harris features}
 

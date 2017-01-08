@@ -29,7 +29,7 @@ dataset_ = 'Kitti';                % 'Kitti', 'Malaga', 'Parking'
 %%% Select initialisation method to run:
 initialisation_ = 'Monocular';     % 'Monocular', 'Stereo', 'Ground Truth'
 %%% Select bundle adjustment method:
-BA_ = 'Online';                   % 'Offline', 'Online', 'None'
+BA_ = 'Offline';                   % 'Offline', 'Online', 'None'
 %%% Select if initialisation frames should be picked automatically
 is_auto_frame_monocular_initialisation_ = false;
 %%% Select if relocalisation should be turned on

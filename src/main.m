@@ -253,6 +253,7 @@ S_i0 = struct(...
     'first_obs_candidate_transform', zeros(12,0),...     % 12xM Transformation matrices of each ofthe candidates
     'last_obs_candidate_keypoints', zeros(2,0)...        % 2xM Last keypoint matched corresponding to initial candidate
     );
+S_i0_init = S_i0;
 
 params_harris_matlab = struct(...
     'MinQuality', 0.01,...
@@ -338,6 +339,9 @@ for i = range_
             T_i0(1:3,4) = T_i0(1:3,4)*norm(T_diff);
             T_final_after_reloc_h = T_i1_prev*T_i0;
             T_i1 = T_final_after_reloc_h(1:3,:);
+            S_i1 = S_i0_init;
+            S_i1.keypoints_correspondences = keypoints_;
+            S_i1.p_W_landmarks_correspondences = p_W_landmarks_;
         else
             % Go to Offline BundleAdjustment
             break;

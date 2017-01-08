@@ -18,7 +18,7 @@ fclose(fileID);
 
 % Dataset paths
 vo_path = paths{1}{2};
-%addpath(genpath(vo_path));
+addpath(genpath(vo_path));
 kitti_path_ = paths{1}{4};
 malaga_path_ = paths{1}{6};
 parking_path_ = paths{1}{8};
@@ -117,31 +117,6 @@ range_ = 0;
 i_ = 0;
 keypoints_ = zeros(0);
 p_W_landmarks_ = zeros(0);
-
-% % Initialize parameters
-% switch initialisation_
-%     case 'Monocular'
-%         mono_init = makeMonoInit(init_parameters.mono);
-%         [state, T_i0] = mono_init(img0_, img1_);
-%         keypoints_ = state.matches_2d(1:2,:);
-%         p_W_landmarks_ = state.landmarks(1:3,:);
-%     case 'Stereo'
-%         stereoInit = makeStereoInit(init_parameters.stereo);
-%         [keypoints_, p_W_landmarks_] = stereoInit(img0_, img1_);
-%     case 'Ground Truth'
-%         %%% GROUND TRUTH initialisation
-%         if (strcmp(dataset_, 'Kitti'))
-%             keypoints_ = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/keypoints.txt');
-%             keypoints_ = keypoints_';
-%             p_W_landmarks_ = load('~/Documents/Vision Algorithms for Mobile Robotics/Exercise 6 - Localization using RANSAC and EPnP/data/p_W_landmarks.txt');
-%             p_W_landmarks_ = p_W_landmarks_';
-%         else
-%             disp('There is no ground truth for the dataset specified');
-%         end
-%         monoInit = makeMonoInit(init_parameters.mono);
-%     otherwise
-%         disp('Autoframes ONLY with MONOCULAR');
-% end
 
 % Initialize parameters
 switch initialisation_
@@ -308,8 +283,9 @@ params_ransac_localization = struct(...
 cont_op_parameters = struct(...
     'K', K,...
     'harris_detector', params_harris_detector,...
-    'triangulation_angle_threshold', 35,...
-    'suppression_radius', 4,...
+    'triangulation_angle_threshold', 3,...
+    'suppression_radius', 3,...
+    'reprojection_error_threshold', 200,...
     'ransac_localization', params_ransac_localization);
 
 % Bundle Adjustment initialization:

@@ -124,6 +124,11 @@ function p = makeMonoInit (parameters)
         %% PLOT
         % Plot matching features
         if (debug_verbose_)
+            fh = figure(17); 
+            showMatchedFeatures(img0, img1, flipud(kp_homo_database_matched(1:2,:))', ...
+                flipud(kp_homo_query_matched(1:2,:))', 'montage');
+            waitfor(fh);
+            
             figure(15); 
             subplot(2,1,1);
             showMatchedFeatures(img0, img1, flipud(kp1h_matched_before_ransac(1:2,:))', ...

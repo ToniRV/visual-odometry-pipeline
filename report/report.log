@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.3.16)  9 JAN 2017 00:10
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.3.16)  9 JAN 2017 00:44
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -462,13 +462,13 @@ Missing character: There is no ˜ in font cmr12!
 Missing character: There is no â in font cmr12!
 Missing character: There is no € in font cmr12!
 Missing character: There is no ™ in font cmr12!
-
-<files/aligned_optimized.jpg, id=138, 1171.37625pt x 878.28125pt>
+ [3]
+<files/aligned_optimized.jpg, id=147, 977.6525pt x 575.14874pt>
 File: files/aligned_optimized.jpg Graphic file (type jpg)
 
 <use files/aligned_optimized.jpg>
-Package pdftex.def Info: files/aligned_optimized.jpg used on input line 76.
-(pdftex.def)             Requested size: 507.03091pt x 380.17305pt.
+Package pdftex.def Info: files/aligned_optimized.jpg used on input line 99.
+(pdftex.def)             Requested size: 507.03091pt x 298.28922pt.
 Missing character: There is no â in font cmr12!
 Missing character: There is no € in font cmr12!
 Missing character: There is no ˜ in font cmr12!
@@ -481,45 +481,45 @@ Missing character: There is no “ in font cmti12!
 Missing character: There is no â in font cmr12!
 Missing character: There is no € in font cmr12!
 Missing character: There is no ™ in font cmr12!
- [3] [4 <./files/aligned_optimized.jpg>]
-<files/block_tracker.jpg, id=153, 1305.87875pt x 691.58376pt>
+ [4 <./files/aligned_optimized.jpg>]
+<files/block_tracker.jpg, id=155, 1040.88875pt x 322.20375pt>
 File: files/block_tracker.jpg Graphic file (type jpg)
 
 <use files/block_tracker.jpg>
-Package pdftex.def Info: files/block_tracker.jpg used on input line 126.
-(pdftex.def)             Requested size: 507.03091pt x 268.51357pt.
-
-<files/klt_tracker.png, id=155, 1191.45125pt x 656.4525pt>
+Package pdftex.def Info: files/block_tracker.jpg used on input line 149.
+(pdftex.def)             Requested size: 507.03091pt x 156.9471pt.
+ [5]
+<files/klt_tracker.png, id=165, 1191.45125pt x 656.4525pt>
 File: files/klt_tracker.png Graphic file (type png)
 
 <use files/klt_tracker.png>
-Package pdftex.def Info: files/klt_tracker.png used on input line 134.
+Package pdftex.def Info: files/klt_tracker.png used on input line 157.
 (pdftex.def)             Requested size: 507.03091pt x 279.35423pt.
- [5] [6 <./files/block_tracker.jpg> <./files/klt_tracker.png>]
-<files/custom_uniform_keypoints.jpg, id=168, 534.99875pt x 165.61874pt>
+ [6 <./files/block_tracker.jpg>]
+<files/custom_uniform_keypoints.jpg, id=173, 534.99875pt x 165.61874pt>
 File: files/custom_uniform_keypoints.jpg Graphic file (type jpg)
 
 <use files/custom_uniform_keypoints.jpg>
 Package pdftex.def Info: files/custom_uniform_keypoints.jpg used on input line 
-152.
+187.
 (pdftex.def)             Requested size: 507.03091pt x 156.96794pt.
 
-<files/strongest_keypoints.jpg, id=169, 536.0025pt x 166.6225pt>
+<files/strongest_keypoints.jpg, id=174, 536.0025pt x 166.6225pt>
 File: files/strongest_keypoints.jpg Graphic file (type jpg)
 
 <use files/strongest_keypoints.jpg>
-Package pdftex.def Info: files/strongest_keypoints.jpg used on input line 157.
+Package pdftex.def Info: files/strongest_keypoints.jpg used on input line 192.
 (pdftex.def)             Requested size: 250.95612pt x 78.01257pt.
 
-<files/uniform_keypoints.jpg, id=170, 1066.98625pt x 326.21875pt>
+<files/uniform_keypoints.jpg, id=175, 1066.98625pt x 326.21875pt>
 File: files/uniform_keypoints.jpg Graphic file (type jpg)
 
 <use files/uniform_keypoints.jpg>
-Package pdftex.def Info: files/uniform_keypoints.jpg used on input line 158.
+Package pdftex.def Info: files/uniform_keypoints.jpg used on input line 193.
 (pdftex.def)             Requested size: 250.95612pt x 76.72612pt.
-) [7 <./files/custom_uniform_keypoints.jpg> <./files/strongest_keypoints.jpg> <
-./files/uniform_keypoints.jpg>]
-(./Conclusion.tex) [8] (./report.bbl)
+) [7 <./files/klt_tracker.png> <./files/custom_uniform_keypoints.jpg>] (./Concl
+usion.tex) [8 <./files/strongest_keypoints.jpg> <./files/uniform_keypoints.jpg>
+] (./report.bbl)
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 137.
  [9]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 137.
@@ -531,22 +531,22 @@ Package rerunfilecheck Info: File `report.out' has not changed.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 137.
  ) 
 Here is how much of TeX's memory you used:
- 7618 strings out of 493117
- 114083 string characters out of 6135433
+ 7622 strings out of 493117
+ 114123 string characters out of 6135433
  201924 words of memory out of 5000000
  10921 multiletter control sequences out of 15000+600000
  10370 words of font info for 37 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 36i,10n,45p,768b,415s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,10n,45p,768b,336s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 ></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb>
 </usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></
 usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></us
 r/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on report.pdf (12 pages, 852880 bytes).
+Output written on report.pdf (12 pages, 846586 bytes).
 PDF statistics:
- 227 PDF objects out of 1000 (max. 8388607)
- 194 compressed objects within 2 object streams
- 59 named destinations out of 1000 (max. 500000)
+ 232 PDF objects out of 1000 (max. 8388607)
+ 199 compressed objects within 2 object streams
+ 63 named destinations out of 1000 (max. 500000)
  171 words of extra memory for PDF output out of 10000 (max. 10000000)
 

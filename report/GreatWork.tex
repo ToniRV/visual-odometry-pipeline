@@ -34,6 +34,15 @@ Due to efficiency reasons we decided to use the epipolar line distance as a meas
 \section{Continuous Operation}
 \label{s:ContOp}
 
+-The continuous operation part of the project performs basically three tasks:
+
+\begin{enumerate}
+	\item Updates the correspondences 2D-3D to the new frame using KLT.
+	\item Localizes using the new correspondences by applying P3P plus RANSAC.
+	\item Stores new candidate keypoints and triangulates new landmarks, also with KL.
+\end{enumerate}
+
+
 \subsection{KLT}
 
 The first part is done by using KLT as a feature tracker. The features that are correctly tracked are then used to estimate the new pose of the camera
@@ -151,6 +160,18 @@ Nonetheless, knowing that the range of movement is constrained in our datasets (
 
 
 The simple replacement of the Block Matching algorithm by the KLT algorithm offered an overall better performance of the estimation due to its sub-pixel accuracy when tracking keypoints. As reference, this figure~\ref{f:klt_tracker} shows the performance of the KLT algorithm on the estimation of the pose.
+
+
+\subsubsection{Triangulation Functions}
+
+During the early development of the pipeline we decided to use the linear triangulation function developed during the exercises.
+For the first iterations of the pipeline it gave us good results that were satisfactory. Nonetheless, the reprojection error of the newly
+triangulated keypoints was not taken into account when considering the keypoints. \\
+Since the Matlab implementation of the triangulation function outputs at the same time the reprojection errors of each newly triangulated
+keypoint we decided to implemented and quantify the performance gain.
+Overall, linearTriangulation, the function done in the exercises, performs faster than the triangulation function of Matlab. This is
+comprehensible since the reprojection errors are also computed in the Matlab implementation. However, the few keypoints that had a big reprojection error were actually behind the camera, which they were easy to remove from the correct triangulations. \\
+Finally, we decided to use the function done in the exercises since the increase of speed outperformed the slightly better reprojection errors of the Matlab implementation.
 
 \subsubsection{Analysis of performance of different ways to extract Harris features}
 

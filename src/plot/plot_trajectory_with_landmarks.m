@@ -26,8 +26,9 @@ function plot_trajectory_with_landmarks(img0, img1, kp_homo_database, ...
     %text(center_cam2_W(1)-0.1, center_cam2_W(2)-0.1, center_cam2_W(3)-0.1,'Cam 2','fontsize',10,'color','k','FontWeight','bold');
     
     % Landmarks
-    hold on
+    hold on;
     scatter3(P(1,:), P(2,:), P(3,:), '.')
     view([0 -1 0])
+    hold off;
 end
 

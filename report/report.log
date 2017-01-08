@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.3.16)  8 JAN 2017 22:46
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.3.16)  8 JAN 2017 23:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -436,36 +436,36 @@ been already used, duplicate ignored
 l.51 
       [1
 
- <./files/KLT_2d2d.jpg>] [2]
-<files/custom_uniform_keypoints.jpg, id=138, 534.99875pt x 165.61874pt>
+ <./files/KLT_2d2d.jpg>] [2] [3]
+<files/custom_uniform_keypoints.jpg, id=146, 534.99875pt x 165.61874pt>
 File: files/custom_uniform_keypoints.jpg Graphic file (type jpg)
 
 <use files/custom_uniform_keypoints.jpg>
 Package pdftex.def Info: files/custom_uniform_keypoints.jpg used on input line 
-123.
+127.
 (pdftex.def)             Requested size: 507.03091pt x 156.96794pt.
- [3]
 
-LaTeX Warning: Reference `f:uniform' on page 4 undefined on input line 131.
 
-<files/strongest_keypoints.jpg, id=148, 536.0025pt x 166.6225pt>
+LaTeX Warning: Reference `f:uniform' on page 4 undefined on input line 135.
+
+<files/strongest_keypoints.jpg, id=149, 536.0025pt x 166.6225pt>
 File: files/strongest_keypoints.jpg Graphic file (type jpg)
 
 <use files/strongest_keypoints.jpg>
-Package pdftex.def Info: files/strongest_keypoints.jpg used on input line 136.
+Package pdftex.def Info: files/strongest_keypoints.jpg used on input line 140.
 (pdftex.def)             Requested size: 250.95612pt x 78.01257pt.
 
-<files/uniform_keypoints.jpg, id=149, 1066.98625pt x 326.21875pt>
+<files/uniform_keypoints.jpg, id=150, 1066.98625pt x 326.21875pt>
 File: files/uniform_keypoints.jpg Graphic file (type jpg)
 
 <use files/uniform_keypoints.jpg>
-Package pdftex.def Info: files/uniform_keypoints.jpg used on input line 137.
+Package pdftex.def Info: files/uniform_keypoints.jpg used on input line 141.
 (pdftex.def)             Requested size: 250.95612pt x 76.72612pt.
-) (./Conclusion.tex) [4 <./files/custom_uniform_keypoints.jpg> <./files/stronge
-st_keypoints.jpg> <./files/uniform_keypoints.jpg>] (./report.bbl) [5]
+) (./Conclusion.tex) [4 <./files/custom_uniform_keypoints.jpg>] [5 <./files/str
+ongest_keypoints.jpg> <./files/uniform_keypoints.jpg>] (./report.bbl) [6]
 \openout2 = `Appendix.aux'.
 
- (./Appendix.tex) [6
+ (./Appendix.tex) [7
 
 ]
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 137.
@@ -482,22 +482,22 @@ LaTeX Warning: There were undefined references.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 137.
  ) 
 Here is how much of TeX's memory you used:
- 7602 strings out of 493117
- 113709 string characters out of 6135433
+ 7606 strings out of 493117
+ 113736 string characters out of 6135433
  202162 words of memory out of 5000000
  10911 multiletter control sequences out of 15000+600000
  10370 words of font info for 37 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 36i,11n,45p,475b,336s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,10n,45p,524b,336s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 ></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb>
 </usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></
 usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></us
 r/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on report.pdf (9 pages, 599682 bytes).
+Output written on report.pdf (10 pages, 600574 bytes).
 PDF statistics:
- 203 PDF objects out of 1000 (max. 8388607)
- 176 compressed objects within 2 object streams
- 49 named destinations out of 1000 (max. 500000)
+ 210 PDF objects out of 1000 (max. 8388607)
+ 182 compressed objects within 2 object streams
+ 53 named destinations out of 1000 (max. 500000)
  172 words of extra memory for PDF output out of 10000 (max. 10000000)
 

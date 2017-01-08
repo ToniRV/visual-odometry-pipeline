@@ -61,6 +61,8 @@ We have further implemented the Bonus Feature "Automatic Selection of Frames for
 Once the minimizing pair was found, the monocular initialisation is recomputed with the new initialisation set of images.
 
 \subsection{Relocalisation}
+It can always happen in VO-pipeline that the errors introduced are getting to big and thus, localization is lost. In such a case, we need to be able to recover from the lost localization to further track the camera motion. \\
+We have implemented a relocalisation state in the pipeline which covers this case. If the number of matched keypoints between two frames tends towards zero the track is lost. We reinitialise the track with two closeby frames with the help of the monocular initialisation. However, the problem is that after reinitialisation also the scale gets reset. To counteract this we first need to recover the approximate scale where the track last ended. This scale is then reused after relocalisation. 
 
 \subsection{Full Bundle Adjustment}
 
@@ -71,9 +73,11 @@ For this endeavour, we printed a checkerboard to calibrate the camera of an smar
 We then used the calibrated camera to record the dataset.
 In order to achieve good results for the calibration, we made sure that we followed the following procedure:
 
-1) Set focus and exposure mode of the smartphone to fixed.
-2) Ensure that the checkerboard is over a planar surface and presents no light reflections.
-3) Take frames of the checkerboard from sufficiently different angles and distances.
+\begin{enumerate}
+	\item Set focus and exposure mode of the smartphone to fixed.
+	\item Ensure that the checkerboard is over a planar surface and presents no light reflections.
+	\item Take frames of the checkerboard from sufficiently different angles and distances.
+\end{enumerate}
 
 Once the calibration dataset recorded, we proceeded to find the intrinsics of the camera.
 As a first approach we used the \href{https://www.vision.caltech.edu/bouguetj/calib_doc/}{Matlab Toolbox}.
@@ -100,12 +104,15 @@ for visual odometry. Or seen from another perspective, we learned about the limi
 
 Our calibration files and images of the dataset are provided under the folder smartphone.
 
+
+
+
+
+
+
+
 \subsection{Quantitative Analysis}
 \subsubsection{Keypoint Tracking via Block Matching versus KLT}
-Our first approach to keypoint tracking was to implement a block matching algorithm. After describing the keypoints by a block of pixels around it
-we simply computed the sum of squared differences to match different blocks. This approach, while simplistic, performed reasonably well and we 
-were able to actually localize reliably. Nonetheless, knowing that the range of movement is constrained in our datasets (small translational displacements) we thought that it would be appropriate to use a more performant tracker such as the KLT algorithm.
-The simple replacement of the Block Matching algorithm by the KLT algorithm offered a overall better performance of the estimation due to its sub-pixel accuracy when tracking keypoints.
 
 \subsubsection{Analysis of performance of different ways to extract Harris features}
 Extracting keypoints from the images is one of the most important parts of a visual odometry pipeline. For that reason, we

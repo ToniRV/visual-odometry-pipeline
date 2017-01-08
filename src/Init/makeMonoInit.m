@@ -80,8 +80,16 @@ function p = makeMonoInit (parameters)
         %% Check if in front of camera
         % lambda0*[u v 1]^T = K1 * [Xw Yw Zw]^T
         % lambda1*[u v 1]^T = K1 * R1* [Xw Yw Zw]^T + T
-        [R, T, P, M1, M2] = disambiguateRelativePose(R_hypo, u3, ...
+        [R, T, P, M1, M2, inlier] = ...
+            disambiguateRelativePose(R_hypo, u3, ...
             kp_homo_database_fl, kp_homo_query_fl, K_, K_);
+
+        %% Remove outlier behind cameras
+        P = P(:, inlier);
+        kp_homo_database_matched = kp_homo_database_matched(:, inlier);
+        kp_homo_query_matched = kp_homo_query_matched(:, inlier);
+        kp_homo_database_fl = kp_homo_database_fl(:, inlier);
+        kp_homo_query_fl = kp_homo_query_fl(:, inlier);  
 
         %% ONLY TESTING
         % Rescale reprojection to homogenous coordinates again (u v 1)
@@ -116,7 +124,7 @@ function p = makeMonoInit (parameters)
         %% PLOT
         % Plot matching features
         if (debug_verbose_)
-            figure(5); 
+            figure(15); 
             subplot(2,1,1);
             showMatchedFeatures(img0, img1, flipud(kp1h_matched_before_ransac(1:2,:))', ...
                 flipud(kp2h_matched_before_ransac(1:2,:))', 'montage');       
@@ -126,7 +134,7 @@ function p = makeMonoInit (parameters)
 
             % Plot 3d scene (trajectory and landmarks)
             plot_trajectory_with_landmarks(img0, img1, kp_homo_database_fl, ...
-                kp_homo_query_fl, P, R, T);
+                kp_homo_query_fl, P, R, T, 10);
         end
 
         %% OUTPUT

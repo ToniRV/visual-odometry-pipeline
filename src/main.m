@@ -1,5 +1,5 @@
 %% Tabula rasa
-clear variables;
+clear all;
 close all;
 
 % REMOVE
@@ -18,7 +18,7 @@ fclose(fileID);
 
 % Dataset paths
 vo_path = paths{1}{2};
-%addpath(genpath(vo_path));
+addpath(genpath(vo_path));
 kitti_path_ = paths{1}{4};
 malaga_path_ = paths{1}{6};
 parking_path_ = paths{1}{8};
@@ -118,7 +118,6 @@ img1_ = 0;
 range_ = 0;
 i_ = 0;
 keypoints_ = zeros(0);
-
 p_W_landmarks_ = zeros(0);
 
 % Initialize parameters
@@ -176,7 +175,7 @@ else
         case 'Kitti'
             switch initialisation_
                 case 'Monocular'
-                    bootstrap_frames_ = [0, 1];
+                    bootstrap_frames_ = [1, 3];
                     range_ = (bootstrap_frames_(2)+1):last_frame_;
                 case 'Stereo'
                     bootstrap_frames_ = [0, 0];
@@ -286,8 +285,9 @@ params_ransac_localization = struct(...
 cont_op_parameters = struct(...
     'K', K,...
     'harris_detector', params_harris_detector,...
-    'triangulation_angle_threshold', 35,...
-    'suppression_radius', 4,...
+    'triangulation_angle_threshold', 3,...
+    'suppression_radius', 3,...
+    'reprojection_error_threshold', 200,...
     'ransac_localization', params_ransac_localization);
 
 % Bundle Adjustment initialization:

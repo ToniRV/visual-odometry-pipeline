@@ -18,7 +18,7 @@ fclose(fileID);
 
 % Dataset paths
 vo_path = paths{1}{2};
-%addpath(genpath(vo_path));
+addpath(genpath(vo_path));
 kitti_path_ = paths{1}{4};
 malaga_path_ = paths{1}{6};
 parking_path_ = paths{1}{8};
@@ -242,16 +242,6 @@ if (isempty(keypoints_) || isempty(p_W_landmarks_))
 end
 
 %% Continuous operation
-% Plotting
-figure(5);
-subplot(1, 3, 3);
-%scatter3(p_W_landmarks(1, :), p_W_landmarks(2, :), p_W_landmarks(3, :), 5);
-set(gcf, 'GraphicsSmoothing', 'on');
-view(0,0);
-axis equal;
-axis vis3d;
-grid on;
-
 S_i0 = struct(...
     'keypoints_correspondences', keypoints_,...          % 2xL
     'p_W_landmarks_correspondences', p_W_landmarks_,...  % 3xL
@@ -296,9 +286,14 @@ end
 
 % Store Image_i0, aka previous image to kickstart continuous operation.
 prev_img = getImage(dataset_, i_, kitti_path_, malaga_path_, parking_path_);
-    
+  
+% Initialize Parmeters
 processFrame = makeProcessFrame(cont_op_parameters);
-    
+num_frames_plotting = 20;
+cam_center1 = zeros(3,num_frames_plotting);
+cam_center_all = [];
+nnz_inlier_masks = zeros(1,num_frames_plotting);
+
 for i = range_
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     image = getImage(dataset_, i, kitti_path_, malaga_path_, parking_path_);
@@ -306,10 +301,6 @@ for i = range_
     % State and pose update:
     [S_i1, T_i1, inlier_mask, validity_mask, new_3D, new_2D] = ...
         processFrame(image, prev_img, S_i0, i);
-    % subplot(1, 3, 3);
-    % scatter3(S_i1.p_W_landmarks_correspondences(1, :), ...
-    % S_i1.p_W_landmarks_correspondences(2, :), ...
-    % S_i1.p_W_landmarks_correspondences(3, :), 5);
   
     % BUNDLE ADJUSTMENT
     if (numel(T_i1) == 0)
@@ -333,6 +324,17 @@ for i = range_
          S_i0 = S_i1;
          prev_img = image;
 %     end
+
+    %% PLOTTING
+    cam_help = -T_i1(:,1:3)'*T_i1(:,4);
+    cam_center1 = [cam_help cam_center1(:, 1:end-1)];
+    cam_center_all(:, end+1) = cam_help;
+    nnz_inlier_masks = [nnz(inlier_mask) nnz_inlier_masks(1, 1:end-1)];
+    
+    plot_main(image, S_i1.keypoints_correspondences, ...
+        S_i1.p_W_landmarks_correspondences, inlier_mask, ...
+        nnz_inlier_masks, T_i1(:,1:3), T_i1(:,4), 20, i, ...
+        cam_center1, cam_center_all);
 end
 
 %% Offline Bundle Adjustment

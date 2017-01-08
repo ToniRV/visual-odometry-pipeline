@@ -8,6 +8,7 @@ K_ = parameters.K;
 %%% Tune this threshold
 triangulation_angle_threshold_ = parameters.triangulation_angle_threshold; %35
 suppression_radius_ = parameters.suppression_radius;
+reprojection_error_threshold_ = parameters.reprojection_error_threshold;
 
 ransacLocalization = makeRansacLocalization(parameters.ransac_localization);
 
@@ -123,7 +124,7 @@ function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = 
 
             %%% III) Update state
             %%%% a) Store new 2D-3D correspondences which are valid
-            reprojectionError_threshold = 0.5; % WARNING: this guy gets rid of MANY possible landmarks!
+            reprojectionError_threshold = reprojection_error_threshold_; % WARNING: this guy gets rid of MANY possible landmarks!
             valid_reprojection = list_reprojection_errors < reprojectionError_threshold;
             X_cam_frame = Inversed_Transform_i1*[X_s; ones(1,size(X_s,2))];
             valid_depth = X_cam_frame(3,:)>0;

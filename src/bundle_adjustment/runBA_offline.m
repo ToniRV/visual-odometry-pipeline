@@ -70,7 +70,7 @@ end
 p_W_opt_estimate_aligned = alignEstimateToGroundTruth(...
     p_W_GT, p_W_opt_estimate);
 
-figure(3);
+fig3 = figure(3);
 plot(p_W_GT(3, :), -p_W_GT(1, :));
 hold on;
 plot(p_W_estimate_aligned(3, :), -p_W_estimate_aligned(1, :));
@@ -82,7 +82,7 @@ axis([-10 100 -40 20]);
 legend('Ground truth', 'Original (aligned) estimate',...
     'Optimized (aligned) estimate', 'Optimized (not aligned) estimate',...
     'Location', 'SouthWest');
-
+print('Aligned optimized', '-djpeg');
 
 end
 

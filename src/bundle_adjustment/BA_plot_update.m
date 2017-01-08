@@ -5,7 +5,7 @@ function [plot_pose_hist_, plot_opt_pose_hist_] = BA_plot_update(...
 % current landmarks.
 
 if (i > range_(1))  
-    figure(13);
+    fig = figure(13);
     p_W_GT = ground_truth_pose_(1:600, [4 8 12])';
     % Plot ground truth for the first 600 frames:
     plot(p_W_GT(3, :), -p_W_GT(1, :),'--k');

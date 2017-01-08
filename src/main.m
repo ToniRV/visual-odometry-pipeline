@@ -354,7 +354,7 @@ for i = range_
 end
 
 %% Offline Bundle Adjustment
-
+disp('Dataset finished to localize');
 if (strcmp(BA_,'Offline') == 1)
    [poses_W_opt_, landmarks_opt_] = runBA_offline(poses_W_hist_,...
         landmarks_hist_, observation_hist_, ground_truth_pose_, K, n_off_);

@@ -23,10 +23,10 @@ We have implemented two different approaches for finding the 2D-2D correspondenc
 
 \begin{figure}
 \includegraphics[width=0.98\textwidth]{files/KLT_2d2d.jpg}
-\caption[\label{s:KLT_2d2d}2D-2D Correspondences with KLT]{2D-2D Correspondences with KLT.}
+\caption[\label{f:KLT_2d2d}2D-2D Correspondences with KLT]{2D-2D Correspondences with KLT.}
 \end{figure}
 
-An examplary output of the 2D-2D module can be seen in Figure~\ref{s:KLT_2d2d}. The correspondences between two images are indicated.
+An examplary output of the 2D-2D module can be seen in Figure~\ref{f:KLT_2d2d}. The correspondences between two images are indicated.
 
 Due to efficiency reasons we decided to use the epipolar line distance as a measure to validate the estimated Fundamental Matrices. In theory the reprojection error would have yielded better results (sacrificing efficiency); however, in our case the differences were neglectable.
 
@@ -65,6 +65,18 @@ It can always happen in VO-pipeline that the errors introduced are getting to bi
 We have implemented a relocalisation state in the pipeline which covers this case. If the number of matched keypoints between two frames tends towards zero the track is lost. We reinitialise the track with two closeby frames with the help of the monocular initialisation. However, the problem is that after reinitialisation also the scale gets reset. To counteract this we first need to recover the approximate scale where the track last ended. This scale is then reused after relocalisation. 
 
 \subsection{Full Bundle Adjustment}
+
+In our VO pipeline, we implemented two different approaches of bundle adjustment in order to refine the obtained pose estimates and landmark positions. The user can choose between different methods by setting the flag BA\_ to either ‘Offline’, ‘Online’, or ‘None’. 
+BA\_ set to ‘Offline’ will perform full offline bundle adjustment to simultaneously optimize both, the trajectory of estimated poses as well as the 3D positions of triangulated landmarks, that have been recorded over a previously set number of frames. This approach is based on the implementation provided with exercise 9. 
+
+\begin{figure}
+\includegraphics[width=0.99\textwidth]{files/aligned_optimized.jpg}
+\caption[\label{f:aligned_optimized}Offline Bundle Adjustment]{This Figure shows the original estimated poses (orange) for the first 150 frames of the KITTI dataset. To account for the scale ambiguity of monocular VO, the obtained trajectory has been aligned to the ground truth by means of a similarity transformation.}
+\end{figure}
+
+If \textit{BA\_} is set to ‘Online’ full online bundle adjustment on a certain number of (key-)frames is performed to update the current pose estimate and the landmark positions observed in the last m frames. However, as can be seen in \textit{Video 5 – Online BA}, the code is not working properly in the sense of meaningfully improving the current pose estimate. The idea is that the poses, triangulated landmarks, and observed keypoints of the last m frames are stored and can be passed in the format introduced in exercise 9 to Matlab’s \textit{lsqnonlin} solver which then iteratively adjusts the last m poses and the positions of landmarks observed in those m frames by minimizing the reprojection error.  
+
+
 
 \subsection{Calibrated Smartphone Camera and Own Dataset}
 
@@ -146,6 +158,12 @@ as bins. In each of these bins we run the Matlab implementation of "detectHarris
   \caption[\label{f:custom_uniform}Uniform Harris Implementation]{Uniform Harris Implementation.}
 \end{figure}
 
+\begin{figure}[b]
+\subfigure[\label{f:strongest}Strongest Harris Features.]{\includegraphics[width=0.49\textwidth]{files/strongest_keypoints.jpg}}
+\subfigure[\label{f:custom_uniform}Uniform Harris Features.]{\includegraphics[width=0.49\textwidth]{files/uniform_keypoints.jpg}}
+\caption[\label{f:harris}Harris Features]{Harris Features.}
+\end{figure}
+
 This provides us with localy optimal corners in
 the bin. Applying this approach recursevely over the bins gives us an homogeneous extraction of features of the image. Figure~\ref{f:custom_uniform} 
 presents the result of this implementation on the first frame of the Kitti dataset.
@@ -154,10 +172,5 @@ The other two algorithms that we may use consist in running the Harris corner de
 This should not be a problem if the quality of the corners is good. Nonetheless, we experienced in practice that a mapping of keypoints on different
 patches of the image gives overall better results and is more robust to occlusions.
 
-\begin{figure}[b]
-\subfigure[\label{f:strongest}Strongest Harris Features.]{\includegraphics[width=0.49\textwidth]{files/strongest_keypoints.jpg}}
-\subfigure[\label{f:custom_uniform}Uniform Harris Features.]{\includegraphics[width=0.49\textwidth]{files/uniform_keypoints.jpg}}
-\caption[\label{f:harris}Harris Features]{Harris Features.}
-\end{figure}
 
 \subsection{Monocular Initialisation Harris Detector via Matlab versus Exercise Harris Detector}

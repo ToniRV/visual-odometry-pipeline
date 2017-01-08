@@ -41,8 +41,7 @@ function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = 
     query_keypoints = removeDuplicates(query_keypoints, keypoints_correspondences_i1, suppression_radius_);
     
     %% Step 3: trying to triangulate new landmarks
-    points_2D_global_var = 0;
-    new_first_obs_cand_kp_i1_global_var = 0;
+    last_obs_cand_kp_i1_global_var = 0;
     final_keypoints_correspondences_i1 = keypoints_correspondences_i1;
     final_p_W_landmarks_correspondences_i1 = p_W_landmarks_correspondences_i1;
           
@@ -169,6 +168,7 @@ function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = 
             first_obs_cand_tf_i1 = [clear_first_obs_cand_tf_i1, new_first_obs_cand_tf_i1];
 
             % F) FINAL RESULT
+            last_obs_cand_kp_i1_global_var = last_obs_cand_kp_i1;
             State_i1.last_obs_candidate_keypoints = last_obs_cand_kp_i1;
             State_i1.first_obs_candidate_keypoints = first_obs_cand_kp_i1;
             State_i1.first_obs_candidate_transform = first_obs_cand_tf_i1;
@@ -204,6 +204,10 @@ function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = 
     % Plot all the new keypoints
 %     if (new_first_obs_cand_kp_i1_global_var ~= 0)
 %         plot(new_first_obs_cand_kp_i1_global_var(2,:), new_first_obs_cand_kp_i1_global_var(1,:),'yx', 'Linewidth', 2);
+%     end
+    % Plot all the last cand keypoints
+%     if (last_obs_cand_kp_i1_global_var ~= 0)
+%         plot(last_obs_cand_kp_i1_global_var(2,:), last_obs_cand_kp_i1_global_var(1,:),'yx', 'Linewidth', 1);
 %     end
     % Plot the new 2D<->3D correspondences
 %     if (points_2D_global_var ~= 0)

@@ -2,8 +2,10 @@ function error_terms = baError(hidden_state, observations, K, num_frames)
 
 plot_debug = false;
 
-T_W_frames = reshape(hidden_state(1:num_frames*6), 6, []); % 6xnum_frames matrix; stores positions in columns
-p_W_landmarks = reshape(hidden_state(num_frames*6+1:end), 3, []); % 3xnum_frames matrix; stores landmarks in columns
+% 6xnum_frames matrix; stores positions in columns
+T_W_frames = reshape(hidden_state(1:num_frames*6), 6, []); 
+% 3xnum_frames matrix; stores landmarks in columns
+p_W_landmarks = reshape(hidden_state(num_frames*6+1:end), 3, []); 
 
 error_terms = [];
 observation_i = 0;

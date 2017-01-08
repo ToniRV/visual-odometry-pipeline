@@ -9,12 +9,12 @@ if with_pattern
     %%% num_error_terms = 2 * (numel(observations)-2-num_frames)/3;
     
     % Define the number of error terms in the error function passed to
-    % lsqnonlin:
+    % lsqnonlin; each observed keypoint contributes two error terms:
     num_error_terms = 2 * (numel(observations)-num_frames)/3;
     
     % Each error term will depend on one pose (6 entries) and one landmark
     % position (3 entries):
-    pattern = spalloc(num_error_terms, numel(hidden_state), ...
+    pattern_ = spalloc(num_error_terms, numel(hidden_state), ...
         num_error_terms * 9);
     
     % Define the (sparse) Jacobian pattern for each frame:
@@ -23,7 +23,7 @@ if with_pattern
     for frame_i = 1:num_frames
         num_keypoints_in_frame = observations(observation_i);
         % All errors of a frame are affected by its pose.
-        pattern(error_i:error_i+2*num_keypoints_in_frame-1, ...
+        pattern_(error_i:error_i+2*num_keypoints_in_frame-1, ...
             (frame_i-1)*6+1:frame_i*6) = 1;
         
         % Each error is affected by the corresponding landmark.
@@ -32,7 +32,7 @@ if with_pattern
             observation_i+2*num_keypoints_in_frame+1:...
             observation_i+3*num_keypoints_in_frame);
         for kp_i = 1:numel(landmark_indices)
-            pattern(error_i+(kp_i-1)*2:error_i+kp_i*2-1,...
+            pattern_(error_i+(kp_i-1)*2:error_i+kp_i*2-1,...
                 1+num_frames*6+(landmark_indices(kp_i)-1)*3:...
                 num_frames*6+landmark_indices(kp_i)*3) = 1;
         end
@@ -40,8 +40,6 @@ if with_pattern
         observation_i = observation_i + 1 + 3*num_keypoints_in_frame;
         error_i = error_i + 2 * num_keypoints_in_frame;
     end
-%     figure(4);
-%     spy(pattern);
 end
 
 % Define the error function passed to lsqnonlin:
@@ -49,7 +47,7 @@ error_terms = @(hidden_state) baError(hidden_state, observations, K, num_frames)
 options = optimoptions(@lsqnonlin, 'Display', 'iter', ...
     'MaxIter', n_iter);
 if with_pattern
-    options.JacobPattern = pattern;
+    options.JacobPattern = pattern_;
     options.UseParallel = false;
 end
 

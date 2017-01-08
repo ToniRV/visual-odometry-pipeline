@@ -1,7 +1,7 @@
 function [index_mask_, index_hist_m_, poses_W_hist_, poses_W_opt_,...
     landmarks_hist_, observation_hist_] = ...
     BA_init(S_i0, T_i0, initialisation_, m_on_)
-% Initialize parameters used by the chosen bundle adjustment method.
+% Initialize parameters according to the chosen bundle adjustment method.
 
 % Initialize observation vector and index mask:
 index_mask_ = (1:size(S_i0.p_W_landmarks_correspondences,2));

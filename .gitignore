@@ -1,5 +1,4 @@
 # pdfs
-*.pdf
 
 #zip files
 *.zip
@@ -10,9 +9,6 @@
 
 # Images
 *.img
-*.jpg
-*.jpeg
-*.png
 
 # Videos
 *.mp4

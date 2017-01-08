@@ -39,10 +39,10 @@ Due to efficiency reasons we decided to use the epipolar line distance as a meas
 \label{s:BF}
 
 \subsection{Plotting}
-The source code provides extensive plottings to help debug the pipeline. These are enabled by using the debug_with_figures flags
-on the different modules of the pipeline. Moreover, in order to properly visualize the logic of the pipeline, we show a figure 
+The source code provides extensive plottings to help debug the pipeline. These are enabled by using the $debug_with_figures$ flags
+on the different modules of the pipeline. Moreover, in order to properly visualize the logic of the pipeline, we show a Figure 
 with the main output of the odometry estimation.
-At the top left of the mentioned figure it is shown the current frame that is being processed. On top of it we plot the keypoints
+At the top left of the mentioned Figure, it is shown the current frame that is being processed. On top of it we plot the keypoints
 triangulated in green, while in yellow we plot the ones that have not yet been triangulated but are potentially going to be
 triangulated.
 The figures below the image present both the number of landmarks that are being tracked (left image) and the global trajectory
@@ -76,7 +76,7 @@ In order to achieve good results for the calibration, we made sure that we follo
 3) Take frames of the checkerboard from sufficiently different angles and distances.
 
 Once the calibration dataset recorded, we proceeded to find the intrinsics of the camera.
-As a first approach we used the Matlab toolbox (REFERENCE TO THE TOOLBOX \href{https://www.vision.caltech.edu/bouguetj/calib_doc/}).
+As a first approach we used the Matlab toolbox (REFERENCE TO THE TOOLBOX \href{https://www.vision.caltech.edu/bouguetj/calib_doc/}{Matlab toolbox}).
 Unfortunately, we could not get good calibration results.
 This was in part due to the fact that the interface requires you to click on the
 corners of the checkerboard in the image, and therefore limits the amount of images you can process in a given time.

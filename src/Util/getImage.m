@@ -1,4 +1,4 @@
-function image = getImage(dataset, idx, kitti_path, malaga_path, parking_path)
+function image = getImage(dataset, idx, kitti_path, malaga_path, parking_path, left_images)
    switch dataset
         case 'Kitti'
             image = imread([kitti_path '/00/image_0/' ...

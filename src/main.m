@@ -131,7 +131,7 @@ if (is_auto_frame_monocular_initialisation_)
     % Retrieve the initial image
     idx_initial_image = 1;
     img0_ = getImage(dataset_, idx_initial_image, ...
-        kitti_path_, malaga_path_, parking_path_);
+        kitti_path_, malaga_path_, parking_path_, left_images_);
         
     max_num_auto_frames = 10;
     min_num_inliers = 30;
@@ -142,7 +142,7 @@ if (is_auto_frame_monocular_initialisation_)
         
         % Retrieve the current image
          current_image = getImage(dataset_, i, kitti_path_, ...
-             malaga_path_, parking_path_);
+             malaga_path_, parking_path_, left_images_);
 
         % Monocular initialisation with repro errors
         [state_i, T_i0, reprojection_errors, ~] = ...
@@ -286,7 +286,7 @@ if (strcmp(BA_,'None') == 0)
 end
 
 % Store Image_i0, aka previous image to kickstart continuous operation.
-prev_img = getImage(dataset_, i_, kitti_path_, malaga_path_, parking_path_);
+prev_img = getImage(dataset_, i_, kitti_path_, malaga_path_, parking_path_, left_images_);
   
 % Initialize Parmeters
 processFrame = makeProcessFrame(cont_op_parameters);
@@ -297,7 +297,7 @@ nnz_inlier_masks = zeros(1,num_frames_plotting);
 
 for i = range_
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
-    image = getImage(dataset_, i, kitti_path_, malaga_path_, parking_path_);
+    image = getImage(dataset_, i, kitti_path_, malaga_path_, parking_path_, left_images_);
     
     % State and pose update:
     [S_i1, T_i1, inlier_mask, validity_mask, new_3D, new_2D] = ...

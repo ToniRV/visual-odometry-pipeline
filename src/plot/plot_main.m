@@ -22,6 +22,7 @@ function plot_main(img1, state1, inlier_mask, ...
     subplot(3,4,[5,9]);
     plot(nnz_inlier_masks, 'b-');
     title('# tracked landmarks over last 20 frames');
+    ylim([0 200]);
     grid on;
 
     subplot(3,4,[6,10]);
@@ -30,6 +31,9 @@ function plot_main(img1, state1, inlier_mask, ...
     plot3(cam_center1_all(1,:)', cam_center1_all(2,:)', ...
         cam_center1_all(3,:)', 'b-', 'Linewidth', 3);
     hold off;
+    axis equal;
+    xlim([-10 10]);
+    ylim([0 inf]);
     title('Full trajectory');
     set(gcf, 'GraphicsSmoothing', 'on');
     view(0,0);

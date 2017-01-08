@@ -32,6 +32,8 @@ initialisation_ = 'Monocular';     % 'Monocular', 'Stereo', 'Ground Truth'
 BA_ = 'Online';                   % 'Offline', 'Online', 'None'
 %%% Select if initialisation frames should be picked automatically
 is_auto_frame_monocular_initialisation_ = false;
+%%% Select if relocalisation should be turned on
+is_relocalisation = true;
 
 % Parameters
 baseline_  = 0;
@@ -175,7 +177,7 @@ else
         case 'Kitti'
             switch initialisation_
                 case 'Monocular'
-                    bootstrap_frames_ = [1, 3];
+                    bootstrap_frames_ = [0, 1];
                     range_ = (bootstrap_frames_(2)+1):last_frame_;
                 case 'Stereo'
                     bootstrap_frames_ = [0, 0];
@@ -297,6 +299,7 @@ num_frames_plotting = 20;
 cam_center1 = zeros(3,num_frames_plotting);
 cam_center_all = [];
 nnz_inlier_masks = zeros(1,num_frames_plotting);
+T_i1_prev = eye(4);
 
 for i = range_
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
@@ -305,9 +308,41 @@ for i = range_
     % State and pose update:
     [S_i1, T_i1, inlier_mask, validity_mask, new_3D, new_2D] = ...
         processFrame(image, prev_img, S_i0, i);
-  
+      
     % BUNDLE ADJUSTMENT
-    if (strcmp(BA_,'None') == 0)
+    if (numel(T_i1) == 0)
+        if (is_relocalisation)  
+            % Relocalization
+            bootstrap_frames_ = [i-2, i];
+            range_ = (bootstrap_frames_(2)+1):last_frame_;
+            img0_ = prev_img;
+            img1_ = image;
+
+            switch initialisation_
+                case 'Monocular'
+                    monoInit = makeMonoInit(init_parameters.mono);
+                    [state, T_i0, ~, ~] = monoInit(img0_, img1_);
+                    keypoints_ = state.matches_2d(1:2,:);
+                    p_W_landmarks_ = state.landmarks(1:3,:);
+                otherwise
+                    disp('Only monocular for relocalisation');
+            end
+
+            if (isempty(keypoints_) || isempty(p_W_landmarks_))
+                disp('Relocalisation did not succeed');
+                assert('false');
+                break;
+            end
+
+            T_diff = T_i1_prev2 - T_i1_prev;
+            T_i0(1:3,4) = T_i0(1:3,4)*norm(T_diff);
+            T_final_after_reloc_h = T_i1_prev*T_i0;
+            T_i1 = T_final_after_reloc_h(1:3,:);
+        else
+            % Go to Offline BundleAdjustment
+            break;
+        end
+    elseif (strcmp(BA_,'None') == 0)
         if (strcmp(BA_,'Offline') == 1)
             [poses_W_hist_, landmarks_hist_, observation_hist_, ...
                 index_mask_] = BA_offline_hist_update(S_i0, T_i1, ...
@@ -344,12 +379,12 @@ for i = range_
         end
     end
     
-    % Idea: Update keypoints and 3D landmarks and switch to new keyframe every 5
-    % frames, that's why there is a mod there .... 
-%     if (mod(i,5) == 0)
-         S_i0 = S_i1;
-         prev_img = image;
-%     end
+    % Update variables
+    S_i0 = S_i1;
+    prev_img = image;
+    T_i0 = T_i1;
+    T_i1_prev(1:3,:) = T_i1;
+    T_i1_prev2 = T_i1_prev;
 
     %% PLOTTING
     cam_help = -T_i1(:,1:3)'*T_i1(:,4);

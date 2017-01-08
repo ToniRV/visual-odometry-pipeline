@@ -7,14 +7,16 @@ function plot_main(img1, state1, inlier_mask, ...
     kp_candidates = state1.last_obs_candidate_keypoints;
     
     % Visualize the 3-D scene
-    figure(fig_num);
+    fig = figure(fig_num);
+    scrsz = get(groot, 'ScreenSize');
+    fig.Position = [1 scrsz(4) scrsz(3) scrsz(4)];
     subplot(3,4,[1,2]);
     imshow(img1);
     title('Inlier and outlier matches');
 
     hold on;
     if (nnz(inlier_mask) > 0)
-        plot(kp_candidates(2, :), kp_candidates(1, :), 'rx', 'Linewidth', 0.5);
+        plot(kp_candidates(2, :), kp_candidates(1, :), 'yx', 'Linewidth', 0.5);
         plot(kp_homo_query(2, :),kp_homo_query(1, :),'gx','Linewidth',2);
     end
     hold off;
@@ -32,8 +34,8 @@ function plot_main(img1, state1, inlier_mask, ...
         cam_center1_all(3,:)', 'b-', 'Linewidth', 3);
     hold off;
     axis equal;
-    xlim([-10 10]);
-    ylim([0 inf]);
+%     xlim([-10 10]);
+%     ylim([0 inf]);
     title('Full trajectory');
     set(gcf, 'GraphicsSmoothing', 'on');
     view(0,0);

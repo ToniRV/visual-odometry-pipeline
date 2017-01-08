@@ -5,8 +5,10 @@ function p = makeCorrespondences2D2D(parameters)
     % Set to 'true' if you want debugging figures to be shown
     debug_verbose_ = parameters.debug_verbose;
     flag_harris_matlab_ = parameters.flag_harris_matlab;
-    
-    if(flag_harris_matlab_)
+    is_KLT_init = true;
+    num_keypoints_ = parameters.num_keypoints;
+
+    if(flag_harris_matlab_ | is_KLT_init)
         params_match_features_ = parameters.match_features;
         params_extract_features_ = parameters.extract_features;
         filter_size_ = parameters.filter_size;
@@ -18,7 +20,6 @@ function p = makeCorrespondences2D2D(parameters)
         match_lambda_ = parameters.match_lambda; % Trades of false positives and false negatives
         harris_patch_size_ = parameters.harris_patch_size;
         harris_kappa_ = parameters.harris_kappa; % Typical values between 0.04 - 0.15
-        num_keypoints_ = parameters.num_keypoints;
         nonmaximum_suppression_radius_ = parameters.nonmaximum_suppression_radius;
     end
 
@@ -40,7 +41,7 @@ function p = makeCorrespondences2D2D(parameters)
         %       in the database image.
         %   *   descriptors_2: The descriptors corresponding to the keypoints 
         %       in the query image.
-        
+                
         if (flag_harris_matlab_)
             %% Part 1 - Harris Score Calculation & Keypoint Selection
             % Selects the N pixels with the highest Harris scores while performing
@@ -117,6 +118,29 @@ function p = makeCorrespondences2D2D(parameters)
             kp_homo_query_matched = ...
             [keypoints_2; ones(1, size(keypoints_2, 2))];
 
+        elseif (is_KLT_init)
+            corners_1 = detectHarrisFeatures(img0,'FilterSize', ...
+                filter_size_, 'MinQuality', min_quality_);
+            
+            corners_1 = corners_1.selectStrongest(num_keypoints_);
+            
+            % Extract matched keypoint locations and round to integer
+            keypoints_1 = [corners_1.Location];
+            keypoints_1 = flipud(keypoints_1.');
+            
+            % Get keypoints on second image and inlier mask for keypoints
+            [keypoints_2, inlier_mask] = KLT(keypoints_1, img1, img0);
+            
+            % Apply inlier mask
+            keypoints_1 = keypoints_1(:, inlier_mask > 0);
+            keypoints_2 = keypoints_2(:, inlier_mask > 0);
+             
+            %% OUTPUT
+            % Homogeneous Keypoint Coordinates
+            kp_homo_database_matched = ...
+            [keypoints_1; ones(1, size(keypoints_1, 2))];
+            kp_homo_query_matched = ...
+            [keypoints_2; ones(1, size(keypoints_2, 2))];
         else
             %% Part 1 - Harris scores
             % Calculate the Harris scores of the database image

@@ -236,14 +236,18 @@ function is_triangulable = checkTriangulability(last_kps, last_tf, first_kps, fi
     is_triangulable = angles > angle_threshold;
 end
 
-function bearing_vector = computeBearing(kps, tfs)
+function norm_bearing_vector = computeBearing(kps, tfs)
     % Get bearings orientation in cam frame
     bearings = K_\[kps; ones(1, size(kps,2))];
     % Get rot matrix from cam points to world
     R_C_W = tfs(:, 1:3);
     % Get bearings orientation in world frame
     bearings_in_world_frame = R_C_W*bearings;
-    bearing_vector = bearings_in_world_frame;
+    norm_bearing_vector = bearings_in_world_frame;
+    for ii = 1:3
+            norm_bearing_vector(:, ii) = norm_bearing_vector(:, ii) / ...
+            norm(norm_bearing_vector(:, ii), 2);
+    end
 end
 
 end

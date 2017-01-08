@@ -1,7 +1,11 @@
-function plot_main(img1, kp_homo_query, P, inlier_mask, ...
+function plot_main(img1, state1, inlier_mask, ...
     nnz_inlier_masks, R_C_W, t_C_W, fig_num, i1, ...
     cam_center1_last_n, cam_center1_all)
 
+    P = state1.p_W_landmarks_correspondences;
+    kp_homo_query = state1.keypoints_correspondences;
+    kp_candidates = state1.last_obs_candidate_keypoints;
+    
     % Visualize the 3-D scene
     figure(fig_num);
     subplot(3,4,[1,2]);
@@ -10,6 +14,7 @@ function plot_main(img1, kp_homo_query, P, inlier_mask, ...
 
     hold on;
     if (nnz(inlier_mask) > 0)
+        plot(kp_candidates(2, :), kp_candidates(1, :), 'rx', 'Linewidth', 0.5);
         plot(kp_homo_query(2, :),kp_homo_query(1, :),'gx','Linewidth',2);
     end
     hold off;
@@ -21,7 +26,10 @@ function plot_main(img1, kp_homo_query, P, inlier_mask, ...
 
     subplot(3,4,[6,10]);
     %plotCoordinateFrame(R_C_W',cam_center1_all(:,end), 2);
-    plot3(cam_center1_all(1,:)', cam_center1_all(2,:)', cam_center1_all(3,:)', 'b-');
+    hold on;
+    plot3(cam_center1_all(1,:)', cam_center1_all(2,:)', ...
+        cam_center1_all(3,:)', 'b-', 'Linewidth', 3);
+    hold off;
     title('Full trajectory');
     set(gcf, 'GraphicsSmoothing', 'on');
     view(0,0);
@@ -44,7 +52,7 @@ function plot_main(img1, kp_homo_query, P, inlier_mask, ...
     
     % Visualize current 3d landmarks
     hold on;
-    scatter3(P(1, :), P(2, :), P(3, :), 5);
+    scatter3(P(1, :), P(2, :), P(3, :), 5, 'filled');
     hold off;   
     pause(0.001);
 end

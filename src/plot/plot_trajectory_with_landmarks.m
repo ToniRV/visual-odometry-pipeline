@@ -1,7 +1,7 @@
 function plot_trajectory_with_landmarks(img0, img1, kp_homo_database, ...
-    kp_homo_query, P, R, T)
+    kp_homo_query, P, R, T, fig_num)
     % Visualize the 3-D scene
-    figure(10);
+    figure(fig_num);
     subplot(2,3,1)
     imshow(img0,[]);
     hold on

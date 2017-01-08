@@ -3,7 +3,7 @@ function [poses_W_opt_, landmarks_hist_] = runBA_online(poses_W_hist_,...
 % Perform online bundle adjustment on the last m_on_ frames
 
 % Set number of iterations for lsqnonlin solver:
-n_iter = 20;
+n_iter = 30;
 
 % Define current hidden_state, i.e. poses and landmarks of last m_on_ frames:
 idx_m = unique(index_hist_m_);

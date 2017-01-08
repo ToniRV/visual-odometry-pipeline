@@ -1,5 +1,5 @@
 function [index_mask_, index_hist_m_, poses_W_hist_, poses_W_opt_,...
-    landmarks_hist_, observation_hist_] = ...
+    plot_pose_hist_, plot_opt_pose_hist_, landmarks_hist_, observation_hist_] = ...
     BA_init(S_i0, T_i0, initialisation_, m_on_)
 % Initialize parameters according to the chosen bundle adjustment method.
 
@@ -25,6 +25,8 @@ end
 
 % Initialize pose history and optimized poses:
 poses_W_opt_ = zeros(6*m_on_,1);
+plot_pose_hist_ = [];
+plot_opt_pose_hist_ = [];
 poses_W_hist_ = tau_i0;
 end
 

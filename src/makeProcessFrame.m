@@ -180,7 +180,7 @@ function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = 
     State_i1.p_W_landmarks_correspondences = final_p_W_landmarks_correspondences_i1;
       
 %% Plotting
-% % Distinguish success from failure.
+% Distinguish success from failure.
 %     if (numel(R_C_W) > 0)
 %         subplot(1, 3, 3);
 %         num_inliers(i1) = nnz(inlier_mask);

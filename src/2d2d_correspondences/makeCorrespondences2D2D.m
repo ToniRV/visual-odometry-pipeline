@@ -12,7 +12,6 @@ function p = makeCorrespondences2D2D(parameters)
         filter_size_ = parameters.filter_size;
         min_quality_ = parameters.min_quality;
     else
-        % TODO: IMPROVE PERFORMANCE BY TWEAKING THE PARAMETERS.
         % Parameter values taken from exercise 3:
         descriptor_radius_ = parameters.descriptor_radius; % A total of 361 pixels per descriptor patch. 
         match_lambda_ = parameters.match_lambda; % Trades of false positives and false negatives
@@ -20,6 +19,8 @@ function p = makeCorrespondences2D2D(parameters)
         harris_kappa_ = parameters.harris_kappa; % Typical values between 0.04 - 0.15
         num_keypoints_ = parameters.num_keypoints;
         nonmaximum_suppression_radius_ = parameters.nonmaximum_suppression_radius;
+        filter_size_ = parameters.filter_size;
+        min_quality_ = parameters.min_quality;
     end
 
     function [kp_homo_database_matched, kp_homo_query_matched] = ...
@@ -122,27 +123,16 @@ function p = makeCorrespondences2D2D(parameters)
         elseif (is_KLT_init)
             [keypoints_2, inlier_mask] = KLT(keypoints_1, img1, img0);
         else
-            %% Part 1 - Harris scores
-            % Calculate the Harris scores of the database image
-            harris_scores = harris(img0, harris_patch_size_, harris_kappa_);
-            assert(min(size(harris_scores) == size(img0)));
-
-            if (debug_verbose_)
-                figure(1);
-                subplot(2, 1, 1);
-                imshow(img0);
-                subplot(2, 1, 2);
-                imagesc(harris_scores);
-                axis equal;
-                axis off;
-            end
+            %% Part 1 - Harris Score Calculation & Keypoint Selection
+            corners_1 = detectHarrisFeatures(img0,'FilterSize', filter_size_, 'MinQuality', min_quality_);
+            corners_1 = corners_1.selectStrongest(num_keypoints_);
+            keypoints_1 = [corners_1.Location];
+            keypoints_1 = round(flipud(keypoints_1.'));
 
             %% Part 2 - Keypoint Selection
             % Selects the N pixels with the highest Harris scores while performing 
             % non-maximum suppression and stores them in a 2xN matrix; Harris score 
             % decreases for increasing column index
-            keypoints_1 = selectKeypoints(...
-            harris_scores, num_keypoints_, nonmaximum_suppression_radius_);
 
             if (debug_verbose_) 
                 figure(2);
@@ -169,12 +159,11 @@ function p = makeCorrespondences2D2D(parameters)
             end
 
             %% Part 4 - Keypoint Matching
-
-            % Calculate the Harris scores of the query image
-            harris_scores_2 = harris(img1, harris_patch_size_, harris_kappa_);
-            % Select the N stongest keypoints in the query image
-            keypoints_2 = selectKeypoints(...
-                harris_scores_2, num_keypoints_, nonmaximum_suppression_radius_);
+            
+            corners_2 = detectHarrisFeatures(img1,'FilterSize', filter_size_, 'MinQuality', min_quality_);
+            corners_2 = corners_2.selectStrongest(num_keypoints_);
+            keypoints_2 = [corners_2.Location];
+            keypoints_2 = round(flipud(keypoints_2.'));
             % Obtain the corresponding keypoint descriptors
             descriptors_2 = describeKeypoints(img1, keypoints_2, descriptor_radius_);
 

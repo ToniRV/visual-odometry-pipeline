@@ -29,7 +29,9 @@ dataset_ = 'Kitti';                % 'Kitti', 'Malaga', 'Parking'
 %%% Select initialisation method to run:
 initialisation_ = 'Monocular';     % 'Monocular', 'Stereo', 'Ground Truth'
 %%% Select bundle adjustment method:
-BA_ = 'Online';                   % 'Offline', 'Online', 'None'
+BA_ = 'None';     % 'Offline', 'Online', 'None'
+m_on_ = 30;         % Set number of frames used for full online BA
+m_off_ = 150;       % Set number of frames used for full offline BA
 %%% Select if initialisation frames should be picked automatically
 is_auto_frame_monocular_initialisation_ = false;
 %%% Select if relocalisation should be turned on
@@ -40,8 +42,6 @@ baseline_  = 0;
 gound_truth_pose_ = 0;
 last_frame_ = 0;
 left_images_ = 0;
-m_on_ = 30; % Set number of frames used for full online BA
-m_off_ = 150; % Set number of frames used for full offline BA
 
 switch dataset_
     case 'Kitti'
@@ -88,13 +88,13 @@ params_correspondences_2D2D = struct(...
     'debug_verbose', false,...
     'flag_harris_matlab', false,...
     'descriptor_radius', 9,... % A total of 361 pixels per descriptor patch    % Only used if flag_harris_matlab is false
-    'match_lambda', 4,... % Trades of false positives and false negatives    % Only used if flag_harris_matlab is false
+    'match_lambda', 5,... % Trades of false positives and false negatives    % Only used if flag_harris_matlab is false
     'harris_patch_size', 9,...                                                                         % Only used if flag_harris_matlab is false
     'harris_kappa', 0.08,... % Typical values between 0.04 - 0.15                 % Only used if flag_harris_matlab is false
-    'num_keypoints', 1000,...                                                                       % Only used if flag_harris_matlab is false
-    'nonmaximum_suppression_radius', 6,...                                               % Only used if flag_harris_matlab is false
+    'num_keypoints', 300,...                                                                       % Only used if flag_harris_matlab is false
+    'nonmaximum_suppression_radius', 8,...                                               % Only used if flag_harris_matlab is false
     'filter_size', 3,...                                                                                      % Only used if flag_harris_matlab is true
-    'min_quality', 0.00001,...
+    'min_quality', 0.01,...
     'match_features', params_match_features_matlab,...
     'extract_features', params_extract_features);                                                                          % Only used if flag_harris_matlab is true
 params_ransac = struct(...
@@ -177,7 +177,7 @@ else
         case 'Kitti'
             switch initialisation_
                 case 'Monocular'
-                    bootstrap_frames_ = [0, 1];
+                    bootstrap_frames_ = [0, 2];
                     range_ = (bootstrap_frames_(2)+1):last_frame_;
                 case 'Stereo'
                     bootstrap_frames_ = [0, 0];

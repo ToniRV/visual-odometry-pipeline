@@ -9,7 +9,8 @@ function p = makeMonoInit (parameters)
     parameters_correspondences_2D2D_ = parameters.correspondences_2D2D;
     parameters_ransac_ = parameters.ransac;
 
-    function [state, T_cw] = monocular_initialisation(img0, img1)
+    function [state, T_cw, reprojection_errors, costs] = ...
+            monocular_initialisation(img0, img1)
 
     %   INPUT:
         %   * img0: First image taken by monocular camera
@@ -33,10 +34,7 @@ function p = makeMonoInit (parameters)
         %   3. Find rotation and translation pose hypotheses
         %   4. Triangulate 2D-3D points
 
-        
-
-        %% Output Initialization
-        
+        %% Output Initialization   
         state = struct('matches_2d', zeros(3, N_), 'landmarks', zeros(4, N_));
         T_cw = eye(4);
 
@@ -76,22 +74,22 @@ function p = makeMonoInit (parameters)
         E = estimateEssentialMatrix(kp_homo_database_fl, kp_homo_query_fl, K_, K_);
         sprintf('Time needed: exercise estimateEssentialMatrix: %f seconds', toc)
 
-        if (debug_verbose_)
-            tic;
-            F_test = estimateFundamentalMatrix(kp_homo_database_fl(1:2,:)', ...
-                kp_homo_query_fl(1:2,:)');
-            E_test = K_' * F_test * K_;
-            sprintf('Time needed: matlab estimateFundamentalMatrix: %f seconds', toc)
-        end
-
         %% Get the hypotheses for the pose (rotation and translation)
         [R_hypo, u3]= decomposeEssentialMatrix(E);
 
         %% Check if in front of camera
         % lambda0*[u v 1]^T = K1 * [Xw Yw Zw]^T
         % lambda1*[u v 1]^T = K1 * R1* [Xw Yw Zw]^T + T
-        [R, T, P, M1, M2] = disambiguateRelativePose(R_hypo, u3, ...
+        [R, T, P, M1, M2, inlier] = ...
+            disambiguateRelativePose(R_hypo, u3, ...
             kp_homo_database_fl, kp_homo_query_fl, K_, K_);
+
+        %% Remove outlier behind cameras
+        P = P(:, inlier);
+        kp_homo_database_matched = kp_homo_database_matched(:, inlier);
+        kp_homo_query_matched = kp_homo_query_matched(:, inlier);
+        kp_homo_database_fl = kp_homo_database_fl(:, inlier);
+        kp_homo_query_fl = kp_homo_query_fl(:, inlier);  
 
         %% ONLY TESTING
         % Rescale reprojection to homogenous coordinates again (u v 1)
@@ -126,7 +124,7 @@ function p = makeMonoInit (parameters)
         %% PLOT
         % Plot matching features
         if (debug_verbose_)
-            figure(5); 
+            figure(15); 
             subplot(2,1,1);
             showMatchedFeatures(img0, img1, flipud(kp1h_matched_before_ransac(1:2,:))', ...
                 flipud(kp2h_matched_before_ransac(1:2,:))', 'montage');       
@@ -136,7 +134,7 @@ function p = makeMonoInit (parameters)
 
             % Plot 3d scene (trajectory and landmarks)
             plot_trajectory_with_landmarks(img0, img1, kp_homo_database_fl, ...
-                kp_homo_query_fl, P, R, T);
+                kp_homo_query_fl, P, R, T, 10);
         end
 
         %% OUTPUT

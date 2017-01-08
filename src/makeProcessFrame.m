@@ -8,10 +8,14 @@ K_ = parameters.K;
 %%% Tune this threshold
 triangulation_angle_threshold_ = parameters.triangulation_angle_threshold; %35
 suppression_radius_ = parameters.suppression_radius;
+reprojection_error_threshold_ = parameters.reprojection_error_threshold;
 
 ransacLocalization = makeRansacLocalization(parameters.ransac_localization);
+is_exercise_triangulation_ = true;
 
-function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i0, State_i0, i1)
+function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = ...
+    processFrame(Image_i1, Image_i0, State_i0, i1)
+
 %PROCESSFRAME Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -23,8 +27,9 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     ransacLocalization(Image_i1, Image_i0,  State_i0.keypoints_correspondences, ...
                                   State_i0.p_W_landmarks_correspondences);
     
-    % B) Retrieve transformation
+    % B) Retrieve transformation of points from cam to world
     Transform_i1 = [R_C_W, t_C_W];
+    Inversed_Transform_i1 = [R_C_W', -R_C_W'*t_C_W];
     isLocalized = numel(R_C_W)>0;
     
     keypoints_correspondences_i1 = valid_tracked_keypoints(:, inlier_mask > 0); % WARNING: should we round, ceil floor?
@@ -37,11 +42,12 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     query_keypoints = removeDuplicates(query_keypoints, keypoints_correspondences_i1, suppression_radius_);
     
     %% Step 3: trying to triangulate new landmarks
-    points_2D_global_var = 0;
-    new_first_obs_cand_kp_i1_global_var = 0;
+    last_obs_cand_kp_i1_global_var = 0;
     final_keypoints_correspondences_i1 = keypoints_correspondences_i1;
     final_p_W_landmarks_correspondences_i1 = p_W_landmarks_correspondences_i1;
           
+    new_3D = [];
+    new_2D = [];
     
     %First time we start:
     if (isempty(State_i0.first_obs_candidate_keypoints))
@@ -105,28 +111,44 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             num_triang_kps = size(triangulable_last_kp, 2);
             X_s = zeros(3, num_triang_kps);
             list_reprojection_errors = zeros(1, num_triang_kps);
-            for i = 1:num_triang_kps
-                [newX_cam_frame, reprojectionError] = ...
-                triangulate(flipud(triangulable_last_kp(:, i))',...
-                                  flipud(triangulable_first_kp(:, i))',...
-                                  (K_*triangulable_last_tf)',...
-                                  (K_*reshape(triangulable_first_tf(:,i), 3, 4))');
-                newX_cam_frame = newX_cam_frame';
-                X_s(:, i) = newX_cam_frame;
-                list_reprojection_errors(i) = reprojectionError;
+            
+            if (is_exercise_triangulation_)
+                homo_keypoints_last_fliped = [flipud(triangulable_last_kp) ; ones(1, size(triangulable_last_kp,2))]; % TODO not sure if this zeros should instead 
+                homo_keypoints_first_fliped = [flipud(triangulable_first_kp) ; ones(1, size(triangulable_first_kp,2))];
+                for i = 1:num_triang_kps
+                    newX_cam_frame = linearTriangulation(homo_keypoints_last_fliped(:, i),...
+                        homo_keypoints_first_fliped(:, i),...
+                        (K_*triangulable_last_tf),...
+                        (K_*reshape(triangulable_first_tf(:,i), 3, 4)));
+                     X_s(:, i) = newX_cam_frame(1:3,:);
+                end
+            else
+                for i = 1:num_triang_kps
+                    [newX_cam_frame, reprojectionError] = ...
+                    triangulate(flipud(triangulable_last_kp(:, i))',...
+                                      flipud(triangulable_first_kp(:, i))',...
+                                      (K_*triangulable_last_tf)',...
+                                      (K_*reshape(triangulable_first_tf(:,i), 3, 4))');
+                    newX_cam_frame = newX_cam_frame';
+                    X_s(:, i) = newX_cam_frame;
+                    list_reprojection_errors(i) = reprojectionError;
+                end
             end
 
             %%% III) Update state
             %%%% a) Store new 2D-3D correspondences which are valid
-            reprojectionError_threshold = 0.5; % WARNING: this guy gets rid of MANY possible landmarks!
-            valid_errors = list_reprojection_errors < reprojectionError_threshold;
-            valid_depth = X_s(3,:) > 0;
-            valid_indices = valid_errors & valid_depth;
+            valid_reprojection = list_reprojection_errors < reprojection_error_threshold_;
+            X_cam_frame = Inversed_Transform_i1*[X_s; ones(1,size(X_s,2))];
+            valid_depth = X_cam_frame(3,:)>0;
+            valid_indices = valid_depth & valid_reprojection;
             fprintf('Number of valid triangulated points: %d \n', nnz(valid_indices));
-            points_3D_cam_frame = X_s(:, valid_indices);
+            points_3D_world_frame = X_s(:, valid_indices);
             % IS THIS CORRECT?
-            points_3D_W = points_3D_cam_frame;
+            points_3D_W = points_3D_world_frame;
             points_2D = triangulable_last_kp(:, valid_indices);
+            
+            new_3D = points_3D_W;
+            new_2D = points_2D;
             
             %%%% b) Append to already known 2D-3D correspondences
             final_keypoints_correspondences_i1 = [keypoints_correspondences_i1,  points_2D];
@@ -159,6 +181,7 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
             first_obs_cand_tf_i1 = [clear_first_obs_cand_tf_i1, new_first_obs_cand_tf_i1];
 
             % F) FINAL RESULT
+            last_obs_cand_kp_i1_global_var = last_obs_cand_kp_i1;
             State_i1.last_obs_candidate_keypoints = last_obs_cand_kp_i1;
             State_i1.first_obs_candidate_keypoints = first_obs_cand_kp_i1;
             State_i1.first_obs_candidate_transform = first_obs_cand_tf_i1;
@@ -168,43 +191,6 @@ function [ State_i1, Transform_i1, inlier_mask] = processFrame(Image_i1, Image_i
     % F) FINAL RESULTS
     State_i1.keypoints_correspondences = final_keypoints_correspondences_i1;
     State_i1.p_W_landmarks_correspondences = final_p_W_landmarks_correspondences_i1;
-      
-%% Plotting
-% Distinguish success from failure.
-    if (numel(R_C_W) > 0)
-        subplot(1, 3, 3);
-        num_inliers(i1) = nnz(inlier_mask);
-        plotCoordinateFrame(R_C_W', -R_C_W'*t_C_W, 1);
-        disp(['Frame ' num2str(i1) ' localized with ' ...
-            num2str(num_inliers(i1)) ' inliers!']);
-        view(0,0);
-    else
-        disp(['Frame ' num2str(i1) ' failed to localize!']);
-    end
-
-    subplot(1, 3, [1 2]);
-    imshow(Image_i1);
-    hold on;
-    plot(valid_tracked_keypoints(2, (1-inlier_mask)>0), ...
-        valid_tracked_keypoints(1, (1-inlier_mask)>0), 'rx', 'Linewidth', 2);
-    if (nnz(inlier_mask) > 0)
-        plot(keypoints_correspondences_i1(2, :), ...
-            keypoints_correspondences_i1(1, :), 'gx', 'Linewidth', 2);
-    end
-    % Plot all the new keypoints
-%     if (new_first_obs_cand_kp_i1_global_var ~= 0)
-%         plot(new_first_obs_cand_kp_i1_global_var(2,:), new_first_obs_cand_kp_i1_global_var(1,:),'yx', 'Linewidth', 2);
-%     end
-    % Plot the new 2D<->3D correspondences
-%     if (points_2D_global_var ~= 0)
-%         plot (points_2D_global_var(2, :), points_2D_global_var(1, :), 'bx', 'Linewidth', 2);
-%     end
-    valid_keypoints_correspondences_i0 = State_i0.keypoints_correspondences(:, validity_mask > 0);
-    keypoints_correspondences_i0 = valid_keypoints_correspondences_i0(:, inlier_mask > 0);
-    
-    hold off;
-    title('Inlier and outlier matches');
-    pause(0.001);
 
 end
 
@@ -222,19 +208,21 @@ function is_triangulable = checkTriangulability(last_kps, last_tf, first_kps, fi
         bearing_vector_first_kps(:, i) = computeBearing(first_kps(:, i), first_tf);
     end
     %3) Check which current kps are triangulable
-    angles = atan2d(norm(cross(bearing_vector_last_kps, bearing_vector_first_kps)), ...
-        dot(bearing_vector_last_kps, bearing_vector_first_kps));
+    angles = zeros(1, size(bearing_vector_last_kps,2));
+    for i = 1:size(bearing_vector_last_kps,2)
+        angles(i) = atan2d(norm(cross(bearing_vector_last_kps(:,i)', bearing_vector_first_kps(:,i)')), ...
+            dot(bearing_vector_last_kps(:,i)', bearing_vector_first_kps(:,i)'));
+    end
     is_triangulable = angles > angle_threshold;
 end
 
-function bearing_vector = computeBearing(kps, tfs)
+function bearings_in_world_frame = computeBearing(kps, tfs)
     % Get bearings orientation in cam frame
     bearings = K_\[kps; ones(1, size(kps,2))];
     % Get rot matrix from cam points to world
     R_C_W = tfs(:, 1:3);
     % Get bearings orientation in world frame
     bearings_in_world_frame = R_C_W*bearings;
-    bearing_vector = bearings_in_world_frame;
 end
 
 end

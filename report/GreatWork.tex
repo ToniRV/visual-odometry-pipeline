@@ -23,7 +23,14 @@ We have implemented two different approaches for finding the 2D-2D correspondenc
 	\item Implementation of the Kanade-Lucas Tracker (KLT).
 \end{enumerate}
 
-Due to efficiency reasons we decided to use the epipolar line distance as a measure to validate the estimated Fundamental Matrices.
+\begin{figure}
+\includegraphics[width=0.98\textwidth]{files/KLT_2d2d.jpg}
+\caption[\label{s:KLT_2d2d}]{2D-2D correspondences with KLT.}
+\end{figure}
+
+An examplary output of the 2D-2D module can be seen in Figure~\ref{s:KLT_2d2d}. The correspondences between two images are indicated.
+
+Due to efficiency reasons we decided to use the epipolar line distance as a measure to validate the estimated Fundamental Matrices. In theory the reprojection error would have yielded better results (sacrificing efficiency); however, in our case the differences were neglectable.
 
 \section{Continous Operation}
 \label{s:ContOp}

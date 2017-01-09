@@ -22,10 +22,11 @@ addpath(genpath(vo_path));
 kitti_path_ = paths{1}{4};
 malaga_path_ = paths{1}{6};
 parking_path_ = paths{1}{8};
+smartphone_path_ = '/home/tonirv/Documents/visual-odometry-pipeline/src/Smartphone/';
 
 %% Setup
 %%% Select dataset to run:
-dataset_ = 'Kitti';                % 'Kitti', 'Malaga', 'Parking'
+dataset_ = 'Kitti';                                             % 'Kitti', 'Malaga', 'Parking', 'Smartphone'
 %%% Select initialisation method to run:
 initialisation_ = 'Monocular';     % 'Monocular', 'Stereo', 'Ground Truth'
 %%% Select bundle adjustment method:
@@ -70,6 +71,10 @@ switch dataset_
         K = load([parking_path_ '/K.txt']);
         ground_truth = load([parking_path_ '/poses.txt']);
         ground_truth = ground_truth(:, [end-8 end]);
+    case 'Smartphone'
+        load('./Smartphone/data/cameraParams.mat');
+        K = cameraParams.IntrinsicMatrix';
+        last_frame_ = 12;
     otherwise
         disp(' No correct dataset specified');
         assert(false);
@@ -135,7 +140,7 @@ if (is_auto_frame_monocular_initialisation_)
     % Retrieve the initial image
     idx_initial_image = 1;
     img0_ = getImage(dataset_, idx_initial_image, ...
-        kitti_path_, malaga_path_, parking_path_, left_images_);
+        kitti_path_, malaga_path_, parking_path_, smartphone_path_, left_images_);
         
     max_num_auto_frames = 10;
     min_num_inliers = 30;
@@ -146,7 +151,7 @@ if (is_auto_frame_monocular_initialisation_)
         
         % Retrieve the current image
          current_image = getImage(dataset_, i, kitti_path_, ...
-             malaga_path_, parking_path_, left_images_);
+             malaga_path_, parking_path_, smartphone_path_, left_images_);
 
         % Monocular initialisation with repro errors
         [state_i, T_i0, reprojection_errors, ~] = ...
@@ -210,6 +215,17 @@ else
                     assert(false);
             end
             [img0_, img1_] = parseParkingImages(parking_path_, bootstrap_frames_);
+        case 'Smartphone'
+            switch initialisation_
+                case 'Monocular'
+                    bootstrap_frames_ = [1, 2];
+                    range_ = (bootstrap_frames_(2)+1):last_frame_;
+                otherwise
+                    disp(['Wrong initialisation ', initialisation_,' method for dataset: ', dataset_]);
+                    assert(false);
+            end
+            img0_ = parseSmartphoneImages(smartphone_path_, bootstrap_frames_(1));
+            img1_ = parseSmartphoneImages(smartphone_path_, bootstrap_frames_(2));
         otherwise
             disp(['Wrong dataset: ', dataset_]);
             assert(false);
@@ -289,9 +305,7 @@ if (strcmp(BA_,'None') == 0)
         BA_init(S_i0, T_i0, initialisation_, m_on_);
 end
 
-% Store Image_i0, aka previous image to kickstart continuous operation.
-prev_img = getImage(dataset_, i_, kitti_path_, malaga_path_, parking_path_, left_images_);
-  
+prev_img = getImage(dataset_, i_, kitti_path_, malaga_path_, parking_path_, smartphone_path_, left_images_);
 % Initialize Parmeters
 processFrame = makeProcessFrame(cont_op_parameters);
 
@@ -303,12 +317,11 @@ T_i1_prev = eye(4);
 
 for i = range_
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
-    image = getImage(dataset_, i, kitti_path_, malaga_path_, parking_path_, left_images_);
-    
+    image = getImage(dataset_, i, kitti_path_, malaga_path_, parking_path_, smartphone_path_, left_images_);
     % State and pose update:
     [S_i1, T_i1, inlier_mask, validity_mask, new_3D, new_2D] = ...
         processFrame(image, prev_img, S_i0, i);
-      
+    image = getImage(dataset_, i, kitti_path_, malaga_path_, parking_path_, left_images_);
     % BUNDLE ADJUSTMENT
     if (numel(T_i1) == 0)
         if (is_relocalisation)  
@@ -378,7 +391,6 @@ for i = range_
             assert(false);
         end
     end
-    
     % Update variables
     S_i0 = S_i1;
     prev_img = image;
@@ -398,7 +410,7 @@ for i = range_
 end
 
 %% Offline Bundle Adjustment
-
+disp('Dataset finished to localize');
 if (strcmp(BA_,'Offline') == 1)
    [poses_W_opt_, landmarks_opt_] = runBA_offline(poses_W_hist_,...
         landmarks_hist_, observation_hist_, ground_truth_pose_, K, m_off_);

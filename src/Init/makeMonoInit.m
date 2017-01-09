@@ -124,6 +124,7 @@ function p = makeMonoInit (parameters)
         %% PLOT
         % Plot matching features
         if (debug_verbose_)
+            
             figure(15); 
             subplot(2,1,1);
             showMatchedFeatures(img0, img1, flipud(kp1h_matched_before_ransac(1:2,:))', ...

@@ -1,0 +1,137 @@
+% -------------------------------------------------------------------------------------------------
+%
+%  Skeleton for theses
+%
+% -------------------------------------------------------------------------------------------------
+%
+% FILENAME:   thesis.tex
+%
+% ABSTRACT:   main file for theses
+%
+% EXCEPTIONS: -
+%
+% USAGE:      !!!!!!COMPILE WITH PDFLATEX, *NOT* WITH LATEX OR TEX!!!!!!!
+%
+% HISTORY:    written by Sascha A. Stoeter <stoeter@iris.ethz.ch>, www.stoeter.com, 02.06.2004
+%             		  modified by Martin Probst, 18.08.2004
+%             	      modified by Chauncey Graetzel, 11.05.2005
+%					  modified by Marius Grimm, 06.05.2015
+
+% -------------------------------------------------------------------------------------------------
+
+\documentclass[12pt,a4paper]{article} % report
+%\renewcommand{\thesection}{\arabic{section}} % if report, section numbering in arabic integers
+\usepackage{thesisstyle}
+
+% -------------------------------------------------------------------------------------------------
+% Add needed packages. Some generally useful packages are listed for
+% your convenience.
+% -------------------------------------------------------------------------------------------------
+\usepackage{subfigure}                          % enable the use of subfigures
+\usepackage[bf]{caption}                        % must go after subfigure
+\usepackage[thickspace,thinqspace]{SIunits}     % enable the use of SI units
+
+\usepackage{hyperref}                           % enable Hyperlinks in pdf/ps Docs
+
+
+% -------------------------------------------------------------------------------------------------
+% Some handy definition to simplify future markup changes
+% -------------------------------------------------------------------------------------------------
+\providecommand{\eg}{e.g.}
+\providecommand{\etal}{\textit{et al.}}
+\providecommand{\ie}{i.e.}
+
+%\setlength{\textwidth}{18cm} \setlength{\oddsidemargin}{-1cm}
+%\setlength{\evensidemargin}{-1cm}
+
+% -------------------------------------------------------------------------------------------------
+% Select type of thesis
+% -------------------------------------------------------------------------------------------------
+\renewcommand{\thesistype}{Project Report} % default value: Thesis
+
+% -------------------------------------------------------------------------------------------------
+% Set names
+% -------------------------------------------------------------------------------------------------
+\renewcommand{\thesisauthor}{Marius Grimm, Amadeus Oertel, Toni Rosi\~nol}
+\renewcommand{\thesisadviser}{Titus Cieslewski, Henri Rebecq}
+\renewcommand{\thesisprof}{Prof. Dr. Davide Scaramuzza}
+\renewcommand{\thesisinstitut}{Robotics and Perception Group}
+\renewcommand{\thesisinstitutaddress}{}
+\renewcommand{\thesisuni}{University of Zurich \& Swiss Federal Institute of Technology Zurich (ETH)} % default value: Swiss Federal Institute of Technology Zurich (ETH)
+\renewcommand{\thesisinstitutlogoname}{files/RPGlogo}
+\renewcommand{\thesisunilogoname}{files/ETHlogo}
+
+
+% -------------------------------------------------------------------------------------------------
+% Beginning of the main document body
+% -------------------------------------------------------------------------------------------------
+\begin{document}
+
+% include all Bib-items even if they're not cited in the text
+\nocite{*}
+
+% This is the first part of the front matter. Pages appear unnumbered
+% and the pages are not counted.
+
+% Title page: set title and date preferably formatted according to
+% ISO 8601
+\thesistitlepage{Visual Odometry Pipeline}{2017-01} 
+
+% This is the second part of the front matter. Pages appear with
+% lowercase roman numbering. The first page number is 'i'.
+\pagenumbering{roman}
+
+% Table of contents
+\newpage
+\tableofcontents
+\addtocontents{toc}{\vspace{.5\baselineskip}}
+
+% List of tables
+%\newpage
+%\addcontentsline{toc}{section}{\protect\numberline{}{List of Tables}}
+%\listoftables
+
+% List of figures
+\newpage
+\addcontentsline{toc}{section}{\protect\numberline{}{List of Figures}}
+\listoffigures
+
+\clearpage
+\pagenumbering{arabic}
+
+% This is the main part of the thesis. Pages appear with arabic numbering.
+
+%\input{Preface}
+
+% Abstract must not be longer than one page per language.
+%\addcontentsline{toc}{section}{\protect\numberline{}{Abstract}}
+%\markright{Abstract}
+%\input{Abstract}
+
+% Main body
+\newpage
+\input{Introduction}
+
+\input{GreatWork}
+
+\input{Conclusion}
+
+%\input{SummaryAndContributions}
+
+%\input{\Acknowledgement}
+
+% Bibliography
+\newpage
+\addtocontents{toc}{\vspace{.5\baselineskip}}
+\addcontentsline{toc}{section}{\protect\numberline{}{References}}
+\bibliography{report}
+
+% Appendices (if needed)
+%\addtocontents{toc}{\vspace{.5\baselineskip}}
+%\appendix
+%\include{Appendix}
+%\include{Notation}
+%\include{Examples}
+
+
+\end{document}

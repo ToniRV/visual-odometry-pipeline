@@ -1,0 +1,26 @@
+\begin{thebibliography}{1}
+
+\bibitem{blanco2013mlgdataset}
+J.-L. Blanco, F.-A. Moreno, and J.~Gonz{\'{a}}lez-Jim{\'{e}}nez.
+\newblock The m{\'{a}}laga urban dataset: High-rate stereo and lidars in a
+  realistic urban scenario.
+\newblock {\em International Journal of Robotics Research}, 33(2):207--214,
+  2014.
+
+\bibitem{Geiger2013IJRR}
+A.~Geiger, P.~Lenz, C.~Stiller, and R.~Urtasun.
+\newblock Vision meets robotics: The kitti dataset.
+\newblock {\em International Journal of Robotics Research (IJRR)}, 2013.
+
+\bibitem{scaramuzza2011vo1}
+D.~Scaramuzza and F.~Fraundorfer.
+\newblock Visual odometry: Part i - the first 30 years and fundamentals.
+\newblock {\em IEEE Robotics and Automation Magazine}, 18(4), 2011.
+
+\bibitem{scaramuzza2012vo2}
+D.~Scaramuzza and F.~Fraundorfer.
+\newblock Visual odometry: Part ii - matching, robustness, optimization, and
+  applications.
+\newblock {\em IEEE Robotics and Automation Magazine}, 19(2), 2012.
+
+\end{thebibliography}

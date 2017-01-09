@@ -1,0 +1,103 @@
+%  Sascha A. Stoeter <stoeter@iris.ethz.ch>, www.stoeter.com
+%  Modified by Chauncey Graetzel <cgraetzel@ethz.ch> 13.05.2005
+%  new style file based on iristhesis: M. Probst <mprobst@ethz.ch> 31.05.2005
+%  Modified for more general use: M. Grimm <mgrimm@ethz.ch> 06.05.2015
+
+\def\packagename{thesisstyle}
+\def\packagemessage{Thesis style of Marius Grimm, ETH Zurich.}
+\def\fileversion{0.1}
+\def\filedate{2015/05/06}
+\def\docdate{2015/05/06}
+
+
+% ---- identification ---------------------------------------------------------
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{thesisstyle}[\filedate\space v\fileversion\space \packagename]
+\typeout{Package: `\packagename' v\fileversion\space <\filedate>}
+\typeout{\packagemessage}
+
+
+% ---- package loading --------------------------------------------------------
+
+\RequirePackage{a4}
+\RequirePackage{amsmath}
+\RequirePackage{fancyhdr}
+\RequirePackage{graphicx}
+\RequirePackage{setspace}
+
+
+% ---- main code --------------------------------------------------------------
+
+\DeclareGraphicsExtensions{.png,.PNG,.pdf,.PDF,.jpg,.JPG}
+
+\setlength{\headheight}{14.49998pt}
+\setlength{\textwidth}{18cm}
+\setlength{\textheight}{25cm} 
+\setlength{\topmargin}{-1cm}
+\setlength{\oddsidemargin}{-1cm}
+\setlength{\evensidemargin}{-1cm}
+\setlength{\columnsep}{+0.5cm}
+
+\onehalfspacing
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{2}
+
+\numberwithin{equation}{section}  % (sec.number)
+
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\fancyhead{}
+\rhead{\thepage}
+\lhead{\nouppercase{\rightmark}}
+\fancyfoot{}
+
+\bibliographystyle{abbrv}
+
+
+\newcommand{\thesistype}{}
+\newcommand{\thesisauthor}{}
+\newcommand{\thesisadviser}{}
+\newcommand{\thesisprof}{}
+\newcommand{\thesisinstitut}{}
+\newcommand{\thesisinstitutaddress}{}
+\newcommand{\thesisuni}{}
+\newcommand{\thesisinstitutlogoname}{}
+\newcommand{\thesisunilogoname}{}
+
+
+\newcommand{\thesistitlepage}[2]{
+\newpage
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{spacing}{1}
+\begin{center}
+{\large \thesistype{}}\\
+\vspace*{\stretch{1}}
+\begin{spacing}{1.5}
+{\LARGE\bf #1}\\
+\end{spacing}
+\vspace*{\stretch{1}}
+{\large\bf \thesisauthor{}}\\
+\vspace*{\stretch{3}}
+\thesisadviser{}\\
+{\footnotesize Adviser}\\
+\vspace*{3mm}
+\thesisprof{}\\
+{\footnotesize Professor}\\
+\vspace*{3mm}
+\thesisinstitut{}\\
+{\thesisuni{}}\\
+\thesisinstitutaddress{}
+\vspace*{\stretch{2}}
+{\large #2}\\
+\vspace*{\stretch{2}}
+\begin{tabular*}{\linewidth}{l@{\extracolsep{\fill}}m@{\extracolsep{\fill}}r}
+\includegraphics[height=13mm]{files/UZHlogo.jpg} & \includegraphics[height=13mm]{\thesisinstitutlogoname} & \includegraphics[height=13mm]{\thesisunilogoname}
+\end{tabular*}
+\end{center}
+\end{spacing}
+\clearpage
+\end{titlepage}
+}

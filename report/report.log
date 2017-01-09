@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.3.16)  9 JAN 2017 00:44
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2015.3.16)  9 JAN 2017 01:14
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -386,19 +386,19 @@ l.78 ...tlepage{Visual Odometry Pipeline}{2017-01}
 You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
-<files/UZHlogo.jpg, id=63, 183.92715pt x 62.634pt>
+<files/UZHlogo.jpg, id=59, 183.92715pt x 62.634pt>
 File: files/UZHlogo.jpg Graphic file (type jpg)
  <use files/UZHlogo.jpg>
 Package pdftex.def Info: files/UZHlogo.jpg used on input line 78.
 (pdftex.def)             Requested size: 108.6199pt x 36.98857pt.
 
-<files/RPGlogo.png, id=64, 385.9218pt x 223.7961pt>
+<files/RPGlogo.png, id=60, 385.9218pt x 223.7961pt>
 File: files/RPGlogo.png Graphic file (type png)
  <use files/RPGlogo.png>
 Package pdftex.def Info: files/RPGlogo.png used on input line 78.
 (pdftex.def)             Requested size: 63.78033pt x 36.98857pt.
 
-<files/ETHlogo.png, id=66, 1027.84pt x 266.9975pt>
+<files/ETHlogo.png, id=62, 1027.84pt x 266.9975pt>
 File: files/ETHlogo.png Graphic file (type png)
  <use files/ETHlogo.png>
 Package pdftex.def Info: files/ETHlogo.png used on input line 78.
@@ -424,20 +424,31 @@ Overfull \hbox (4.86592pt too wide) in paragraph at lines 12--114
 k4fu2e/AADP0zjf7AOGADLhL-
  []
 
-(./GreatWork.tex <files/KLT_2d2d.jpg, id=114, 951.555pt x 181.67876pt>
+(./GreatWork.texpdfTeX warning (ext4): destination with the same identifier (na
+me{page.1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.17 \newpage
+              [1
+
+] <files/KLT_2d2d.jpg, id=126, 951.555pt x 181.67876pt>
 File: files/KLT_2d2d.jpg Graphic file (type jpg)
 
 <use files/KLT_2d2d.jpg>
 Package pdftex.def Info: files/KLT_2d2d.jpg used on input line 26.
 (pdftex.def)             Requested size: 501.9044pt x 95.82909pt.
-pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
-been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.33 
-      [1
+ [2 <./files/KLT_2d2d.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 63--65
 
-] [2 <./files/KLT_2d2d.jpg>]
+ []
+
+<files/titus_plot.png, id=138, 1153.30875pt x 705.63625pt>
+File: files/titus_plot.png Graphic file (type png)
+
+<use files/titus_plot.png>
+Package pdftex.def Info: files/titus_plot.png used on input line 67.
+(pdftex.def)             Requested size: 507.03091pt x 310.22249pt.
+ [3 <./files/titus_plot.png>]
 Missing character: There is no â in font cmr12!
 Missing character: There is no € in font cmr12!
 Missing character: There is no ˜ in font cmr12!
@@ -462,12 +473,12 @@ Missing character: There is no ˜ in font cmr12!
 Missing character: There is no â in font cmr12!
 Missing character: There is no € in font cmr12!
 Missing character: There is no ™ in font cmr12!
- [3]
-<files/aligned_optimized.jpg, id=147, 977.6525pt x 575.14874pt>
+
+<files/aligned_optimized.jpg, id=145, 977.6525pt x 575.14874pt>
 File: files/aligned_optimized.jpg Graphic file (type jpg)
 
 <use files/aligned_optimized.jpg>
-Package pdftex.def Info: files/aligned_optimized.jpg used on input line 99.
+Package pdftex.def Info: files/aligned_optimized.jpg used on input line 102.
 (pdftex.def)             Requested size: 507.03091pt x 298.28922pt.
 Missing character: There is no â in font cmr12!
 Missing character: There is no € in font cmr12!
@@ -481,60 +492,59 @@ Missing character: There is no “ in font cmti12!
 Missing character: There is no â in font cmr12!
 Missing character: There is no € in font cmr12!
 Missing character: There is no ™ in font cmr12!
- [4 <./files/aligned_optimized.jpg>]
-<files/block_tracker.jpg, id=155, 1040.88875pt x 322.20375pt>
+ [4] [5 <./files/aligned_optimized.jpg>]
+<files/block_tracker.jpg, id=163, 1040.88875pt x 322.20375pt>
 File: files/block_tracker.jpg Graphic file (type jpg)
 
 <use files/block_tracker.jpg>
-Package pdftex.def Info: files/block_tracker.jpg used on input line 149.
+Package pdftex.def Info: files/block_tracker.jpg used on input line 152.
 (pdftex.def)             Requested size: 507.03091pt x 156.9471pt.
- [5]
+
 <files/klt_tracker.png, id=165, 1191.45125pt x 656.4525pt>
 File: files/klt_tracker.png Graphic file (type png)
 
 <use files/klt_tracker.png>
-Package pdftex.def Info: files/klt_tracker.png used on input line 157.
+Package pdftex.def Info: files/klt_tracker.png used on input line 160.
 (pdftex.def)             Requested size: 507.03091pt x 279.35423pt.
- [6 <./files/block_tracker.jpg>]
-<files/custom_uniform_keypoints.jpg, id=173, 534.99875pt x 165.61874pt>
+ [6 <./files/block_tracker.jpg>] [7 <./files/klt_tracker.png>]
+<files/custom_uniform_keypoints.jpg, id=177, 534.99875pt x 165.61874pt>
 File: files/custom_uniform_keypoints.jpg Graphic file (type jpg)
 
 <use files/custom_uniform_keypoints.jpg>
 Package pdftex.def Info: files/custom_uniform_keypoints.jpg used on input line 
-187.
+191.
 (pdftex.def)             Requested size: 507.03091pt x 156.96794pt.
 
-<files/strongest_keypoints.jpg, id=174, 536.0025pt x 166.6225pt>
+<files/strongest_keypoints.jpg, id=178, 536.0025pt x 166.6225pt>
 File: files/strongest_keypoints.jpg Graphic file (type jpg)
 
 <use files/strongest_keypoints.jpg>
-Package pdftex.def Info: files/strongest_keypoints.jpg used on input line 192.
+Package pdftex.def Info: files/strongest_keypoints.jpg used on input line 196.
 (pdftex.def)             Requested size: 250.95612pt x 78.01257pt.
 
-<files/uniform_keypoints.jpg, id=175, 1066.98625pt x 326.21875pt>
+<files/uniform_keypoints.jpg, id=179, 1066.98625pt x 326.21875pt>
 File: files/uniform_keypoints.jpg Graphic file (type jpg)
 
 <use files/uniform_keypoints.jpg>
-Package pdftex.def Info: files/uniform_keypoints.jpg used on input line 193.
+Package pdftex.def Info: files/uniform_keypoints.jpg used on input line 197.
 (pdftex.def)             Requested size: 250.95612pt x 76.72612pt.
-) [7 <./files/klt_tracker.png> <./files/custom_uniform_keypoints.jpg>] (./Concl
-usion.tex) [8 <./files/strongest_keypoints.jpg> <./files/uniform_keypoints.jpg>
-] (./report.bbl)
+) (./Conclusion.tex) [8 <./files/custom_uniform_keypoints.jpg> <./files/stronge
+st_keypoints.jpg> <./files/uniform_keypoints.jpg>] [9] (./report.bbl)
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 137.
- [9]
+ [10]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 137.
  (./report.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 137.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 137.
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: CAF9D9CCB00F03C991DAF310D8D141D3;940.
+(rerunfilecheck)             Checksum: 984367FC1CACB5E2E007B5315139A6A3;887.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 137.
  ) 
 Here is how much of TeX's memory you used:
- 7622 strings out of 493117
- 114123 string characters out of 6135433
- 201924 words of memory out of 5000000
- 10921 multiletter control sequences out of 15000+600000
+ 7629 strings out of 493117
+ 114267 string characters out of 6135433
+ 202053 words of memory out of 5000000
+ 10926 multiletter control sequences out of 15000+600000
  10370 words of font info for 37 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  36i,10n,45p,768b,336s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -543,10 +553,10 @@ Here is how much of TeX's memory you used:
 </usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></
 usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></us
 r/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on report.pdf (12 pages, 846586 bytes).
+Output written on report.pdf (13 pages, 1492035 bytes).
 PDF statistics:
- 232 PDF objects out of 1000 (max. 8388607)
- 199 compressed objects within 2 object streams
- 63 named destinations out of 1000 (max. 500000)
- 171 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 238 PDF objects out of 1000 (max. 8388607)
+ 201 compressed objects within 3 object streams
+ 64 named destinations out of 1000 (max. 500000)
+ 168 words of extra memory for PDF output out of 10000 (max. 10000000)
 

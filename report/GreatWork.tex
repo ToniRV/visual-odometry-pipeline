@@ -3,18 +3,18 @@
 
 \subsection{Monocular Initialisation}
 The monocular initialisation is a key module in the Visual-Odometry pipeline.
-It is ordered in the follwoing way:
+It is ordered in the following way:
 \begin{enumerate}
-	\item Find the 2D-2D correspondences between the the chosen first two images
+	\item Find the 2D-2D correspondences between the chosen first two images.
 	\item Apply the 8-point Algorithm to estimate the Fundamental matrix combined with running RANSAC.
 	\item Check the validity of the estimated Fundamental matrix by either comparing the reprojection error or the distance to the epipolar line. 
-	\item RANSAC return a set of inlier of the current 2D-2D correspondences.
-	\item With the new set of inlier we can re-evaluate the final Essential Matrix $E$ estimate.
+	\item RANSAC returns a set of inliers of the current 2D-2D correspondences.
+	\item With the new set of inliers we can re-evaluate the final Essential Matrix $E$ estimate.
 	\item The Essential Matrix $E$ can then be decomposed into two rotation and two translation hypotheses for the pose of the first camera frame. This gives in total a set of four camera motion possibilities.
 	\item These hypotheses have to be disambiguated to choose the right camera rotation and translation.
 \end{enumerate}
 
-
+\newpage
 We have implemented two different approaches for finding the 2D-2D correspondences:
 
 \begin{enumerate}
@@ -29,33 +29,30 @@ We have implemented two different approaches for finding the 2D-2D correspondenc
 
 An examplary output of the 2D-2D module can be seen in Figure~\ref{fig:KLT_2d2d}. The correspondences between two images are indicated.
 
-Due to efficiency reasons we decided to use the epipolar line distance as a measure to validate the estimated Fundamental Matrices. In theory the reprojection error would have yielded better results (sacrificing efficiency); however, in our case the differences were neglectable.
+Due to efficiency reasons we decided to use the epipolar line distance as a measure to validate the estimated Fundamental Matrices. In theory, the reprojection error would have yielded better results (sacrificing efficiency); however, in our case the differences were neglectable.
 
 \section{Continuous Operation}
 \label{s:ContOp}
 
--The continuous operation part of the project performs basically three tasks:
+The continuous operation part of the project performs basically three tasks:
 
 \begin{enumerate}
 	\item Updates the correspondences 2D-3D to the new frame using KLT.
 	\item Localizes using the new correspondences by applying P3P plus RANSAC.
-	\item Stores new candidate keypoints and triangulates new landmarks, also with KL.
+	\item Stores new candidate keypoints and triangulates new landmarks, also with KLT.
 \end{enumerate}
 
 
-\subsection{KLT}
-
 The first part is done by using KLT as a feature tracker. The features that are correctly tracked are then used to estimate the new pose of the camera
 by running P3P together with RANSAC. This last step will also provide us with a list of inliers and outliers.
-This mask will let us discard the outliers while updating the 2D-3D correspondences with only inliers.
-Next, the last observed kps that were in the candidates bin are also tracked in the new frame with KLT. If the tracking is successful, then
+This mask will let us discard the outliers while updating the 2D-3D correspondences with only inliers. \\
+Next, the last observed keypoints that were in the candidates bin are also tracked in the new frame with KLT. If the tracking is successful, then
 they have to pass a triangulability check to see if they will result in a good triangulation.
 For this, we simply compute the angle between the bearing vectors of the current keypoint and the first time we saw it.
-If the triangulability test does not pass it is simply stored for further processing in next frame.
-If it does pass, then the keypoint is used together with the current transform, to triangulate a new landmark.
-The landmark is then checked if it falls in front of the camera.
-Before, we used to check also if the reprojection error of this landmark was
-good, but now we just triangulate using the function used in the exercises (more information in the quantitative analysis section).
+If the triangulability test does not pass, the keypoint is simply stored for further processing in next frame.
+If it does pass the test, then the keypoint is used together with the current transform to triangulate a new landmark. \\
+The landmark is then checked if it falls in front of the camera to verify that it is valid.
+Before, we also used to check if the reprojection error of this landmark was good, but now we just triangulate using the function used in the exercises (more information in the Quantitative Analysis Section~\ref{sssec:triangulation}).\\
 Finally we update the set of 2D-3D correspondences with this new landmark.
 In case the triangulation did not result in a satisfactory landmark, it gets discarded together with its corresponding keypoint.
 
@@ -64,9 +61,15 @@ In case the triangulation did not result in a satisfactory landmark, it gets dis
 
 \subsection{Plotting}
 The source code provides extensive plottings to help debug the pipeline. These are enabled by using the $debug\_with\_figures$ flags
-on the different modules of the pipeline. Moreover, in order to properly visualize the logic of the pipeline, we show a Figure 
-with the main output of the odometry estimation. \\
-At the top left of the mentioned Figure, it is shown the current frame that is being processed. On top of it we plot the keypoints
+on the different modules of the pipeline. \\
+
+\begin{figure}
+\includegraphics[width=0.99\textwidth]{files/titus_plot.png}
+\caption[Trajectory with Landmarks and Keypoints]{\label{fig:titus_plot}Trajectory with Landmarks and Keypoints.}
+\end{figure}
+
+Moreover, in order to properly visualize the logic of the pipeline, we show a figure with the main output of the odometry estimation. \\
+At the top left of the mentioned figure, it is shown the current frame that is being processed. On top of it we plot the keypoints
 triangulated in green, while in yellow we plot the ones that have not yet been triangulated but are potentially going to be
 triangulated. \\
 The figures below the image present both the number of landmarks that are being tracked (left image) and the global trajectory
@@ -85,7 +88,7 @@ We have further implemented the Bonus Feature "Automatic Selection of Frames for
 Once the minimizing pair was found, the monocular initialisation is recomputed with the new initialisation set of images.
 
 \subsection{Relocalisation}
-It can always happen in VO-pipeline that the errors introduced are getting to big and thus, localization is lost. In such a case, we need to be able to recover from the lost localization to further track the camera motion. \\
+It can always happen in VO-pipeline that the errors introduced are getting too big and thus, localization is lost. In such a case, we need to be able to recover from the lost localization to further track the camera motion. \\
 We have implemented a relocalisation state in the pipeline which covers this case. If the number of matched keypoints between two frames tends towards zero the track is lost. We reinitialise the track with two closeby frames with the help of the monocular initialisation. \\
 However, the problem is that after reinitialisation also the scale gets reset. To counteract this we first need to recover the approximate scale where the track last ended. This scale is then reused after relocalisation. 
 
@@ -130,7 +133,7 @@ Once calibrated, we processed the images to get a gray-scaled, resized and undis
 dataset to our VO pipeline and checked the results with our ground truth.
 The ground truth was taken approximately with no special instrumentation other than a meter.
 
-We encountered many problems while recording the dataset, to name a few: motion blur when moving, changes of illumination on the scene,
+We encountered many problems while recording the dataset, to name a few: Motion blur when moving, changes of illumination on the scene,
 maintaining a constant focus, transferring images, having enough features on the scene, etc.
 
 In the end, we found that monocular initialisation was having difficulties to output a sufficient amount of 2D-3D correspondences.
@@ -150,7 +153,7 @@ Our calibration files and images of the dataset are provided under the folder sm
   \caption[Block Matching Tracker]{\label{f:block_tracker}Block Matching Tracker.}
 \end{figure}
 
-Our first approach to keypoint tracking was to implement a block matching algorithm. After describing the keypoints by a block of pixels around it we simply computed the sum of squared differences to match different blocks. This approach, while simplistic, performed reasonably well and we were able to actually localize reliably. As seen in this figure~\ref{f:block_tracker}, Block Matching gives overall good results but fails to track some keypoints. \\
+Our first approach to keypoint tracking was to implement a block matching algorithm. After describing the keypoints by a block of pixels around it we simply computed the sum of squared differences to match different blocks. This approach, while simplistic, performed reasonably well and we were able to actually localize reliably. As seen in this Figure~\ref{f:block_tracker}, Block Matching gives overall good results but fails to track some keypoints. \\
 Nonetheless, knowing that the range of movement is constrained in our datasets (small translational displacements) we thought that it would be appropriate to use a more performant tracker in this situations such as the KLT algorithm.
 
 \begin{figure}
@@ -159,10 +162,11 @@ Nonetheless, knowing that the range of movement is constrained in our datasets (
 \end{figure}
 
 
-The simple replacement of the Block Matching algorithm by the KLT algorithm offered an overall better performance of the estimation due to its sub-pixel accuracy when tracking keypoints. As reference, this figure~\ref{f:klt_tracker} shows the performance of the KLT algorithm on the estimation of the pose.
+The simple replacement of the Block Matching algorithm by the KLT algorithm offered an overall better performance of the estimation due to its sub-pixel accuracy when tracking keypoints. As reference, this Figure~\ref{f:klt_tracker} shows the performance of the KLT algorithm on the estimation of the pose.
 
 
 \subsubsection{Triangulation Functions}
+\label{sssec:triangulation}
 
 During the early development of the pipeline we decided to use the linear triangulation function developed during the exercises.
 For the first iterations of the pipeline it gave us good results that were satisfactory. Nonetheless, the reprojection error of the newly
@@ -194,8 +198,8 @@ as bins. In each of these bins we run the Matlab implementation of "detectHarris
 \caption[Harris Features]{\label{f:harris}Harris Features.}
 \end{figure}
 
-This provides us with localy optimal corners in
-the bin. Applying this approach recursevely over the bins gives us an homogeneous extraction of features of the image. Figure~\ref{f:custom_uniform} 
+This provides us with locally optimal corners in
+the bin. Applying this approach recursively over the bins gives us an homogeneous extraction of features of the image. Figure~\ref{f:custom_uniform} 
 presents the result of this implementation on the first frame of the Kitti dataset.
 
 The other two algorithms that we may use consist in running the Harris corner detector over the whole image, as it is usually done. They differ between them in that one selects the strongest detected keypoints while the other selects them more uniformly. As it can be seen in Figure~\ref{f:strongest} and Figure~\ref{f:custom_uniform}, the uniform selection of keypoints performed by Matlab is still not homogeneous over the image.

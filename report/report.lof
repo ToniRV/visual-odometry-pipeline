@@ -1,8 +1,9 @@
 \contentsline {figure}{\numberline {1}{\ignorespaces 2D-2D Correspondences with KLT}}{2}{figure.caption.3}
-\contentsline {figure}{\numberline {2}{\ignorespaces Offline Bundle Adjustment}}{4}{figure.caption.4}
-\contentsline {figure}{\numberline {3}{\ignorespaces Block Matching Tracker}}{6}{figure.caption.5}
-\contentsline {figure}{\numberline {4}{\ignorespaces KLT Matching Tracker}}{7}{figure.caption.6}
-\contentsline {figure}{\numberline {5}{\ignorespaces Uniform Harris Implementation}}{7}{figure.caption.7}
-\contentsline {figure}{\numberline {6}{\ignorespaces Harris Features}}{8}{figure.caption.8}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Strongest Harris Features.}}}{8}{figure.caption.8}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Uniform Harris Features.}}}{8}{figure.caption.8}
+\contentsline {figure}{\numberline {2}{\ignorespaces Trajectory with Landmarks and Keypoints}}{3}{figure.caption.4}
+\contentsline {figure}{\numberline {3}{\ignorespaces Offline Bundle Adjustment}}{5}{figure.caption.5}
+\contentsline {figure}{\numberline {4}{\ignorespaces Block Matching Tracker}}{6}{figure.caption.6}
+\contentsline {figure}{\numberline {5}{\ignorespaces KLT Matching Tracker}}{7}{figure.caption.7}
+\contentsline {figure}{\numberline {6}{\ignorespaces Uniform Harris Implementation}}{8}{figure.caption.8}
+\contentsline {figure}{\numberline {7}{\ignorespaces Harris Features}}{8}{figure.caption.9}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Strongest Harris Features.}}}{8}{figure.caption.9}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Uniform Harris Features.}}}{8}{figure.caption.9}

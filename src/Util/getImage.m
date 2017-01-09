@@ -1,4 +1,4 @@
-function image = getImage(dataset, idx, kitti_path, malaga_path, parking_path, left_images)
+function image = getImage(dataset, idx, kitti_path, malaga_path, parking_path, smartphone_path, left_images)
    switch dataset
         case 'Kitti'
             image = imread([kitti_path '/00/image_0/' ...
@@ -10,6 +10,8 @@ function image = getImage(dataset, idx, kitti_path, malaga_path, parking_path, l
         case 'Parking'
             image = rgb2gray(imread([parking_path ...
                sprintf('/images/img_%05d.png', idx)]));
+        case 'Smartphone'
+            image = parseSmartphoneImages(smartphone_path, idx);
        otherwise
             disp(['Wrong dataset specified: ', dataset]);
             assert(false);

@@ -187,7 +187,6 @@ function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = 
             State_i1.first_obs_candidate_transform = first_obs_cand_tf_i1;
         end
     end % end of if (isempty(State_i0.first_obs_candidate_keypoints))
-    
     % F) FINAL RESULTS
     State_i1.keypoints_correspondences = final_keypoints_correspondences_i1;
     State_i1.p_W_landmarks_correspondences = final_p_W_landmarks_correspondences_i1;

@@ -33,12 +33,16 @@ initialisation_ = 'Monocular';     % 'Monocular', 'Stereo', 'Ground Truth'
 BA_ = 'Offline';                   % 'Offline', 'Online', 'None'
 %%% Select if initialisation frames should be picked automatically
 is_auto_frame_monocular_initialisation_ = false;
+%%% Select if relocalisation should be turned on
+is_relocalisation = false;
 
 % Parameters
 baseline_  = 0;
 gound_truth_pose_ = 0;
 last_frame_ = 0;
 left_images_ = 0;
+m_on_ = 30; % Set number of frames used for full online BA
+m_off_ = 150; % Set number of frames used for full offline BA
 
 switch dataset_
     case 'Kitti'
@@ -99,7 +103,7 @@ params_correspondences_2D2D = struct(...
     'match_features', params_match_features_matlab,...
     'extract_features', params_extract_features);                                                                          % Only used if flag_harris_matlab is true
 params_ransac = struct(...
-    'num_iterations', 500);
+    'num_iterations', 1000);
     
 params_stereo = struct(...
     'triangulation_algorithm', 'matlab_triangulation',...
@@ -136,7 +140,7 @@ if (is_auto_frame_monocular_initialisation_)
     % Retrieve the initial image
     idx_initial_image = 1;
     img0_ = getImage(dataset_, idx_initial_image, ...
-        kitti_path_, malaga_path_, parking_path_, smartphone_path_);
+        kitti_path_, malaga_path_, parking_path_, smartphone_path_, left_images_);
         
     max_num_auto_frames = 10;
     min_num_inliers = 30;
@@ -147,7 +151,7 @@ if (is_auto_frame_monocular_initialisation_)
         
         % Retrieve the current image
          current_image = getImage(dataset_, i, kitti_path_, ...
-             malaga_path_, parking_path_, smartphone_path_);
+             malaga_path_, parking_path_, smartphone_path_, left_images_);
 
         % Monocular initialisation with repro errors
         [state_i, T_i0, reprojection_errors, ~] = ...
@@ -204,7 +208,7 @@ else
         case 'Parking'
             switch initialisation_
                 case 'Monocular'
-                    bootstrap_frames_ = [0, 1];
+                    bootstrap_frames_ = [0, 2];
                     range_ = (bootstrap_frames_(2)+1):last_frame_;
                 otherwise
                     disp(['Wrong initialisation ', initialisation_,' method for dataset: ', dataset_]);
@@ -267,7 +271,7 @@ S_i0 = struct(...
     );
 
 params_harris_matlab = struct(...
-    'MinQuality', 0.01,...
+    'MinQuality', 0.1,...
     'FilterSize', 5);
 params_harris_lecture = struct(...
     'harris_patch_size', 9,...
@@ -275,67 +279,124 @@ params_harris_lecture = struct(...
     'nonmaximum_supression_radius', 8);
 params_harris_detector = struct(...
     'debug_with_figures', false,...
-    'num_keypoints', 70,...
+    'num_keypoints', 100,...
     'cols', 4,...
-    'rows', 3,...
+    'rows', 4,...
     'algorithm', 1,...
     'harris_matlab', params_harris_matlab,...
     'harris_lecture', params_harris_lecture);
 params_ransac_localization = struct(...
     'K', K,...
-    'num_iterations', 200,...
-    'pixel_tolerance', 10);
+    'num_iterations', 500,...
+    'pixel_tolerance', 5);
 
 cont_op_parameters = struct(...
     'K', K,...
     'harris_detector', params_harris_detector,...
     'triangulation_angle_threshold', 3,...
     'suppression_radius', 3,...
-    'reprojection_error_threshold', 200,...
+    'reprojection_error_threshold', 100,...
     'ransac_localization', params_ransac_localization);
 
 % Bundle Adjustment initialization:
 if (strcmp(BA_,'None') == 0)
-    [m_on_, n_off_, index_mask_, index_hist_m_, poses_W_hist_,...
-        landmarks_hist_, observation_hist_] = ...
-        BA_init(S_i0, T_i0, initialisation_);
+    [index_mask_, index_hist_m_, poses_W_hist_, poses_W_opt_,...
+        plot_pose_hist_, plot_opt_pose_hist_, landmarks_hist_, observation_hist_] = ...
+        BA_init(S_i0, T_i0, initialisation_, m_on_);
 end
 
-% Store Image_i0, aka previous image to kickstart continuous operation.
-prev_img = getImage(dataset_, i_, kitti_path_, malaga_path_, parking_path_, smartphone_path_);
+prev_img = getImage(dataset_, i_, kitti_path_, malaga_path_, parking_path_, smartphone_path_, left_images_);
 % Initialize Parmeters
 processFrame = makeProcessFrame(cont_op_parameters);
-num_frames_plotting = 20;
+
+num_frames_plotting = 80;
 cam_center1 = zeros(3,num_frames_plotting);
 cam_center_all = [];
 nnz_inlier_masks = zeros(1,num_frames_plotting);
+T_i1_prev = eye(4);
 
 for i = range_
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
-
-    image = getImage(dataset_, i, kitti_path_, malaga_path_, parking_path_, smartphone_path_);
+    image = getImage(dataset_, i, kitti_path_, malaga_path_, parking_path_, smartphone_path_, left_images_);
     % State and pose update:
     [S_i1, T_i1, inlier_mask, validity_mask, new_3D, new_2D] = ...
         processFrame(image, prev_img, S_i0, i);
-
+    image = getImage(dataset_, i, kitti_path_, malaga_path_, parking_path_, left_images_);
     % BUNDLE ADJUSTMENT
     if (numel(T_i1) == 0)
-        break;
+        if (is_relocalisation)  
+            % Relocalization
+            bootstrap_frames_ = [i-2, i];
+            range_ = (bootstrap_frames_(2)+1):last_frame_;
+            img0_ = prev_img;
+            img1_ = image;
+
+            switch initialisation_
+                case 'Monocular'
+                    monoInit = makeMonoInit(init_parameters.mono);
+                    [state, T_i0, ~, ~] = monoInit(img0_, img1_);
+                    keypoints_ = state.matches_2d(1:2,:);
+                    p_W_landmarks_ = state.landmarks(1:3,:);
+                otherwise
+                    disp('Only monocular for relocalisation');
+            end
+
+            if (isempty(keypoints_) || isempty(p_W_landmarks_))
+                disp('Relocalisation did not succeed');
+                assert('false');
+                break;
+            end
+
+            T_diff = T_i1_prev2 - T_i1_prev;
+            T_i0(1:3,4) = T_i0(1:3,4)*norm(T_diff);
+            T_final_after_reloc_h = T_i1_prev*T_i0;
+            T_i1 = T_final_after_reloc_h(1:3,:);
+        else
+            % Go to Offline BundleAdjustment
+            break;
+        end
     elseif (strcmp(BA_,'None') == 0)
         if (strcmp(BA_,'Offline') == 1)
             [poses_W_hist_, landmarks_hist_, observation_hist_, ...
                 index_mask_] = BA_offline_hist_update(S_i0, T_i1, ...
-                validity_mask, inlier_mask, index_mask_, new_3D, new_2D, ...
+                validity_mask, inlier_mask, index_mask_, new_3D, new_2D,...
                 poses_W_hist_, landmarks_hist_, observation_hist_);
-            n_off_ = n_off_ + 1;  
+            % Stop VO pipeline if enough frames to perform offline BA have
+            % been recorded:
+            if (i == range_(m_off_-1))
+                break;
+            end
+        elseif (strcmp(BA_,'Online') == 1)
+            [poses_W_hist_, landmarks_hist_, observation_hist_,...
+                index_mask_, index_hist_m_] = BA_online_hist_update(...
+                S_i0, T_i1, validity_mask, inlier_mask, index_mask_,...
+                index_hist_m_, new_3D, new_2D, poses_W_hist_,...
+                landmarks_hist_, observation_hist_, range_, m_on_, i);
+            if (i >= range_(m_on_-1))
+                [poses_W_opt_, landmarks_hist_] = runBA_online(...
+                   poses_W_hist_, landmarks_hist_, index_hist_m_,...
+                   observation_hist_, K, m_on_);
+                % Use optimized landmarks for next pose update:
+                State_i1.p_W_landmarks_correspondences =...
+                landmarks_hist_(:, index_mask_);
+            end
+            %BA_plot_update(poses_W_opt_, T_i1, T_i0,...
+            %    ground_truth_pose_, i, range_, i);
+            [plot_pose_hist_, plot_opt_pose_hist_] = BA_plot_update(...
+                poses_W_opt_, T_i1, T_i0, ground_truth_pose_, m_on_,...
+                range_, i, landmarks_hist_, plot_pose_hist_,...
+                plot_opt_pose_hist_);            
         else
             disp(['Unidentified BA method: ', BA_]);
             assert(false);
         end
     end
-
+    % Update variables
     S_i0 = S_i1;
     prev_img = image;
+    T_i0 = T_i1;
+    T_i1_prev(1:3,:) = T_i1;
+    T_i1_prev2 = T_i1_prev;
 
     %% PLOTTING
     cam_help = -T_i1(:,1:3)'*T_i1(:,4);
@@ -352,6 +413,5 @@ end
 disp('Dataset finished to localize');
 if (strcmp(BA_,'Offline') == 1)
    [poses_W_opt_, landmarks_opt_] = runBA_offline(poses_W_hist_,...
-        landmarks_hist_, observation_hist_, ground_truth_pose_, K, n_off_);
+        landmarks_hist_, observation_hist_, ground_truth_pose_, K, m_off_);
 end
->>>>>>> 792c7e33fbac9ea014e2709f4e912cdcdf686c0b

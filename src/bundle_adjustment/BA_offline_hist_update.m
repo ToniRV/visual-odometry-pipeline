@@ -25,11 +25,17 @@ if (isempty(new_3D) == 0)
     index_mask_ = [index_mask_tracked, index_mask_new];
     kp2add = [kp_inliers_tracked(:); new_2D(:)];
     n_kp = size(kp_inliers_tracked,2) + size(new_2D,2);
-else
-    landmarks_hist_ = landmarks_hist_0;
-    index_mask_ = index_mask_tracked;
-    kp2add = kp_inliers_tracked(:);
-    n_kp = size(kp_inliers_tracked,2);
+    % Sanity check:
+    assert(n_kp == size(kp2add,1)/2,...
+        'Unknown number of keypoints to add.');
+    else
+        landmarks_hist_ = landmarks_hist_0;
+        index_mask_ = index_mask_tracked;
+        kp2add = kp_inliers_tracked(:);
+        n_kp = size(kp_inliers_tracked,2);
+        % Sanity check:
+        assert(n_kp == size(kp2add,1)/2,...
+            'Unknown number of keypoints to add.');
 end
 
 poses_W_hist_ = [poses_W_hist_0; tau_i1];

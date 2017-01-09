@@ -191,7 +191,6 @@ function [State_i1, Transform_i1, inlier_mask, validity_mask, new_3D, new_2D] = 
     % F) FINAL RESULTS
     State_i1.keypoints_correspondences = final_keypoints_correspondences_i1;
     State_i1.p_W_landmarks_correspondences = final_p_W_landmarks_correspondences_i1;
-
 end
 
 function is_triangulable = checkTriangulability(last_kps, last_tf, first_kps, first_tfs)

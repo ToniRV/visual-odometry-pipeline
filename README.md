@@ -19,7 +19,7 @@ git clone git@github.com:ToniRV/visual-odometry-pipeline.git
 ```
 
 2. Modify the paths to the datasets that you can download from [here](http://rpg.ifi.uzh.ch/docs/teaching/2016/kitti00.zip)
-Copy this [file](visual-odometry-pipeline/src/Parameters/paths_example.txt) and rename it to paths.txt
+Copy this [file](https://github.com/ToniRV/visual-odometry-pipeline/blob/master/src/Parameters/paths_example.txt) and rename it to paths.txt
 Modify your paths inside this file accordingly.
 Then store it in the Parameters folder.
 

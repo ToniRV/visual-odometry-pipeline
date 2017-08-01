@@ -1,5 +1,6 @@
 <img src="resources/vo_pipeline.png" align="right" width="30%"/>
-# README for VO pipeline
+
+# Visual Odometry pipeline
 
 Monocular, visual odometry (VO) pipeline with the most essential features:
 

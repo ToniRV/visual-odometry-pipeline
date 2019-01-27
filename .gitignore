@@ -5,6 +5,7 @@
 
 # txt files
 *.txt
+!LICENSE.txt
 !dataset_paths_example.txt
 
 # Images
